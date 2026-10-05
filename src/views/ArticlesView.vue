@@ -10,7 +10,7 @@ const { items: articles } = useArticles()
 
 <template>
   <div>
-    <PageHero title="المقالات" eyebrow="الموارد" :subtitle="texts.learning.articles.text">
+    <PageHero :title="texts.ui.pages.articles" :eyebrow="texts.ui.pages.resources" :subtitle="texts.learning.articles.text">
       <span><BaseIcon name="article" :size="16" /><b>{{ articles.length }}</b> مقالات</span>
       <span v-if="texts.learning.articles.badge"><BaseIcon name="calendar" :size="16" />{{ texts.learning.articles.badge }}</span>
     </PageHero>

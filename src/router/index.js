@@ -13,23 +13,23 @@ const fromTabs = (map, fallback) => (to) => {
 
 const routes = [
   { path: '/', name: 'home', component: HomeView, meta: { title: '' } },
-  { path: '/services', name: 'services', component: () => import('@/views/ServicesView.vue'), meta: { title: 'الخدمات' } },
-  { path: '/work', name: 'work', component: () => import('@/views/WorkView.vue'), meta: { title: 'أعمالي' } },
+  { path: '/services', name: 'services', component: () => import('@/views/ServicesView.vue'), meta: { page: 'services', title: 'الخدمات' } },
+  { path: '/work', name: 'work', component: () => import('@/views/WorkView.vue'), meta: { page: 'work', title: 'أعمالي' } },
 
   // الأكاديمية
-  { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { title: 'الدورات' } },
+  { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { page: 'courses', title: 'الدورات' } },
   { path: '/courses/:slug', name: 'course', component: () => import('@/views/CourseView.vue'), props: true, meta: { title: 'الدورات' } },
-  { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { title: 'الورش' } },
+  { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { page: 'workshops', title: 'الورش' } },
   { path: '/academy', redirect: fromTabs({ workshops: '/workshops' }, '/courses') },
 
   // الموارد
-  { path: '/articles', name: 'articles', component: () => import('@/views/ArticlesView.vue'), meta: { title: 'المقالات' } },
-  { path: '/tools', name: 'tools', component: () => import('@/views/ToolsView.vue'), meta: { title: 'أدواتي' } },
+  { path: '/articles', name: 'articles', component: () => import('@/views/ArticlesView.vue'), meta: { page: 'articles', title: 'المقالات' } },
+  { path: '/tools', name: 'tools', component: () => import('@/views/ToolsView.vue'), meta: { page: 'tools', title: 'أدواتي' } },
   { path: '/resources', redirect: fromTabs({ tools: '/tools' }, '/articles') },
   { path: '/stack', redirect: '/tools' },
   { path: '/articles/:id', name: 'article', component: () => import('@/views/ArticleView.vue'), props: true, meta: { title: 'المقالات' } },
 
-  { path: '/about', name: 'about', component: () => import('@/views/AboutView.vue'), meta: { title: 'من أنا' } },
+  { path: '/about', name: 'about', component: () => import('@/views/AboutView.vue'), meta: { page: 'about', title: 'من أنا' } },
   { path: '/login', name: 'login', component: () => import('@/views/auth/LoginView.vue'), meta: { title: 'تسجيل الدخول', bare: true } },
   { path: '/register', name: 'register', component: () => import('@/views/auth/RegisterView.vue'), meta: { title: 'إنشاء حساب', bare: true } },
   { path: '/reset-password', name: 'reset-password', component: () => import('@/views/auth/ResetPasswordView.vue'), meta: { title: 'كلمة مرور جديدة', bare: true } },
@@ -74,8 +74,11 @@ router.beforeEach(async (to) => {
   return auth.isSignedIn.value || { name: 'register', query: { next: to.fullPath } }
 })
 
+// meta.page: the page's name from the dashboard (texts.ui.pages), meta.title the bundled fallback
+export const pageTitle = (route) => siteTitle(texts.ui.pages[route.meta.page] ?? route.meta.title)
+
 router.afterEach((to) => {
-  document.title = siteTitle(to.meta.title)
+  document.title = pageTitle(to)
   trackPageView(to.fullPath)
 })
 

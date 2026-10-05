@@ -20,7 +20,7 @@ const stats = useStats()
           </li>
         </ul>
         <RouterLink class="btn btn-dark btn-lg" :to="{ path: '/services', hash: '#contact' }">
-          احجز استشارة مجانية <BaseIcon name="arrow" :size="18" />
+          {{ texts.ui.buttons.consult }} <BaseIcon name="arrow" :size="18" />
         </RouterLink>
       </div>
 

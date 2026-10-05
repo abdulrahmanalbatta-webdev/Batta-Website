@@ -21,7 +21,7 @@ const filtered = computed(() => tools.value.filter((t) => category.value === 'ا
     <FilterChips v-model="category" :options="categories" />
     <div class="grid g3">
       <ToolCard v-for="t in filtered" :key="t.id" :tool="t" />
-      <LoadState :loading="loading" :error="error" :empty="!filtered.length" empty-text="لا توجد أدوات بعد." @retry="reload" />
+      <LoadState :loading="loading" :error="error" :empty="!filtered.length" :empty-text="texts.ui.empty.tools" @retry="reload" />
     </div>
     <p class="note">{{ texts.learning.tools.note }}</p>
   </div>

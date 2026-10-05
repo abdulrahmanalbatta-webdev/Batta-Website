@@ -38,7 +38,7 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
           <CourseCard v-for="c in courses.slice(0, 3)" :key="c.id" :course="c" />
         </div>
         <div class="center-row">
-          <RouterLink class="btn btn-ghost btn-lg" to="/courses">كل الدورات <BaseIcon name="arrow" :size="18" /></RouterLink>
+          <RouterLink class="btn btn-ghost btn-lg" to="/courses">{{ texts.ui.buttons.all_courses }} <BaseIcon name="arrow" :size="18" /></RouterLink>
         </div>
       </div>
     </section>
@@ -52,7 +52,7 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
           <ArticleCard v-for="a in latestArticles" :key="a.id" :article="a" />
         </div>
         <div class="center-row">
-          <RouterLink class="btn btn-ghost btn-lg" to="/articles">كل المقالات <BaseIcon name="arrow" :size="18" /></RouterLink>
+          <RouterLink class="btn btn-ghost btn-lg" to="/articles">{{ texts.ui.buttons.all_articles }} <BaseIcon name="arrow" :size="18" /></RouterLink>
         </div>
       </div>
     </section>

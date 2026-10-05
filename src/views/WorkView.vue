@@ -7,7 +7,7 @@ import { texts } from '@/data/texts'
 
 <template>
   <div>
-    <PageHero title="الأعمال" :subtitle="texts.pages.work.text" />
+    <PageHero :title="texts.ui.pages.work" :subtitle="texts.pages.work.text" />
 
     <section class="page-body">
       <div class="container">
@@ -18,7 +18,7 @@ import { texts } from '@/data/texts'
             <h2>{{ texts.pages.work.cta_title }}</h2>
             <p>{{ texts.pages.work.cta_text }}</p>
           </div>
-          <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">ابدأ مشروعك</RouterLink>
+          <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.work_cta }}</RouterLink>
         </div>
       </div>
     </section>

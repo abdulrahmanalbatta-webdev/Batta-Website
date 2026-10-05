@@ -91,7 +91,7 @@ async function copyLink() {
       <div class="container narrow">
         <nav class="crumbs" aria-label="مسار التنقل">
           <RouterLink to="/">الرئيسية</RouterLink><span>/</span>
-          <RouterLink to="/articles">المقالات</RouterLink><span>/</span>
+          <RouterLink to="/articles">{{ texts.ui.pages.articles }}</RouterLink><span>/</span>
           <span>{{ article.category }}</span>
         </nav>
         <span class="pill">{{ article.category }}</span>
@@ -124,7 +124,7 @@ async function copyLink() {
             <div>
               <b>{{ author.name }}</b>
               <p>{{ author.role }}. {{ texts.learning.articles.author_bio }}</p>
-              <RouterLink to="/about" class="link-more">تعرّف عليّ أكثر</RouterLink>
+              <RouterLink to="/about" class="link-more">{{ texts.ui.buttons.about_author }}</RouterLink>
             </div>
           </div>
 
@@ -154,7 +154,7 @@ async function copyLink() {
           <div class="ink-panel side-cta">
             <h4>نشرة البطّة</h4>
             <p>{{ texts.learning.articles.newsletter_text }}</p>
-            <RouterLink class="btn btn-primary btn-block" :to="{ path: '/', hash: '#newsletter' }">اشترك مجاناً</RouterLink>
+            <RouterLink class="btn btn-primary btn-block" :to="{ path: '/', hash: '#newsletter' }">{{ texts.ui.buttons.subscribe }}</RouterLink>
           </div>
         </aside>
       </div>

@@ -36,7 +36,7 @@ async function subscribe() {
       <form @submit.prevent="subscribe">
         <input v-model="email" type="email" required dir="ltr" placeholder="بريدك الإلكتروني" aria-label="البريد الإلكتروني" />
         <div hidden aria-hidden="true"><input v-model="trap" type="text" name="hp_extra" tabindex="-1" autocomplete="off" /></div>
-        <button class="btn btn-primary" type="submit" :disabled="sending">{{ sending ? 'جارٍ الاشتراك…' : 'اشترك مجاناً' }}</button>
+        <button class="btn btn-primary" type="submit" :disabled="sending">{{ sending ? 'جارٍ الاشتراك…' : texts.ui.buttons.subscribe }}</button>
       </form>
     </div>
   </div>

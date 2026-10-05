@@ -18,13 +18,13 @@ import { texts } from '@/data/texts'
           <span class="ico"><BaseIcon :name="s.icon" :size="24" /></span>
           <h3>{{ s.title }}</h3>
           <p>{{ s.text }}</p>
-          <span class="more">اعرف المزيد <BaseIcon name="arrow" :size="16" /></span>
+          <span class="more">{{ texts.ui.buttons.service_more }} <BaseIcon name="arrow" :size="16" /></span>
         </RouterLink>
       </div>
 
       <div class="center-row">
         <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">
-          اطلب خدمتك <BaseIcon name="arrow" :size="18" />
+          {{ texts.ui.buttons.request_service }} <BaseIcon name="arrow" :size="18" />
         </RouterLink>
       </div>
     </div>

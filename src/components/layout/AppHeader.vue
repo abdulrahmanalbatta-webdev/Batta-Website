@@ -5,6 +5,7 @@ import BrandLogo from '@/components/ui/BrandLogo.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { nav } from '@/data/navigation'
 import { useAuth } from '@/composables/useAuth'
+import { texts } from '@/data/texts'
 
 const route = useRoute()
 const { student } = useAuth()
@@ -103,13 +104,13 @@ const isActive = (item) =>
 
         <RouterLink v-if="student" class="nav-link mobile-only" to="/my-courses">دوراتي</RouterLink>
         <RouterLink v-else class="nav-link mobile-only" to="/login">تسجيل الدخول</RouterLink>
-        <RouterLink class="btn btn-dark mobile-only mobile-quote" :to="{ path: '/services', hash: '#contact' }">اطلب عرض سعر</RouterLink>
+        <RouterLink class="btn btn-dark mobile-only mobile-quote" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
       </nav>
 
       <div class="end">
         <RouterLink v-if="student" class="login auth" to="/my-courses"><BaseIcon name="user" :size="18" />دوراتي</RouterLink>
         <RouterLink v-else class="login auth" to="/login"><BaseIcon name="user" :size="18" />دخول</RouterLink>
-        <RouterLink class="btn btn-dark quote" :to="{ path: '/services', hash: '#contact' }">اطلب عرض سعر</RouterLink>
+        <RouterLink class="btn btn-dark quote" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
         <button class="icon-btn menu-btn" type="button" aria-label="القائمة" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen">
           <BaseIcon :name="menuOpen ? 'close' : 'menu'" />
         </button>

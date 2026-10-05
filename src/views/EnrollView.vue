@@ -17,6 +17,8 @@ import { texts } from '@/data/texts'
 const route = useRoute()
 const { student } = useAuth()
 const { settings, price } = useSettings()
+// the payment methods set on the dashboard (تحويل بنكي، محفظة إلكترونية، نقداً…)
+const paymentMethods = computed(() => (settings.value?.payment_methods ?? []).map((m) => m.label).join('، '))
 const { items: workshops, loading: workshopsLoading } = useWorkshops()
 
 const course = ref(null)
@@ -76,10 +78,10 @@ async function sendRequest() {
 
 <template>
   <div>
-    <PageHero title="التسجيل" eyebrow="الأكاديمية" :subtitle="texts.learning.enroll.text" />
+    <PageHero title="التسجيل" :eyebrow="texts.ui.pages.academy" :subtitle="texts.learning.enroll.text" />
     <section class="page-body">
       <div class="container narrow">
-        <LoadState v-if="!item" :loading="loading || workshopsLoading" :error="error" :empty="!loading && !workshopsLoading" empty-text="لم نجد ما تريد التسجيل فيه. اختر دورة أو ورشة أولاً." @retry="load" />
+        <LoadState v-if="!item" :loading="loading || workshopsLoading" :error="error" :empty="!loading && !workshopsLoading" :empty-text="texts.ui.empty.enroll" @retry="load" />
 
         <div v-else-if="owned" class="card step done">
           <BaseIcon name="check" :size="28" />
@@ -114,7 +116,7 @@ async function sendRequest() {
               <div>
                 <h3>ادفع</h3>
                 <p v-if="settings?.payment_instructions" class="instructions">{{ settings.payment_instructions }}</p>
-                <p v-else>سنرسل لك طريقة الدفع على واتساب (تحويل بنكي، محفظة إلكترونية أو نقداً).</p>
+                <p v-else>سنرسل لك طريقة الدفع على واتساب{{ paymentMethods ? ` (${paymentMethods})` : '' }}.</p>
               </div>
             </li>
             <li class="card step">

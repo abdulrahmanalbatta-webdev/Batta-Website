@@ -8,9 +8,13 @@ import '@/assets/styles/tokens.css'
 import '@/assets/styles/base.css'
 
 import App from './App.vue'
-import router from './router'
+import router, { pageTitle } from './router'
 import { loadSiteContent } from './lib/siteContent'
 
 createApp(App).use(router).mount('#app')
 // the site's texts from the dashboard (the bundled ones show until they arrive)
-loadSiteContent()
+loadSiteContent().then(() => {
+  // the tab title, now with the dashboard's page names (course and article pages set their own)
+  const route = router.currentRoute.value
+  if (!Object.keys(route.params).length) document.title = pageTitle(route)
+})
