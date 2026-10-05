@@ -1,0 +1,353 @@
+<script setup>
+import { computed, ref, onMounted, onBeforeUnmount, watchEffect } from 'vue'
+import BaseIcon from '@/components/ui/BaseIcon.vue'
+import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
+import TopoPattern from '@/components/ui/TopoPattern.vue'
+import ArticleCard from '@/components/cards/ArticleCard.vue'
+import ArticleBody from '@/components/article/ArticleBody.vue'
+import SectionHeading from '@/components/ui/SectionHeading.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import { articles, getArticle, author } from '@/data/articles'
+import { useToast } from '@/composables/useToast'
+import { siteTitle } from '@/router'
+
+const props = defineProps({
+  id: { type: String, required: true },
+})
+
+const { showToast } = useToast()
+const article = computed(() => getArticle(props.id))
+
+watchEffect(() => {
+  if (article.value) document.title = siteTitle(article.value.title)
+})
+
+const toc = computed(() => (article.value?.body ?? []).filter((b) => b.type === 'h2').map((b, i) => ({ id: `section-${i + 1}`, text: b.text })))
+
+const index = computed(() => articles.findIndex((a) => a.id === props.id))
+const newer = computed(() => articles[index.value - 1])
+const older = computed(() => articles[index.value + 1])
+
+const related = computed(() => {
+  const same = articles.filter((a) => a.id !== props.id && a.category === article.value?.category)
+  const others = articles.filter((a) => a.id !== props.id && a.category !== article.value?.category)
+  return [...same, ...others].slice(0, 3)
+})
+
+// reading progress bar
+const progress = ref(0)
+function onScroll() {
+  const max = document.documentElement.scrollHeight - window.innerHeight
+  progress.value = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0
+}
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
+
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText(window.location.href)
+    showToast('تم نسخ رابط المقال')
+  } catch {
+    showToast('تعذّر النسخ، انسخ الرابط من شريط العنوان')
+  }
+}
+</script>
+
+<template>
+  <NotFoundView v-if="!article" />
+
+  <div v-else>
+    <div class="progress" :style="{ width: `${progress}%` }" />
+
+    <header class="article-hero">
+      <TopoPattern tone="dark" />
+      <div class="container narrow">
+        <nav class="crumbs" aria-label="مسار التنقل">
+          <RouterLink to="/">الرئيسية</RouterLink><span>/</span>
+          <RouterLink to="/articles">المقالات</RouterLink><span>/</span>
+          <span>{{ article.category }}</span>
+        </nav>
+        <span class="pill">{{ article.category }}</span>
+        <h1>{{ article.title }}</h1>
+        <p class="lead">{{ article.excerpt }}</p>
+        <div class="byline">
+          <ProfilePhoto :size="44" />
+          <div>
+            <b>{{ author.name }}</b>
+            <div class="meta">
+              <span><BaseIcon name="calendar" :size="15" />{{ article.date }}</span>
+              <span><BaseIcon name="clock" :size="15" />{{ article.minutes }} دقيقة قراءة</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-body">
+      <div class="container layout">
+        <article class="content">
+          <ArticleBody :blocks="article.body" />
+
+          <div v-if="article.tags?.length" class="tags">
+            <span v-for="tag in article.tags" :key="tag" class="pill line mono">#{{ tag }}</span>
+          </div>
+
+          <div class="author-box card">
+            <ProfilePhoto :size="64" />
+            <div>
+              <b>{{ author.name }}</b>
+              <p>{{ author.role }}. أكتب عن بناء منتجات الويب والعمل الحر، مقال جديد كل ثلاثاء.</p>
+              <RouterLink to="/about" class="link-more">تعرّف عليّ أكثر</RouterLink>
+            </div>
+          </div>
+
+          <nav class="pager" aria-label="مقالات أخرى">
+            <RouterLink v-if="older" class="card hover pager-link" :to="{ name: 'article', params: { id: older.id } }">
+              <span class="dir"><BaseIcon name="prev" :size="16" />المقال السابق</span>
+              <b>{{ older.title }}</b>
+            </RouterLink>
+            <span v-else />
+            <RouterLink v-if="newer" class="card hover pager-link end" :to="{ name: 'article', params: { id: newer.id } }">
+              <span class="dir">المقال التالي<BaseIcon name="next" :size="16" /></span>
+              <b>{{ newer.title }}</b>
+            </RouterLink>
+          </nav>
+        </article>
+
+        <aside class="sidebar">
+          <div v-if="toc.length" class="card toc">
+            <h4>في هذا المقال</h4>
+            <ol>
+              <li v-for="item in toc" :key="item.id"><a :href="`#${item.id}`">{{ item.text }}</a></li>
+            </ol>
+          </div>
+          <button class="btn btn-ghost btn-block" type="button" @click="copyLink">
+            <BaseIcon name="link" :size="18" />نسخ رابط المقال
+          </button>
+          <div class="ink-panel side-cta">
+            <h4>نشرة البطّة</h4>
+            <p>مقال كهذا يصلك كل ثلاثاء.</p>
+            <RouterLink class="btn btn-primary btn-block" :to="{ path: '/', hash: '#newsletter' }">اشترك مجاناً</RouterLink>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section tinted">
+      <div class="container">
+        <SectionHeading eyebrow="اقرأ أيضاً" title="مقالات قد تهمك" />
+        <div class="grid g3">
+          <ArticleCard v-for="a in related" :key="a.id" :article="a" />
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<style scoped>
+.progress {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  height: 3px;
+  background: var(--primary);
+  z-index: 50;
+  transition: width 0.1s linear;
+}
+.article-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--ink-panel);
+  padding-block: 56px 48px;
+}
+.article-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(45% 90% at 85% 0%, rgba(0, 102, 255, 0.35), transparent 70%);
+}
+.narrow {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.narrow > * {
+  max-width: 760px;
+}
+.crumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  font-size: 13.5px;
+  color: var(--ink-text);
+  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  padding: 4px 14px;
+}
+.crumbs a:hover {
+  color: #fff;
+}
+.article-hero .pill {
+  background: var(--primary);
+  color: #fff;
+}
+h1 {
+  font-size: clamp(28px, 4.2vw, 42px);
+  line-height: 1.45;
+  color: #fff;
+}
+.lead {
+  font-size: 19px;
+  color: var(--ink-text);
+}
+.byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.byline b {
+  color: #fff;
+}
+.byline .meta {
+  color: var(--ink-text);
+}
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.avatar.lg {
+  width: 64px;
+  height: 64px;
+}
+
+.layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 48px;
+  align-items: start;
+}
+.content {
+  max-width: 760px;
+  min-width: 0;
+}
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 36px;
+}
+.author-box {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+.author-box b {
+  color: var(--fg);
+  font-size: 16px;
+}
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 28px;
+}
+.pager-link {
+  gap: 6px;
+  padding: 18px 20px;
+}
+.pager-link.end {
+  text-align: left;
+}
+.pager-link.end .dir {
+  justify-content: flex-end;
+}
+.dir {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.pager-link b {
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.pager-link:hover b {
+  color: var(--primary-600);
+}
+
+.sidebar {
+  position: sticky;
+  top: calc(var(--header-h) + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.toc h4 {
+  font-size: 15px;
+}
+.toc ol {
+  margin: 0;
+  padding-inline-start: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.toc li::marker {
+  color: var(--primary);
+  font-weight: 700;
+}
+.toc a:hover {
+  color: var(--primary-600);
+}
+.side-cta {
+  padding: 24px;
+  border-radius: var(--r);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.side-cta h4 {
+  color: #fff;
+  font-size: 17px;
+}
+.side-cta p {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar {
+    position: static;
+    order: -1;
+  }
+  .side-cta {
+    display: none;
+  }
+}
+@media (max-width: 620px) {
+  .pager {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

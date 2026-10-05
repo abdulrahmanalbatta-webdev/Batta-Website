@@ -1,0 +1,63 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '@/views/HomeView.vue'
+import { profile } from '@/data/profile'
+
+// old combined pages (/academy?tab=…, /resources?tab=…) → the matching standalone page, keeping filters/search
+const fromTabs = (map, fallback) => (to) => {
+  const { tab, ...query } = to.query
+  return { path: map[tab] ?? fallback, query }
+}
+
+const routes = [
+  { path: '/', name: 'home', component: HomeView, meta: { title: '' } },
+  { path: '/services', name: 'services', component: () => import('@/views/ServicesView.vue'), meta: { title: 'الخدمات' } },
+  { path: '/work', name: 'work', component: () => import('@/views/WorkView.vue'), meta: { title: 'أعمالي' } },
+
+  // الأكاديمية
+  { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { title: 'الدورات' } },
+  { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { title: 'الورش' } },
+  { path: '/academy', redirect: fromTabs({ workshops: '/workshops' }, '/courses') },
+
+  // الموارد
+  { path: '/articles', name: 'articles', component: () => import('@/views/ArticlesView.vue'), meta: { title: 'المقالات' } },
+  { path: '/tools', name: 'tools', component: () => import('@/views/ToolsView.vue'), meta: { title: 'أدواتي' } },
+  { path: '/resources', redirect: fromTabs({ tools: '/tools' }, '/articles') },
+  { path: '/stack', redirect: '/tools' },
+  { path: '/articles/:id', name: 'article', component: () => import('@/views/ArticleView.vue'), props: true, meta: { title: 'المقالات' } },
+
+  { path: '/about', name: 'about', component: () => import('@/views/AboutView.vue'), meta: { title: 'من أنا' } },
+  { path: '/login', name: 'login', component: () => import('@/views/auth/LoginView.vue'), meta: { title: 'تسجيل الدخول', bare: true } },
+  { path: '/register', name: 'register', component: () => import('@/views/auth/RegisterView.vue'), meta: { title: 'إنشاء حساب', bare: true } },
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/NotFoundView.vue'), meta: { title: 'الصفحة غير موجودة' } },
+]
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      // wait for the page transition so the target section exists
+      const delay = to.path === from.path ? 0 : 320
+      // vertical scroll only (RTL page), stopping 96px down so the sticky header doesn't cover the target
+      return new Promise((resolve) =>
+        setTimeout(() => {
+          const el = document.getElementById(decodeURIComponent(to.hash.slice(1)))
+          resolve(el ? { top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: 'smooth' } : false)
+        }, delay),
+      )
+    }
+    if (savedPosition) return savedPosition
+    // switching tabs / filters on the same page: keep the scroll position
+    if (to.path === from.path) return false
+    return { top: 0 }
+  },
+})
+
+// عنوان التبويب: "اسم الصفحة | الاسم"، والرئيسية: "الاسم | المسمّى"
+export const siteTitle = (page) => (page ? `${page} | ${profile.name}` : `${profile.name} | ${profile.role}`)
+
+router.afterEach((to) => {
+  document.title = siteTitle(to.meta.title)
+})
+
+export default router

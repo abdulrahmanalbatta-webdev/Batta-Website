@@ -1,0 +1,110 @@
+<script setup>
+import BrandLogo from '@/components/ui/BrandLogo.vue'
+import SocialLinks from '@/components/ui/SocialLinks.vue'
+import { profile } from '@/data/profile'
+
+const year = new Date().getFullYear()
+</script>
+
+<template>
+  <footer class="footer">
+    <div class="container">
+      <div class="cols">
+        <div>
+          <BrandLogo inverse />
+          <p>{{ profile.role }}. خدمات تطوير ويب ومنصة تعليمية باللغة العربية.</p>
+          <SocialLinks dark class="socials" />
+        </div>
+        <div>
+          <h4>اعمل معي</h4>
+          <ul>
+            <li><RouterLink to="/services">الخدمات</RouterLink></li>
+            <li><RouterLink to="/work">أعمالي</RouterLink></li>
+            <li><RouterLink :to="{ path: '/services', hash: '#contact' }">اطلب عرض سعر</RouterLink></li>
+            <li><RouterLink to="/about">من أنا</RouterLink></li>
+          </ul>
+        </div>
+        <div>
+          <h4>تعلّم</h4>
+          <ul>
+            <li><RouterLink to="/courses">الدورات</RouterLink></li>
+            <li><RouterLink to="/workshops">الورش</RouterLink></li>
+            <li><RouterLink to="/articles">المقالات</RouterLink></li>
+            <li><RouterLink to="/tools">أدواتي</RouterLink></li>
+          </ul>
+        </div>
+        <div>
+          <h4>الحساب</h4>
+          <ul>
+            <li><RouterLink to="/login">تسجيل الدخول</RouterLink></li>
+            <li><RouterLink to="/register">إنشاء حساب</RouterLink></li>
+            <li><RouterLink :to="{ path: '/', hash: '#newsletter' }">نشرة البطّة</RouterLink></li>
+          </ul>
+        </div>
+      </div>
+      <div class="bottom">
+        <span>© {{ year }} {{ profile.name }}. جميع الحقوق محفوظة.</span>
+        <span>صُنع بـ Vue</span>
+      </div>
+    </div>
+  </footer>
+</template>
+
+<style scoped>
+.footer {
+  background: var(--ink-panel);
+  color: var(--ink-text);
+  padding-block: 56px 28px;
+}
+.cols {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: 32px;
+}
+p {
+  font-size: 14.5px;
+  max-width: 300px;
+  margin-top: 14px;
+}
+h4 {
+  font-size: 15px;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.cols > div > ul:not(.socials) {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14.5px;
+}
+a:hover {
+  color: #fff;
+}
+.socials {
+  margin-top: 18px;
+}
+.bottom {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+  color: #7d8796;
+}
+@media (max-width: 860px) {
+  .cols {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .cols {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
