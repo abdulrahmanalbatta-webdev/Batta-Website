@@ -134,3 +134,9 @@ export function useStats() {
     ]
   })
 }
+
+// the raw numbers (students, projects, rating, reviews), for sentences such as the hero's
+export function useStatsNumbers() {
+  stats.load()
+  return computed(() => (Array.isArray(stats.items.value) ? {} : stats.items.value))
+}

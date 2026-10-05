@@ -2,11 +2,12 @@
 import PageHero from '@/components/ui/PageHero.vue'
 import CaseStudyCard from '@/components/cards/CaseStudyCard.vue'
 import { caseStudies } from '@/data/site'
+import { texts } from '@/data/texts'
 </script>
 
 <template>
   <div>
-    <PageHero title="الأعمال" subtitle="دراسات حالة: المشكلة، ما بنيته، والنتيجة بالأرقام." />
+    <PageHero title="الأعمال" :subtitle="texts.pages.work.text" />
 
     <section class="page-body">
       <div class="container">
@@ -14,8 +15,8 @@ import { caseStudies } from '@/data/site'
 
         <div class="ink-panel cta">
           <div>
-            <h2>عندك مشروع مشابه؟</h2>
-            <p>احكِ لي عنه، وأرسل لك خطة وسعراً واضحاً خلال يومين.</p>
+            <h2>{{ texts.pages.work.cta_title }}</h2>
+            <p>{{ texts.pages.work.cta_text }}</p>
           </div>
           <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">ابدأ مشروعك</RouterLink>
         </div>

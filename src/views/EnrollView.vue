@@ -8,6 +8,7 @@ import { api } from '@/lib/api'
 import { toCourse, useWorkshops } from '@/composables/useContent'
 import { useAuth } from '@/composables/useAuth'
 import { useSettings } from '@/composables/useSettings'
+import { texts } from '@/data/texts'
 
 // التسجيل في دورة أو ورشة: الدفع يدوي.
 // 1) يرسل الطالب طلب التسجيل → يصل للفريق في رسائل لوحة التحكم
@@ -75,7 +76,7 @@ async function sendRequest() {
 
 <template>
   <div>
-    <PageHero title="التسجيل" eyebrow="الأكاديمية" subtitle="أرسل طلبك، ادفع بالطريقة المناسبة لك، ونفتح لك المحتوى فور تأكيد الدفع." />
+    <PageHero title="التسجيل" eyebrow="الأكاديمية" :subtitle="texts.learning.enroll.text" />
     <section class="page-body">
       <div class="container narrow">
         <LoadState v-if="!item" :loading="loading || workshopsLoading" :error="error" :empty="!loading && !workshopsLoading" empty-text="لم نجد ما تريد التسجيل فيه. اختر دورة أو ورشة أولاً." @retry="load" />

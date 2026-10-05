@@ -3,6 +3,7 @@ import BrandLogo from '@/components/ui/BrandLogo.vue'
 import SocialLinks from '@/components/ui/SocialLinks.vue'
 import { useContact } from '@/composables/useSettings'
 import { profile } from '@/data/profile'
+import { texts } from '@/data/texts'
 
 const year = new Date().getFullYear()
 const { email, whatsapp, whatsappUrl } = useContact()
@@ -14,7 +15,7 @@ const { email, whatsapp, whatsappUrl } = useContact()
       <div class="cols">
         <div>
           <BrandLogo inverse />
-          <p>{{ profile.role }}. خدمات تطوير ويب ومنصة تعليمية باللغة العربية.</p>
+          <p>{{ profile.role }}. {{ texts.general.footer.text }}</p>
           <ul class="contact">
             <li v-if="email"><a :href="`mailto:${email}`" dir="ltr">{{ email }}</a></li>
             <li v-if="whatsappUrl"><a :href="whatsappUrl" target="_blank" rel="noopener" dir="ltr">{{ whatsapp }}</a></li>

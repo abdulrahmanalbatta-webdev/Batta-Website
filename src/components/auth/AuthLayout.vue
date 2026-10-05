@@ -1,18 +1,13 @@
 <script setup>
 import BrandLogo from '@/components/ui/BrandLogo.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
+import { texts } from '@/data/texts'
 
 defineProps({
   title: { type: String, required: true },
   subtitle: { type: String, default: '' },
 })
 
-const perks = [
-  { icon: 'play', text: 'تابع تقدّمك في كل دورة من لوحة واحدة' },
-  { icon: 'calendar', text: 'احجز مقعدك في الورش بنقرة' },
-  { icon: 'award', text: 'احصل على شهادة إتمام لكل دورة' },
-  { icon: 'mail', text: 'نشرة البطّة كل ثلاثاء' },
-]
 </script>
 
 <template>
@@ -37,15 +32,15 @@ const perks = [
     <aside class="brand-side" aria-hidden="true">
       <div class="brand-inner">
         <BrandLogo :size="72" :with-name="false" inverse />
-        <h2>تعلّم البرمجة بالتطبيق، وابنِ منتجك بثقة</h2>
+        <h2>{{ texts.general.auth.title }}</h2>
         <ul>
-          <li v-for="p in perks" :key="p.text">
+          <li v-for="p in texts.general.auth.perks" :key="p.text">
             <span class="ico"><BaseIcon :name="p.icon" :size="20" /></span>{{ p.text }}
           </li>
         </ul>
         <figure class="quote">
-          <blockquote>أول دورة أكملها للنهاية. المشروع النهائي صار أول شيء في ملف أعمالي.</blockquote>
-          <figcaption>محمد · طالب في دورة Next.js</figcaption>
+          <blockquote>{{ texts.general.auth.quote }}</blockquote>
+          <figcaption>{{ texts.general.auth.quote_by }}</figcaption>
         </figure>
       </div>
     </aside>

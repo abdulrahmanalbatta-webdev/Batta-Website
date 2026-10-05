@@ -2,6 +2,10 @@
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import BrandLogo from '@/components/ui/BrandLogo.vue'
 import StarRating from '@/components/ui/StarRating.vue'
+import { useStatsNumbers } from '@/composables/useContent'
+
+// the real average of the published reviews
+const numbers = useStatsNumbers()
 
 // weekly learning hours for the mini chart
 const days = ['سبت', 'أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة']
@@ -105,9 +109,9 @@ const total = hours.reduce((a, b) => a + b, 0).toFixed(1)
       </div>
     </div>
 
-    <div class="toast rating">
+    <div v-if="numbers.reviews" class="toast rating">
       <StarRating :size="13" />
-      <b>4.9</b>
+      <b>{{ numbers.rating }}</b>
       <span>تقييم الطلاب</span>
     </div>
   </div>

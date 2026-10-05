@@ -5,6 +5,7 @@ import FilterChips from '@/components/ui/FilterChips.vue'
 import ToolCard from '@/components/cards/ToolCard.vue'
 import LoadState from '@/components/ui/LoadState.vue'
 import { useTools } from '@/composables/useContent'
+import { texts } from '@/data/texts'
 
 const route = useRoute()
 const { items: tools, loading, error, reload } = useTools()
@@ -22,7 +23,7 @@ const filtered = computed(() => tools.value.filter((t) => category.value === 'ا
       <ToolCard v-for="t in filtered" :key="t.id" :tool="t" />
       <LoadState :loading="loading" :error="error" :empty="!filtered.length" empty-text="لا توجد أدوات بعد." @retry="reload" />
     </div>
-    <p class="note">الأدوات المعلّمة "إحالة" روابط إحالة؛ لا تغيّر السعر عليك وتدعم المحتوى المجاني.</p>
+    <p class="note">{{ texts.learning.tools.note }}</p>
   </div>
 </template>
 

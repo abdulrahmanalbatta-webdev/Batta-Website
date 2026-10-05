@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import BrandLogo from '@/components/ui/BrandLogo.vue'
 import { useToast } from '@/composables/useToast'
 import { api } from '@/lib/api'
+import { texts } from '@/data/texts'
 
 // المشتركون يظهرون في لوحة التحكم (النشرة البريدية) ويصلهم كل مقال جديد
 const email = ref('')
@@ -29,8 +30,8 @@ async function subscribe() {
     <div class="ink-panel newsletter">
       <span class="mark"><BrandLogo :size="56" :with-name="false" inverse /></span>
       <div>
-        <h2>نشرة البطّة</h2>
-        <p>يصلك كل مقال جديد على بريدك. بدون إزعاج، ورابط الإلغاء في كل رسالة.</p>
+        <h2>{{ texts.home.newsletter.title }}</h2>
+        <p>{{ texts.home.newsletter.text }}</p>
       </div>
       <form @submit.prevent="subscribe">
         <input v-model="email" type="email" required dir="ltr" placeholder="بريدك الإلكتروني" aria-label="البريد الإلكتروني" />

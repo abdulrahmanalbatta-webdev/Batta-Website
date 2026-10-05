@@ -2,6 +2,7 @@
 import WorkshopCard from '@/components/cards/WorkshopCard.vue'
 import LoadState from '@/components/ui/LoadState.vue'
 import { useWorkshops } from '@/composables/useContent'
+import { texts } from '@/data/texts'
 
 const { items: workshops, loading, error, reload } = useWorkshops()
 </script>
@@ -15,8 +16,8 @@ const { items: workshops, loading, error, reload } = useWorkshops()
 
     <div class="ink-panel cta">
       <div>
-        <h2>ورشة خاصة لفريقك أو جامعتك</h2>
-        <p>محتوى مصمم حسب مستوى الفريق، أونلاين أو حضورياً، مع مشروع تطبيقي.</p>
+        <h2>{{ texts.learning.workshops.private_title }}</h2>
+        <p>{{ texts.learning.workshops.private_text }}</p>
       </div>
       <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">اطلب عرضاً</RouterLink>
     </div>

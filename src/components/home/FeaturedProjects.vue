@@ -2,12 +2,13 @@
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import { caseStudies } from '@/data/site'
+import { texts } from '@/data/texts'
 </script>
 
 <template>
   <section class="section tinted">
     <div class="container">
-      <SectionHeading eyebrow="مشاريع مميزة" title="نتائج حقيقية بأرقام واضحة" subtitle="أمثلة من مشاريع سلّمتها، وما الذي تغيّر بعدها." />
+      <SectionHeading :eyebrow="texts.home.projects.eyebrow" :title="texts.home.projects.title" :subtitle="texts.home.projects.text" />
 
       <div class="grid g3">
         <RouterLink v-for="p in caseStudies" :key="p.id" to="/work" class="project">

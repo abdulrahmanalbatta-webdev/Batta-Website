@@ -1,15 +1,16 @@
 <script setup>
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import TopoPattern from '@/components/ui/TopoPattern.vue'
+import { texts } from '@/data/texts'
 </script>
 
 <template>
   <section class="final">
     <TopoPattern tone="dark" />
     <div class="container inner">
-      <span class="eyebrow">جاهز تبدأ؟</span>
-      <h2>حوّل فكرتك إلى منتج رقمي متكامل</h2>
-      <p>مكالمة تعارف مجانية مدتها 30 دقيقة، وبعدها عرض مكتوب بالنطاق والمدة والسعر خلال يومين.</p>
+      <span class="eyebrow">{{ texts.home.cta.eyebrow }}</span>
+      <h2>{{ texts.home.cta.title }}</h2>
+      <p>{{ texts.home.cta.text }}</p>
       <div class="actions">
         <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">
           ابدأ مشروعك الآن <BaseIcon name="arrow" :size="18" />

@@ -6,6 +6,7 @@ import SectionHeading from '@/components/ui/SectionHeading.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import FaqSection from '@/components/home/FaqSection.vue'
 import { packages, processSteps, services } from '@/data/site'
+import { texts } from '@/data/texts'
 import { useToast } from '@/composables/useToast'
 import { api } from '@/lib/api'
 
@@ -37,8 +38,6 @@ watch(
 const budgets = ['أقل من 500$', '500$ – 1,500$', '1,500$ – 5,000$', 'أكثر من 5,000$']
 // the dashboard keeps the budget as a number: the top of the range (or the floor of the last one)
 const budgetValue = { 'أقل من 500$': 500, '500$ – 1,500$': 1500, '1,500$ – 5,000$': 5000, 'أكثر من 5,000$': 5000 }
-// the site's service ids → the dashboard's (LeadService)
-const serviceValue = { websites: 'websites', 'web-apps': 'web_apps', ecommerce: 'stores', dashboards: 'dashboards', maintenance: 'maintenance', training: 'training' }
 
 const sending = ref(false)
 const errors = ref({})
@@ -52,7 +51,8 @@ async function submit() {
       email: form.value.email,
       phone: form.value.phone || null,
       company: form.value.company || null,
-      service: serviceValue[service?.id] ?? 'websites',
+      // the dashboard's project types are these same services (by id)
+      service: service?.id ?? services[0]?.id,
       budget: budgetValue[form.value.budget] ?? null,
       details: `${form.value.details}\n\nالميزانية المتوقعة: ${form.value.budget}`,
       website: form.value.website,
@@ -70,7 +70,7 @@ async function submit() {
 
 <template>
   <div>
-    <PageHero title="الخدمات" subtitle="حلول رقمية متكاملة بسعر واضح ونطاق مكتوب. السعر النهائي بعد مكالمة تعارف مجانية.">
+    <PageHero title="الخدمات" :subtitle="texts.pages.services.text">
       <span v-for="s in services" :key="s.id">
         <RouterLink :to="{ hash: `#${s.id}` }" class="jump"><BaseIcon :name="s.icon" :size="16" />{{ s.title }}</RouterLink>
       </span>
@@ -102,7 +102,7 @@ async function submit() {
           </article>
         </div>
 
-        <SectionHeading eyebrow="الباقات" title="اختر الباقة المناسبة لمرحلة مشروعك" />
+        <SectionHeading :eyebrow="texts.pages.packages.eyebrow" :title="texts.pages.packages.title" />
         <div class="grid g3 packages">
           <article v-for="p in packages" :key="p.id" class="card pkg" :class="{ popular: p.popular }">
             <span v-if="p.popular" class="ribbon">الأكثر طلباً</span>
@@ -118,7 +118,7 @@ async function submit() {
         </div>
 
         <div class="block">
-          <SectionHeading eyebrow="طريقة العمل" title="من الفكرة إلى الإطلاق في أربع خطوات" />
+          <SectionHeading :eyebrow="texts.pages.process.eyebrow" :title="texts.pages.process.title" />
           <ol class="steps">
             <li v-for="(s, i) in processSteps" :key="s.title" class="step">
               <span class="n">{{ i + 1 }}</span>
@@ -129,12 +129,13 @@ async function submit() {
         </div>
 
         <div id="contact" class="block">
-          <SectionHeading eyebrow="تواصل" title="أخبرني عن مشروعك" subtitle="أرد على كل طلب خلال 24 ساعة." />
+          <SectionHeading :eyebrow="texts.pages.contact.eyebrow" :title="texts.pages.contact.title" :subtitle="texts.pages.contact.text" />
           <div class="contact">
-            <aside class="card side">
-              <div class="row"><span class="ico-box"><BaseIcon name="clock" /></span><div><h4>رد خلال 24 ساعة</h4><p>في أيام العمل، من الأحد إلى الخميس.</p></div></div>
-              <div class="row"><span class="ico-box"><BaseIcon name="chat" /></span><div><h4>مكالمة مجانية</h4><p>30 دقيقة لفهم مشروعك قبل أي التزام.</p></div></div>
-              <div class="row"><span class="ico-box"><BaseIcon name="globe" /></span><div><h4>أعمل عن بُعد</h4><p>مع عملاء في الخليج والأردن وفلسطين وأوروبا.</p></div></div>
+            <aside v-if="texts.pages.contact.points.length" class="card side">
+              <div v-for="p in texts.pages.contact.points" :key="p.title" class="row">
+                <span class="ico-box"><BaseIcon :name="p.icon" /></span>
+                <div><h4>{{ p.title }}</h4><p>{{ p.text }}</p></div>
+              </div>
             </aside>
 
             <form class="card form" @submit.prevent="submit">

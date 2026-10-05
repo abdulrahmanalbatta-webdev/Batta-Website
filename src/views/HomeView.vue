@@ -15,6 +15,7 @@ import ArticleCard from '@/components/cards/ArticleCard.vue'
 import WorkshopCard from '@/components/cards/WorkshopCard.vue'
 import { computed } from 'vue'
 import { useArticles, useCourses, useWorkshops } from '@/composables/useContent'
+import { texts } from '@/data/texts'
 
 const { items: courses } = useCourses()
 const { items: articles } = useArticles()
@@ -32,7 +33,7 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
 
     <section class="section">
       <div class="container">
-        <SectionHeading eyebrow="الأكاديمية" title="تعلّم بالتطبيق، لا بالتلقين" subtitle="دورات تنتهي بمشروع حقيقي تنشره وتضيفه لملف أعمالك." />
+        <SectionHeading :eyebrow="texts.home.courses.eyebrow" :title="texts.home.courses.title" :subtitle="texts.home.courses.text" />
         <div class="grid g3">
           <CourseCard v-for="c in courses.slice(0, 3)" :key="c.id" :course="c" />
         </div>
@@ -46,7 +47,7 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
 
     <section class="section">
       <div class="container">
-        <SectionHeading eyebrow="المقالات" title="آخر ما كتبت" subtitle="دروس قصيرة ومركزة تحل مشكلة واحدة بوضوح." />
+        <SectionHeading :eyebrow="texts.home.articles.eyebrow" :title="texts.home.articles.title" :subtitle="texts.home.articles.text" />
         <div class="grid g3">
           <ArticleCard v-for="a in latestArticles" :key="a.id" :article="a" />
         </div>
@@ -58,7 +59,7 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
 
     <section v-if="workshops.length" class="section tinted">
       <div class="container">
-        <SectionHeading eyebrow="الورشة القادمة" title="احجز مقعدك قبل اكتمال العدد" />
+        <SectionHeading :eyebrow="texts.home.workshop.eyebrow" :title="texts.home.workshop.title" />
         <WorkshopCard :workshop="workshops[0]" />
       </div>
     </section>

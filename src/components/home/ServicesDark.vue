@@ -1,15 +1,16 @@
 <script setup>
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { services } from '@/data/site'
+import { texts } from '@/data/texts'
 </script>
 
 <template>
   <section class="services">
     <div class="container inner">
       <header class="head">
-        <span class="eyebrow">الخدمات</span>
-        <h2>حلول رقمية متكاملة لمشروعك</h2>
-        <p>من الفكرة والتصميم إلى الإطلاق والدعم المستمر، بخطة واضحة وسعر محدد.</p>
+        <span class="eyebrow">{{ texts.home.services.eyebrow }}</span>
+        <h2>{{ texts.home.services.title }}</h2>
+        <p>{{ texts.home.services.text }}</p>
       </header>
 
       <div class="grid g3">

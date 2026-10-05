@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { faqs } from '@/data/site'
+import { texts } from '@/data/texts'
 
 const open = ref(0)
 const toggle = (i) => (open.value = open.value === i ? -1 : i)
@@ -11,9 +12,9 @@ const toggle = (i) => (open.value = open.value === i ? -1 : i)
   <section class="section faq">
     <div class="container grid-faq">
       <div class="intro">
-        <span class="eyebrow">أسئلة شائعة</span>
-        <h2>إجابات واضحة قبل أن تبدأ</h2>
-        <p>تفاصيل عملية عن المدة، والدفع، وملكية الكود، والدورات. لم تجد سؤالك؟</p>
+        <span class="eyebrow">{{ texts.home.faq.eyebrow }}</span>
+        <h2>{{ texts.home.faq.title }}</h2>
+        <p>{{ texts.home.faq.text }}</p>
         <RouterLink class="btn btn-dark" :to="{ path: '/services', hash: '#contact' }">اسألني مباشرة <BaseIcon name="arrow" :size="16" /></RouterLink>
       </div>
 

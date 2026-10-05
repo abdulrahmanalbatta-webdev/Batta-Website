@@ -1,4 +1,5 @@
-// محتوى الموقع من لوحة التحكم (محتوى الموقع): الإعلان، الرئيسية، "من أنا"، الخدمات، الباقات، الأعمال، الآراء، الأسئلة.
+// محتوى الموقع من لوحة التحكم (محتوى الموقع): الإعلان، الرئيسية، "من أنا"، الخدمات، الباقات، الأعمال، الآراء، الأسئلة،
+// ونصوص الصفحات (العناوين والمقدّمات، التذييل، صفحتا الدخول والتسجيل).
 // ملفات src/data تبقى النسخة الاحتياطية: يظهر محتواها فوراً، ثم يُستبدل بما في اللوحة عند وصوله.
 import {
   siVuedotjs,
@@ -40,6 +41,7 @@ import {
 } from 'simple-icons'
 import { announcement, heroWords, technologies, services, reasons, faqs, caseStudies, packages, processSteps, testimonials } from '@/data/site'
 import { profile, LINKEDIN_PATH } from '@/data/profile'
+import { texts } from '@/data/texts'
 import { api } from '@/lib/api'
 
 // the logos the dashboard offers (SiteContent::TECHNOLOGIES and NETWORKS), by simple-icons slug;
@@ -67,6 +69,7 @@ export async function loadSiteContent() {
   replace(packages, c.packages.map(({ price_note: priceNote, ...p }) => ({ ...p, priceNote })))
   replace(caseStudies, c.case_studies.map((s) => ({ ...s, kpis: s.kpis.map((k) => [k.value, k.label]) })))
   replace(testimonials, c.testimonials.map((t) => ({ ...t, initial: initial(t.name) })))
+  Object.assign(texts, { home: c.texts_home, pages: c.texts_pages, learning: c.texts_learning, general: c.texts_general })
 
   Object.assign(profile, {
     ...c.profile,
