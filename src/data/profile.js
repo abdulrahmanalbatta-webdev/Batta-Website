@@ -1,8 +1,15 @@
-// بياناتك الشخصية: عدّل هذا الملف ليظهر التعديل في كل الموقع.
+// بياناتك الشخصية: نسخة احتياطية، والمحتوى الفعلي يُعدَّل من لوحة التحكم (محتوى الموقع ← عنك).
 // الصورة: ضع صورتك في src/assets/images/ باسم profile.jpg (أو .png / .webp) وستظهر تلقائياً.
 import { siGithub, siX, siYoutube } from 'simple-icons'
+import { reactive } from 'vue'
 
-export const profile = {
+// LinkedIn أُزيل من simple-icons، فشعاره هنا
+export const LINKEDIN_PATH =
+  'M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z'
+
+export const profile = reactive({
+  // صورة مرفوعة من لوحة التحكم (null: صورة src/assets/images)
+  photo: null,
   name: 'عبدالرحمن البطة',
   role: 'مطوّر Full-stack ومدرّب برمجة',
   initial: 'ع',
@@ -42,15 +49,15 @@ export const profile = {
 
   skills: ['Vue', 'Next.js', 'React', 'Node.js', 'PostgreSQL', 'TypeScript', 'Tailwind CSS', 'Figma', 'Git', 'REST & GraphQL'],
 
-  // TODO: ضع روابط حساباتك الحقيقية (واتساب والبريد يأتيان من إعدادات لوحة التحكم)
+  // الحسابات تُعدَّل من لوحة التحكم (محتوى الموقع ← عنك)، وواتساب والبريد من إعداداتها
   socials: [
     { name: 'GitHub', url: 'https://github.com/', path: siGithub.path },
     {
       name: 'LinkedIn',
       url: 'https://www.linkedin.com/',
-      path: 'M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z',
+      path: LINKEDIN_PATH,
     },
     { name: 'X', url: 'https://x.com/', path: siX.path },
     { name: 'YouTube', url: 'https://www.youtube.com/', path: siYoutube.path },
   ],
-}
+})

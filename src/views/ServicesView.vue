@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import PageHero from '@/components/ui/PageHero.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
@@ -13,8 +13,8 @@ const route = useRoute()
 const { showToast } = useToast()
 
 // "اطلب هذه الخدمة" passes ?service=id → the form's project type is pre-selected
-const projectTypes = services.map((s) => s.title)
-const typeFromQuery = () => services.find((s) => s.id === route.query.service)?.title ?? projectTypes[0]
+const projectTypes = computed(() => services.map((s) => s.title))
+const typeFromQuery = () => services.find((s) => s.id === route.query.service)?.title ?? projectTypes.value[0]
 const emptyForm = () => ({ name: '', email: '', phone: '', company: '', type: typeFromQuery(), budget: '500$ – 1,500$', details: '', website: '' })
 const form = ref(emptyForm())
 watch(() => route.query.service, () => (form.value.type = typeFromQuery()))

@@ -9,5 +9,8 @@ import '@/assets/styles/base.css'
 
 import App from './App.vue'
 import router from './router'
+import { loadSiteContent } from './lib/siteContent'
 
 createApp(App).use(router).mount('#app')
+// the site's texts from the dashboard (the bundled ones show until they arrive)
+loadSiteContent()
