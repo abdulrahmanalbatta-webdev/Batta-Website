@@ -1,6 +1,9 @@
 <script setup>
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import { reasons, stats } from '@/data/site'
+import { reasons } from '@/data/site'
+import { useStats } from '@/composables/useContent'
+
+const stats = useStats()
 </script>
 
 <template>

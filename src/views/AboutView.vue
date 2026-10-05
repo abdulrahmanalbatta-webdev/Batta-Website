@@ -5,7 +5,9 @@ import SocialLinks from '@/components/ui/SocialLinks.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import TopoPattern from '@/components/ui/TopoPattern.vue'
 import { profile } from '@/data/profile'
-import { stats } from '@/data/site'
+import { useStats } from '@/composables/useContent'
+
+const stats = useStats()
 </script>
 
 <template>

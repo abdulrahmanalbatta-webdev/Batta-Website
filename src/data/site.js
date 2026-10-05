@@ -128,9 +128,3 @@ export const testimonials = [
   { name: 'سارة', role: 'منسقة برامج · حاضنة أعمال', initial: 'س', text: 'الورشة كانت عملية من أول دقيقة. خرج الفريق بمشروع منشور بدل شرائح نظرية.' },
 ]
 
-export const stats = [
-  { icon: 'users', value: '+1,200', label: 'طالب ومتدرب' },
-  { icon: 'play', value: '5', label: 'دورات عملية' },
-  { icon: 'briefcase', value: '24', label: 'مشروعاً منجزاً' },
-  { icon: 'article', value: '38', label: 'مقالاً تقنياً' },
-]
