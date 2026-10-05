@@ -1,28 +1,37 @@
 <script setup>
+import { computed } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import SocialLinks from '@/components/ui/SocialLinks.vue'
 import { profile } from '@/data/profile'
 import { texts } from '@/data/texts'
-import { useStatsNumbers } from '@/composables/useContent'
 
-const numbers = useStatsNumbers()
+// the latest four stages; the about page has the whole story
+const steps = computed(() => profile.journey.slice(-4))
 </script>
 
 <template>
   <section class="section about">
     <div class="container grid-about">
-      <div class="portrait">
-        <div class="frame">
-          <ProfilePhoto size="100%" rounded="24px" />
-        </div>
-        <div class="name-card">
-          <b>{{ profile.name }}</b>
-          <span>{{ profile.role }}</span>
-        </div>
-        <div v-if="numbers.projects" class="badge-card">
-          <span class="ico-box"><BaseIcon name="briefcase" :size="20" /></span>
-          <div><b>{{ numbers.projects.toLocaleString('en-US') }}</b><span>مشروعاً منجزاً</span></div>
+      <!-- the journey (dashboard: content → about → journey); the photo is in the hero just above -->
+      <div class="journey-wrap">
+        <div class="journey-card">
+          <div class="jc-head">
+            <span class="ico-box"><BaseIcon name="bulb" :size="20" /></span>
+            <div>
+              <b>مسيرتي</b>
+              <span>{{ profile.role }}</span>
+            </div>
+          </div>
+          <ol class="steps">
+            <li v-for="(j, i) in steps" :key="j.title" :class="{ now: i === steps.length - 1 }" :style="{ '--i': i }">
+              <span class="node">{{ i + 1 }}</span>
+              <div>
+                <span class="label">{{ j.label }}</span>
+                <b>{{ j.title }}</b>
+                <p>{{ j.text }}</p>
+              </div>
+            </li>
+          </ol>
         </div>
       </div>
 
@@ -58,12 +67,12 @@ const numbers = useStatsNumbers()
   align-items: center;
 }
 
-/* portrait */
-.portrait {
+/* journey card */
+.journey-wrap {
   position: relative;
   padding: 0 0 28px 28px;
 }
-.portrait::before {
+.journey-wrap::before {
   content: '';
   position: absolute;
   inset: 28px 28px 0 0;
@@ -72,62 +81,99 @@ const numbers = useStatsNumbers()
   background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
   background-size: 16px 16px;
 }
-.frame {
+.journey-card {
   position: relative;
-  aspect-ratio: 4 / 5;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 24px;
-  overflow: hidden;
   box-shadow: var(--shadow-lg);
-  display: grid;
+  padding: 28px 28px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
-.frame :deep(.photo) {
-  width: 100% !important;
-  height: 100% !important;
+.jc-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
 }
-.name-card {
-  position: absolute;
-  inset-inline-start: 20px;
-  bottom: 52px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 12px 18px;
-  box-shadow: var(--shadow);
-  line-height: 1.5;
-}
-.name-card b {
+.jc-head b {
   display: block;
+  font-size: 18px;
   color: var(--fg);
-  font-size: 17px;
 }
-.name-card span {
+.jc-head span:not(.ico-box) {
   font-size: 13px;
   color: var(--muted);
 }
-.badge-card {
-  position: absolute;
-  inset-inline-end: 0;
-  top: 40px;
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: var(--shadow);
-  line-height: 1.3;
+  flex-direction: column;
 }
-.badge-card b {
-  display: block;
-  font-size: 22px;
-  color: var(--fg);
+.steps li {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 22px;
 }
-.badge-card span {
-  font-size: 12.5px;
+.steps li:last-child {
+  padding-bottom: 0;
+}
+/* the line between the numbered nodes */
+.steps li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 17px;
+  top: 38px;
+  bottom: 4px;
+  width: 2px;
+  background: linear-gradient(var(--line-2), var(--line));
+}
+.node {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--primary-600);
+  background: var(--primary-soft);
+  border: 1px solid rgba(0, 102, 255, 0.18);
+}
+.steps li.now .node {
+  color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 6px rgba(0, 102, 255, 0.14);
+}
+.steps .label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--muted);
+  margin-bottom: 2px;
 }
-
+.steps li.now .label {
+  color: var(--green);
+}
+.steps b {
+  display: block;
+  color: var(--fg);
+  font-size: 16px;
+}
+.steps p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-top: 2px;
+}
 /* copy */
 .copy {
   display: flex;
@@ -202,8 +248,8 @@ h2 {
     grid-template-columns: minmax(0, 1fr);
     gap: 48px;
   }
-  .portrait {
-    max-width: 420px;
+  .journey-wrap {
+    max-width: 520px;
     width: 100%;
     margin-inline: auto;
   }
@@ -215,6 +261,15 @@ h2 {
   .highlights li {
     flex-direction: row;
     align-items: flex-start;
+  }
+  .journey-wrap {
+    padding: 0 0 18px 18px;
+  }
+  .journey-wrap::before {
+    inset: 18px 18px 0 0;
+  }
+  .journey-card {
+    padding: 22px 20px 18px;
   }
 }
 </style>
