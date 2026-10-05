@@ -15,6 +15,7 @@ const routes = [
   { path: '/', name: 'home', component: HomeView, meta: { title: '' } },
   { path: '/services', name: 'services', component: () => import('@/views/ServicesView.vue'), meta: { page: 'services', title: 'الخدمات' } },
   { path: '/work', name: 'work', component: () => import('@/views/WorkView.vue'), meta: { page: 'work', title: 'أعمالي' } },
+  { path: '/work/:id', name: 'project', component: () => import('@/views/ProjectView.vue'), props: true, meta: { title: 'أعمالي' } },
 
   // الأكاديمية
   { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { page: 'courses', title: 'الدورات' } },

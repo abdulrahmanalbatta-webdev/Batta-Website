@@ -1,6 +1,7 @@
 <script setup>
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
+import ProjectCover from '@/components/work/ProjectCover.vue'
 import { caseStudies } from '@/data/site'
 import { texts } from '@/data/texts'
 </script>
@@ -11,7 +12,8 @@ import { texts } from '@/data/texts'
       <SectionHeading :eyebrow="texts.home.projects.eyebrow" :title="texts.home.projects.title" :subtitle="texts.home.projects.text" />
 
       <div class="grid g3">
-        <RouterLink v-for="p in caseStudies" :key="p.id" to="/work" class="project">
+        <RouterLink v-for="p in caseStudies.slice(0, 3)" :key="p.id" :to="{ name: 'project', params: { id: p.id } }" class="project">
+          <div class="media"><ProjectCover :project="p" /></div>
           <div class="top">
             <span class="sector">{{ p.sector }}</span>
             <span class="tag">{{ p.tag }}</span>
@@ -125,5 +127,18 @@ p {
   border: 1px solid var(--line);
   border-radius: 99px;
   color: var(--muted);
+}
+/* the project's image (or its designed cover), edge to edge at the top of the card */
+.media {
+  margin: -26px -26px 4px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+.project {
+  overflow: hidden;
+}
+.project:hover .media :deep(img),
+.project:hover .media :deep(.placeholder) {
+  transform: scale(1.04);
 }
 </style>
