@@ -7,6 +7,7 @@ import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { useToast } from '@/composables/useToast'
 import { useAuth } from '@/composables/useAuth'
 import { useSettings } from '@/composables/useSettings'
+import { texts } from '@/data/texts'
 
 const route = useRoute()
 const router = useRouter()
@@ -66,7 +67,7 @@ async function submit() {
 </script>
 
 <template>
-  <AuthLayout title="أنشئ حسابك" subtitle="مجاناً، وخلال أقل من دقيقة.">
+  <AuthLayout :title="texts.general.register.title" :subtitle="texts.general.register.text">
     <p v-if="settings && !settings.registration_open" class="closed">التسجيل مغلق حالياً. تواصل معنا إذا أردت الانضمام.</p>
 
     <form class="fields" novalidate @submit.prevent="submit">

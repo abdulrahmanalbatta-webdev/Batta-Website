@@ -5,6 +5,7 @@ import SocialLinks from '@/components/ui/SocialLinks.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import TopoPattern from '@/components/ui/TopoPattern.vue'
 import { profile } from '@/data/profile'
+import { texts } from '@/data/texts'
 import { useStats } from '@/composables/useContent'
 
 const stats = useStats()
@@ -51,8 +52,8 @@ const stats = useStats()
     <section class="section">
       <div class="container grid-story">
         <div class="story">
-          <span class="eyebrow">قصتي</span>
-          <h2>من الفضول إلى منصة كاملة</h2>
+          <span class="eyebrow">{{ texts.pages.story.eyebrow }}</span>
+          <h2>{{ texts.pages.story.title }}</h2>
           <p v-for="(p, i) in profile.story" :key="i">{{ p }}</p>
         </div>
 
@@ -70,7 +71,7 @@ const stats = useStats()
     <!-- values -->
     <section class="section tinted">
       <div class="container">
-        <SectionHeading eyebrow="طريقتي في العمل" title="أربعة مبادئ لا أتنازل عنها" />
+        <SectionHeading :eyebrow="texts.pages.values.eyebrow" :title="texts.pages.values.title" />
         <div class="grid g4">
           <div v-for="(v, i) in profile.values" :key="v.title" class="card value">
             <span class="num">0{{ i + 1 }}</span>
@@ -84,7 +85,7 @@ const stats = useStats()
     <!-- skills -->
     <section class="section">
       <div class="container">
-        <SectionHeading eyebrow="المهارات" title="الأدوات التي أعمل بها يومياً" />
+        <SectionHeading :eyebrow="texts.pages.skills.eyebrow" :title="texts.pages.skills.title" />
         <ul class="skills">
           <li v-for="s in profile.skills" :key="s">{{ s }}</li>
         </ul>

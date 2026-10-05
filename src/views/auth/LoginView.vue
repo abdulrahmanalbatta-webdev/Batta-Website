@@ -6,6 +6,7 @@ import PasswordField from '@/components/auth/PasswordField.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { useToast } from '@/composables/useToast'
 import { useAuth } from '@/composables/useAuth'
+import { texts } from '@/data/texts'
 import { api } from '@/lib/api'
 
 const route = useRoute()
@@ -60,7 +61,7 @@ async function forgotPassword() {
 </script>
 
 <template>
-  <AuthLayout title="أهلاً بعودتك" subtitle="سجّل دخولك لتكمل دوراتك وتتابع حجوزاتك.">
+  <AuthLayout :title="texts.general.login.title" :subtitle="texts.general.login.text">
     <form class="fields" novalidate @submit.prevent="submit">
       <div class="field">
         <label for="login-email" class="field-label">البريد الإلكتروني</label>

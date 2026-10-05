@@ -3,6 +3,10 @@ import BaseIcon from '@/components/ui/BaseIcon.vue'
 import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import SocialLinks from '@/components/ui/SocialLinks.vue'
 import { profile } from '@/data/profile'
+import { texts } from '@/data/texts'
+import { useStatsNumbers } from '@/composables/useContent'
+
+const numbers = useStatsNumbers()
 </script>
 
 <template>
@@ -16,14 +20,14 @@ import { profile } from '@/data/profile'
           <b>{{ profile.name }}</b>
           <span>{{ profile.role }}</span>
         </div>
-        <div class="badge-card">
+        <div v-if="numbers.projects" class="badge-card">
           <span class="ico-box"><BaseIcon name="briefcase" :size="20" /></span>
-          <div><b>24</b><span>مشروعاً منجزاً</span></div>
+          <div><b>{{ numbers.projects.toLocaleString('en-US') }}</b><span>مشروعاً منجزاً</span></div>
         </div>
       </div>
 
       <div class="copy">
-        <span class="eyebrow">من أنا</span>
+        <span class="eyebrow">{{ texts.home.about.eyebrow }}</span>
         <h2>أهلاً، أنا {{ profile.name }}</h2>
         <p class="lead">{{ profile.short }}</p>
 

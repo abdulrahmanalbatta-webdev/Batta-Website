@@ -2,12 +2,13 @@
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import StarRating from '@/components/ui/StarRating.vue'
 import { testimonials } from '@/data/site'
+import { texts } from '@/data/texts'
 </script>
 
 <template>
   <section class="section">
     <div class="container">
-      <SectionHeading eyebrow="آراء" title="ماذا يقول الطلاب والعملاء" />
+      <SectionHeading :eyebrow="texts.home.testimonials.eyebrow" :title="texts.home.testimonials.title" />
       <div class="grid g3">
         <figure v-for="t in testimonials" :key="t.name" class="card quote">
           <StarRating />

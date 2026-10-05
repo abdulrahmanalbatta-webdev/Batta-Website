@@ -3,16 +3,16 @@ import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import WorkshopsPanel from '@/components/academy/WorkshopsPanel.vue'
 import { useWorkshops } from '@/composables/useContent'
+import { texts } from '@/data/texts'
 
 const { items: workshops } = useWorkshops()
 </script>
 
 <template>
   <div>
-    <PageHero title="الورش" eyebrow="الأكاديمية" subtitle="جلسات مباشرة من ساعتين إلى يوم كامل، تطبّق فيها مع مدرّب وتخرج بمشروع.">
+    <PageHero title="الورش" eyebrow="الأكاديمية" :subtitle="texts.learning.workshops.text">
       <span><BaseIcon name="calendar" :size="16" /><b>{{ workshops.length }}</b> ورش قادمة</span>
-      <span><BaseIcon name="monitor" :size="16" />أونلاين وحضورياً</span>
-      <span><BaseIcon name="users" :size="16" />ورش خاصة للفرق والجامعات</span>
+      <span v-for="(badge, i) in texts.learning.workshops.badges" :key="badge"><BaseIcon :name="['monitor', 'users', 'check'][i]" :size="16" />{{ badge }}</span>
     </PageHero>
     <section class="page-body">
       <div class="container"><WorkshopsPanel /></div>

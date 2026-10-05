@@ -1,12 +1,18 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import StarRating from '@/components/ui/StarRating.vue'
 import TopoPattern from '@/components/ui/TopoPattern.vue'
 import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import HeroShowcase from '@/components/home/HeroShowcase.vue'
-import { heroWords } from '@/data/site'
+import { heroWords, testimonials } from '@/data/site'
+import { texts } from '@/data/texts'
+import { useStatsNumbers } from '@/composables/useContent'
 import { profile } from '@/data/profile'
+
+const numbers = useStatsNumbers()
+const format = (n) => n.toLocaleString('en-US')
+const initials = computed(() => testimonials.slice(0, 4).map((t) => t.initial))
 
 // rotating word in the headline
 const wordIndex = ref(0)
@@ -24,16 +30,16 @@ onBeforeUnmount(() => clearInterval(timer))
       <div class="copy">
 
         <h1>
-          ابنِ
+          {{ texts.home.hero.before }}
           <span class="rotator" aria-live="polite">
             <Transition name="word" mode="out-in">
               <span :key="wordIndex" class="hl">{{ heroWords[wordIndex] }}</span>
             </Transition>
           </span>
-          <br />بثقة واحترافية
+          <br />{{ texts.home.hero.after }}
         </h1>
 
-        <p>أصمم وأطوّر مواقع وتطبيقات ويب ومتاجر إلكترونية لأصحاب المشاريع، وأعلّم المطورين بناءها عبر دورات وورش عملية باللغة العربية.</p>
+        <p>{{ texts.home.hero.text }}</p>
 
         <div class="actions">
           <RouterLink class="btn btn-dark btn-lg" :to="{ path: '/services', hash: '#contact' }">
@@ -42,11 +48,13 @@ onBeforeUnmount(() => clearInterval(timer))
           <RouterLink class="btn btn-ghost btn-lg" to="/work">شاهد أعمالي</RouterLink>
         </div>
 
-        <div class="trust">
-          <div class="avatars"><span>م</span><span>س</span><span>ي</span><span>ر</span></div>
+        <!-- real numbers from the dashboard; hidden until there is something to show -->
+        <div v-if="numbers.students || numbers.reviews" class="trust">
+          <div v-if="initials.length" class="avatars"><span v-for="(letter, i) in initials" :key="i">{{ letter }}</span></div>
           <div class="trust-text">
-            <StarRating /> <b>4.9</b> من 5<br />
-            أكثر من <b>1,200</b> طالب و<b>24</b> مشروعاً منجزاً
+            <template v-if="numbers.reviews"><StarRating /> <b>{{ numbers.rating }}</b> من 5<br /></template>
+            <template v-if="numbers.students"><b>{{ format(numbers.students) }}</b> طالب</template>
+            <template v-if="numbers.projects">{{ numbers.students ? ' و' : '' }}<b>{{ format(numbers.projects) }}</b> مشروعاً منجزاً</template>
           </div>
         </div>
       </div>

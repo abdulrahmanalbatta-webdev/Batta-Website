@@ -1,6 +1,7 @@
 <script setup>
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { reasons } from '@/data/site'
+import { texts } from '@/data/texts'
 import { useStats } from '@/composables/useContent'
 
 const stats = useStats()
@@ -10,9 +11,9 @@ const stats = useStats()
   <section class="section tinted why">
     <div class="container grid-why">
       <div class="copy">
-        <span class="eyebrow">لماذا تعمل معي؟</span>
-        <h2>شريكك التقني من الفكرة إلى الإطلاق</h2>
-        <p class="lead">لا أكتفي بتسليم الكود. أشرح كل قرار، وأبني معك منتجاً تفهمه وتستطيع تطويره لاحقاً.</p>
+        <span class="eyebrow">{{ texts.home.why.eyebrow }}</span>
+        <h2>{{ texts.home.why.title }}</h2>
+        <p class="lead">{{ texts.home.why.text }}</p>
         <ul>
           <li v-for="r in reasons" :key="r">
             <span class="check"><BaseIcon name="check" :size="16" /></span>{{ r }}

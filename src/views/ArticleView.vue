@@ -9,6 +9,7 @@ import SectionHeading from '@/components/ui/SectionHeading.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import LoadState from '@/components/ui/LoadState.vue'
 import { profile } from '@/data/profile'
+import { texts } from '@/data/texts'
 import { api } from '@/lib/api'
 import { toArticle, useArticles } from '@/composables/useContent'
 import { useToast } from '@/composables/useToast'
@@ -122,7 +123,7 @@ async function copyLink() {
             <ProfilePhoto :size="64" />
             <div>
               <b>{{ author.name }}</b>
-              <p>{{ author.role }}. أكتب عن بناء منتجات الويب والعمل الحر، مقال جديد كل ثلاثاء.</p>
+              <p>{{ author.role }}. {{ texts.learning.articles.author_bio }}</p>
               <RouterLink to="/about" class="link-more">تعرّف عليّ أكثر</RouterLink>
             </div>
           </div>
@@ -152,7 +153,7 @@ async function copyLink() {
           </button>
           <div class="ink-panel side-cta">
             <h4>نشرة البطّة</h4>
-            <p>مقال كهذا يصلك كل ثلاثاء.</p>
+            <p>{{ texts.learning.articles.newsletter_text }}</p>
             <RouterLink class="btn btn-primary btn-block" :to="{ path: '/', hash: '#newsletter' }">اشترك مجاناً</RouterLink>
           </div>
         </aside>
@@ -161,7 +162,7 @@ async function copyLink() {
 
     <section v-if="related.length" class="section tinted">
       <div class="container">
-        <SectionHeading eyebrow="اقرأ أيضاً" title="مقالات قد تهمك" />
+        <SectionHeading :eyebrow="texts.learning.articles.related_eyebrow" :title="texts.learning.articles.related_title" />
         <div class="grid g3">
           <ArticleCard v-for="a in related" :key="a.id" :article="a" />
         </div>
