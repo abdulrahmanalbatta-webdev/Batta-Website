@@ -43,6 +43,10 @@ import { announcement, heroWords, technologies, services, reasons, faqs, caseStu
 import { profile, LINKEDIN_PATH } from '@/data/profile'
 import { texts } from '@/data/texts'
 import { api } from '@/lib/api'
+import { reactive } from 'vue'
+
+// true once the dashboard's content arrived (or failed): a page that needs it (a project) knows when to say "not found"
+export const contentState = reactive({ loaded: false })
 
 // the logos the dashboard offers (SiteContent::TECHNOLOGIES and NETWORKS), by simple-icons slug;
 // named imports keep the rest of the icon set out of the bundle
@@ -56,9 +60,14 @@ export async function loadSiteContent() {
   try {
     c = (await api.get('content')).data
   } catch {
+    contentState.loaded = true
     return // the bundled texts stay
   }
+  apply(c)
+  contentState.loaded = true
+}
 
+function apply(c) {
   Object.assign(announcement, { enabled: c.announcement.enabled, text: c.announcement.text ?? '', link: c.announcement.link || '/', linkLabel: c.announcement.link_label ?? '' })
   replace(heroWords, c.hero.words.length ? c.hero.words : heroWords.slice())
   replace(technologies, c.technologies.map(logo).filter(Boolean).map((i) => ({ name: i.title, path: i.path, color: `#${i.hex}` })))
