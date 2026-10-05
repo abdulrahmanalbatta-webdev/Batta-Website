@@ -2,11 +2,14 @@
 import BrandLogo from '@/components/ui/BrandLogo.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { texts } from '@/data/texts'
+import { useSettings } from '@/composables/useSettings'
 
 defineProps({
   title: { type: String, required: true },
   subtitle: { type: String, default: '' },
 })
+
+const { settings } = useSettings()
 
 </script>
 
@@ -26,7 +29,7 @@ defineProps({
         <slot />
       </div>
 
-      <p class="legal">© Batta · جميع الحقوق محفوظة</p>
+      <p class="legal">© {{ settings?.site_name || 'Batta' }} · جميع الحقوق محفوظة</p>
     </section>
 
     <aside class="brand-side" aria-hidden="true">

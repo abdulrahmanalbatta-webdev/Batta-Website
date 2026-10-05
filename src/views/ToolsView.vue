@@ -10,7 +10,7 @@ const { items: tools } = useTools()
 
 <template>
   <div>
-    <PageHero title="أدواتي" eyebrow="الموارد" :subtitle="texts.learning.tools.text">
+    <PageHero :title="texts.ui.pages.tools" :eyebrow="texts.ui.pages.resources" :subtitle="texts.learning.tools.text">
       <span><BaseIcon name="code" :size="16" /><b>{{ tools.length }}</b> أداة</span>
       <span v-if="texts.learning.tools.badge"><BaseIcon name="check" :size="16" />{{ texts.learning.tools.badge }}</span>
     </PageHero>

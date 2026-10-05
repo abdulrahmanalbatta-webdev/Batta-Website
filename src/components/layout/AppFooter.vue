@@ -25,19 +25,19 @@ const { email, whatsapp, whatsappUrl } = useContact()
         <div>
           <h4>اعمل معي</h4>
           <ul>
-            <li><RouterLink to="/services">الخدمات</RouterLink></li>
-            <li><RouterLink to="/work">أعمالي</RouterLink></li>
-            <li><RouterLink :to="{ path: '/services', hash: '#contact' }">اطلب عرض سعر</RouterLink></li>
-            <li><RouterLink to="/about">من أنا</RouterLink></li>
+            <li><RouterLink to="/services">{{ texts.ui.pages.services }}</RouterLink></li>
+            <li><RouterLink to="/work">{{ texts.ui.pages.work }}</RouterLink></li>
+            <li><RouterLink :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.quote }}</RouterLink></li>
+            <li><RouterLink to="/about">{{ texts.ui.pages.about }}</RouterLink></li>
           </ul>
         </div>
         <div>
           <h4>تعلّم</h4>
           <ul>
-            <li><RouterLink to="/courses">الدورات</RouterLink></li>
-            <li><RouterLink to="/workshops">الورش</RouterLink></li>
-            <li><RouterLink to="/articles">المقالات</RouterLink></li>
-            <li><RouterLink to="/tools">أدواتي</RouterLink></li>
+            <li><RouterLink to="/courses">{{ texts.ui.pages.courses }}</RouterLink></li>
+            <li><RouterLink to="/workshops">{{ texts.ui.pages.workshops }}</RouterLink></li>
+            <li><RouterLink to="/articles">{{ texts.ui.pages.articles }}</RouterLink></li>
+            <li><RouterLink to="/tools">{{ texts.ui.pages.tools }}</RouterLink></li>
           </ul>
         </div>
         <div>
@@ -45,13 +45,13 @@ const { email, whatsapp, whatsappUrl } = useContact()
           <ul>
             <li><RouterLink to="/login">تسجيل الدخول</RouterLink></li>
             <li><RouterLink to="/register">إنشاء حساب</RouterLink></li>
-            <li><RouterLink :to="{ path: '/', hash: '#newsletter' }">نشرة البطّة</RouterLink></li>
+            <li><RouterLink :to="{ path: '/', hash: '#newsletter' }">{{ texts.home.newsletter.title }}</RouterLink></li>
           </ul>
         </div>
       </div>
       <div class="bottom">
         <span>© {{ year }} {{ profile.name }}. جميع الحقوق محفوظة.</span>
-        <span>صُنع بـ Vue</span>
+        <span v-if="texts.general.footer.made_with">{{ texts.general.footer.made_with }}</span>
       </div>
     </div>
   </footer>

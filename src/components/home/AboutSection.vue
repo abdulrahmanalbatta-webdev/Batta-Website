@@ -42,7 +42,7 @@ const numbers = useStatsNumbers()
         </ul>
 
         <div class="actions">
-          <RouterLink class="btn btn-dark btn-lg" to="/about">اقرأ قصتي كاملة <BaseIcon name="arrow" :size="18" /></RouterLink>
+          <RouterLink class="btn btn-dark btn-lg" to="/about">{{ texts.ui.buttons.read_story }} <BaseIcon name="arrow" :size="18" /></RouterLink>
           <SocialLinks />
         </div>
       </div>

@@ -10,7 +10,7 @@ const { items: workshops } = useWorkshops()
 
 <template>
   <div>
-    <PageHero title="الورش" eyebrow="الأكاديمية" :subtitle="texts.learning.workshops.text">
+    <PageHero :title="texts.ui.pages.workshops" :eyebrow="texts.ui.pages.academy" :subtitle="texts.learning.workshops.text">
       <span><BaseIcon name="calendar" :size="16" /><b>{{ workshops.length }}</b> ورش قادمة</span>
       <span v-for="(badge, i) in texts.learning.workshops.badges" :key="badge"><BaseIcon :name="['monitor', 'users', 'check'][i]" :size="16" />{{ badge }}</span>
     </PageHero>

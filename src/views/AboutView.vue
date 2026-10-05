@@ -19,15 +19,15 @@ const stats = useStats()
       <div class="container grid-hero">
         <div class="copy">
           <nav class="crumbs" aria-label="مسار التنقل">
-            <RouterLink to="/">الرئيسية</RouterLink><span>/</span><span>من أنا</span>
+            <RouterLink to="/">الرئيسية</RouterLink><span>/</span><span>{{ texts.ui.pages.about }}</span>
           </nav>
           <span v-if="profile.available" class="status">{{ profile.available }}</span>
           <h1>{{ profile.name }}</h1>
           <p class="role">{{ profile.role }}</p>
           <p class="lead">{{ profile.short }}</p>
           <div class="actions">
-            <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">لنعمل معاً <BaseIcon name="arrow" :size="18" /></RouterLink>
-            <RouterLink class="btn btn-outline-light btn-lg" to="/courses">تعلّم معي</RouterLink>
+            <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.about_work }} <BaseIcon name="arrow" :size="18" /></RouterLink>
+            <RouterLink class="btn btn-outline-light btn-lg" to="/courses">{{ texts.ui.buttons.about_learn }}</RouterLink>
           </div>
           <SocialLinks dark />
         </div>
@@ -90,7 +90,7 @@ const stats = useStats()
           <li v-for="s in profile.skills" :key="s">{{ s }}</li>
         </ul>
         <div class="center-row">
-          <RouterLink class="btn btn-ghost" to="/tools">كل أدواتي ولماذا اخترتها <BaseIcon name="arrow" :size="16" /></RouterLink>
+          <RouterLink class="btn btn-ghost" to="/tools">{{ texts.ui.buttons.all_tools }} <BaseIcon name="arrow" :size="16" /></RouterLink>
         </div>
       </div>
     </section>

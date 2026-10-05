@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { useSettings } from '@/composables/useSettings'
+import { texts } from '@/data/texts'
 
 const props = defineProps({
   workshop: { type: Object, required: true },
@@ -35,8 +36,8 @@ const fill = computed(() => Math.round((props.workshop.taken / props.workshop.se
         <span><b>{{ seatsLeft }}</b> متبقية من {{ workshop.seats }}</span>
       </div>
       <div class="meter"><i :style="{ width: `${fill}%` }" /></div>
-      <span v-if="workshop.full" class="btn btn-ghost" aria-disabled="true">اكتملت المقاعد</span>
-      <RouterLink v-else class="btn btn-primary" :to="{ name: 'enroll', query: { workshop: workshop.id } }">احجز مقعدك</RouterLink>
+      <span v-if="workshop.full" class="btn btn-ghost" aria-disabled="true">{{ texts.ui.buttons.seats_full }}</span>
+      <RouterLink v-else class="btn btn-primary" :to="{ name: 'enroll', query: { workshop: workshop.id } }">{{ texts.ui.buttons.book_seat }}</RouterLink>
     </div>
   </article>
 </template>

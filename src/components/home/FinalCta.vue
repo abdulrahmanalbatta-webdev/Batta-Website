@@ -13,9 +13,9 @@ import { texts } from '@/data/texts'
       <p>{{ texts.home.cta.text }}</p>
       <div class="actions">
         <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">
-          ابدأ مشروعك الآن <BaseIcon name="arrow" :size="18" />
+          {{ texts.ui.buttons.start_project }} <BaseIcon name="arrow" :size="18" />
         </RouterLink>
-        <RouterLink class="btn btn-outline-light btn-lg" to="/courses">أو ابدأ التعلّم</RouterLink>
+        <RouterLink class="btn btn-outline-light btn-lg" to="/courses">{{ texts.ui.buttons.start_learning }}</RouterLink>
       </div>
     </div>
   </section>

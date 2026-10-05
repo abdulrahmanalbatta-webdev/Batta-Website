@@ -1,5 +1,6 @@
 <script setup>
 import BrandLogo from '@/components/ui/BrandLogo.vue'
+import { texts } from '@/data/texts'
 </script>
 
 <template>
@@ -7,8 +8,8 @@ import BrandLogo from '@/components/ui/BrandLogo.vue'
     <div class="container inner">
       <BrandLogo :size="72" :with-name="false" />
       <h1>404</h1>
-      <p>الصفحة التي تبحث عنها غير موجودة أو نُقلت.</p>
-      <RouterLink class="btn btn-primary" to="/">العودة للرئيسية</RouterLink>
+      <p>{{ texts.ui.not_found.text }}</p>
+      <RouterLink class="btn btn-primary" to="/">{{ texts.ui.not_found.button }}</RouterLink>
     </div>
   </section>
 </template>

@@ -11,7 +11,7 @@ const { items: workshops, loading, error, reload } = useWorkshops()
   <div class="panel">
     <div class="list">
       <WorkshopCard v-for="w in workshops" :key="w.id" :workshop="w" />
-      <LoadState :loading="loading" :error="error" :empty="!workshops.length" empty-text="لا توجد ورش قادمة حالياً، تابعنا لتعرف بالورشة التالية." @retry="reload" />
+      <LoadState :loading="loading" :error="error" :empty="!workshops.length" :empty-text="texts.ui.empty.workshops" @retry="reload" />
     </div>
 
     <div class="ink-panel cta">
@@ -19,7 +19,7 @@ const { items: workshops, loading, error, reload } = useWorkshops()
         <h2>{{ texts.learning.workshops.private_title }}</h2>
         <p>{{ texts.learning.workshops.private_text }}</p>
       </div>
-      <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">اطلب عرضاً</RouterLink>
+      <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.private_workshop }}</RouterLink>
     </div>
   </div>
 </template>

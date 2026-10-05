@@ -33,7 +33,7 @@ import { texts } from '@/data/texts'
       </div>
 
       <div class="center-row">
-        <RouterLink class="btn btn-ghost btn-lg" to="/work">ملف الأعمال كاملاً <BaseIcon name="arrow" :size="18" /></RouterLink>
+        <RouterLink class="btn btn-ghost btn-lg" to="/work">{{ texts.ui.buttons.all_projects }} <BaseIcon name="arrow" :size="18" /></RouterLink>
       </div>
     </div>
   </section>

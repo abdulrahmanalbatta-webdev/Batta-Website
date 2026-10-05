@@ -9,6 +9,7 @@ import { api } from '@/lib/api'
 import { arabicDate, toCourse } from '@/composables/useContent'
 import { useSettings } from '@/composables/useSettings'
 import { siteTitle } from '@/router'
+import { texts } from '@/data/texts'
 
 const props = defineProps({
   slug: { type: String, required: true },
@@ -54,7 +55,7 @@ const open = ref(0)
   <section v-else-if="!course" class="page-body"><div class="container"><LoadState :loading="loading" :error="error" @retry="load" /></div></section>
 
   <div v-else>
-    <PageHero :title="course.title" eyebrow="الدورات" :subtitle="course.description || ''">
+    <PageHero :title="course.title" :eyebrow="texts.ui.pages.courses" :subtitle="course.description || ''">
       <span><BaseIcon name="award" :size="16" />{{ course.level }}</span>
       <span><BaseIcon name="clock" :size="16" /><b>{{ course.hours }}</b> ساعة</span>
       <span><BaseIcon name="play" :size="16" /><b>{{ course.lessons }}</b> درساً</span>
@@ -115,7 +116,7 @@ const open = ref(0)
               <li v-if="course.certificate"><BaseIcon name="award" :size="16" />شهادة إتمام</li>
               <li v-if="course.includedInPro"><BaseIcon name="star" :size="16" />ضمن اشتراك Pro</li>
             </ul>
-            <RouterLink class="btn btn-primary btn-lg btn-block" :to="{ name: 'enroll', query: { course: course.slug } }">سجّل في الدورة</RouterLink>
+            <RouterLink class="btn btn-primary btn-lg btn-block" :to="{ name: 'enroll', query: { course: course.slug } }">{{ texts.ui.buttons.enroll }}</RouterLink>
             <p class="muted small">الدفع يدوي: بعد التسجيل نتواصل معك على واتساب لإتمام الدفع، ثم تُفتح لك الدورة.</p>
           </div>
         </aside>

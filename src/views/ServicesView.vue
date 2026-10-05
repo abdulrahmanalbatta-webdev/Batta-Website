@@ -74,7 +74,7 @@ async function submit() {
 
 <template>
   <div>
-    <PageHero title="الخدمات" :subtitle="texts.pages.services.text">
+    <PageHero :title="texts.ui.pages.services" :subtitle="texts.pages.services.text">
       <span v-for="s in services" :key="s.id">
         <RouterLink :to="{ hash: `#${s.id}` }" class="jump"><BaseIcon :name="s.icon" :size="16" />{{ s.title }}</RouterLink>
       </span>
@@ -100,7 +100,7 @@ async function submit() {
                 <span><small>المدة</small><b>{{ s.duration }}</b></span>
               </div>
               <RouterLink class="btn btn-dark" :to="{ query: { service: s.id }, hash: '#contact' }">
-                اطلب هذه الخدمة <BaseIcon name="arrow" :size="16" />
+                {{ texts.ui.buttons.order_service }} <BaseIcon name="arrow" :size="16" />
               </RouterLink>
             </div>
           </article>
@@ -109,7 +109,7 @@ async function submit() {
         <SectionHeading :eyebrow="texts.pages.packages.eyebrow" :title="texts.pages.packages.title" />
         <div class="grid g3 packages">
           <article v-for="p in packages" :key="p.id" class="card pkg" :class="{ popular: p.popular }">
-            <span v-if="p.popular" class="ribbon">الأكثر طلباً</span>
+            <span v-if="p.popular" class="ribbon">{{ texts.ui.buttons.popular }}</span>
             <span class="pill" :class="{ line: !p.popular }">{{ p.label }}</span>
             <h3>{{ p.title }}</h3>
             <div class="price">{{ p.price }} <small>{{ p.priceNote }}</small></div>
@@ -117,7 +117,7 @@ async function submit() {
             <ul>
               <li v-for="f in p.features" :key="f"><BaseIcon name="check" :size="18" />{{ f }}</li>
             </ul>
-            <RouterLink class="btn" :class="p.popular ? 'btn-primary' : 'btn-ghost'" :to="{ hash: '#contact' }">احجز مكالمة</RouterLink>
+            <RouterLink class="btn" :class="p.popular ? 'btn-primary' : 'btn-ghost'" :to="{ hash: '#contact' }">{{ texts.ui.buttons.book_call }}</RouterLink>
           </article>
         </div>
 
