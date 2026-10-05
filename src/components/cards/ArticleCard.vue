@@ -8,6 +8,7 @@ defineProps({
 
 <template>
   <RouterLink class="card hover article" :to="{ name: 'article', params: { id: article.id } }">
+    <img v-if="article.cover" class="thumb" :src="article.cover" alt="" loading="lazy" />
     <div class="top">
       <span class="pill">{{ article.category }}</span>
       <span class="meta"><span><BaseIcon name="clock" :size="16" />{{ article.minutes }} د</span></span>
@@ -33,5 +34,14 @@ defineProps({
 }
 h3 {
   transition: color 0.2s;
+}
+/* the cover from the dashboard, edge to edge at the top of the card */
+.thumb {
+  width: calc(100% + 48px);
+  max-width: none;
+  margin: -24px -24px 4px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--tint);
 }
 </style>

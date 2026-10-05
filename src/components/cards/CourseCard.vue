@@ -14,9 +14,10 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
 
 <template>
   <article class="card hover course">
-    <div class="cover">
+    <div class="cover" :class="{ 'has-image': course.cover }">
+      <img v-if="course.cover" class="cover-img" :src="course.cover" alt="" loading="lazy" />
       <span class="pill" :class="isFree ? 'free' : 'lvl'">{{ isFree ? 'مجانية' : course.level }}</span>
-      <span class="glyph">{{ course.glyph }}</span>
+      <span v-if="!course.cover" class="glyph">{{ course.glyph }}</span>
     </div>
 
     <div class="body">
@@ -148,5 +149,19 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
 }
 .title-link:hover {
   color: var(--primary);
+}
+/* the cover from the dashboard fills the band; the level pill stays on top */
+.cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cover.has-image::after {
+  display: none;
+}
+.cover.has-image .pill.lvl {
+  background: rgba(11, 13, 18, 0.65);
 }
 </style>

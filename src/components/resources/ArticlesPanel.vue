@@ -42,8 +42,9 @@ const filtered = computed(() => {
 <template>
   <div class="panel">
     <RouterLink v-if="featured && !query" class="card hover featured" :to="{ name: 'article', params: { id: featured.id } }">
-      <div class="cover">
-        <pre><span class="k">export async function</span> middleware(req) {
+      <div class="cover" :class="{ 'has-image': featured.cover }">
+        <img v-if="featured.cover" :src="featured.cover" alt="" />
+        <pre v-else><span class="k">export async function</span> middleware(req) {
   const session = await auth(req)
   <span class="k">if</span> (!session)
     return redirect("/login")
@@ -158,5 +159,15 @@ pre {
   .featured {
     grid-template-columns: 1fr;
   }
+}
+.cover.has-image {
+  padding: 0;
+  border-inline-start: 0;
+}
+.cover.has-image img {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  object-fit: cover;
 }
 </style>

@@ -114,6 +114,7 @@ async function copyLink() {
     <section class="page-body">
       <div class="container layout">
         <article class="content">
+          <img v-if="article.cover" class="article-cover" :src="article.cover" :alt="article.title" />
           <ArticleBody :blocks="article.body" />
 
           <div v-if="article.tags?.length" class="tags">
@@ -379,5 +380,14 @@ h1 {
   .pager {
     grid-template-columns: 1fr;
   }
+}
+.article-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  margin-bottom: 28px;
+  background: var(--tint);
 }
 </style>
