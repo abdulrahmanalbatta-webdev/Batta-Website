@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { api } from '@/lib/api'
 import { markdownToBlocks } from '@/lib/markdown'
 
@@ -117,3 +117,20 @@ export const useCourses = () => use(courses)
 export const useWorkshops = () => use(workshops)
 export const useArticles = () => use(articles)
 export const useTools = () => use(tools)
+
+// أرقام حقيقية من اللوحة لشرائط الإحصائيات (تُحدَّث كل 10 دقائق هناك)
+const stats = shared(async () => (await api.get('stats')).data)
+const count = (n) => (typeof n === 'number' ? n.toLocaleString('en-US') : '—')
+
+export function useStats() {
+  stats.load()
+  return computed(() => {
+    const s = Array.isArray(stats.items.value) ? {} : stats.items.value
+    return [
+      { icon: 'users', value: count(s.students), label: 'طالب ومتدرب' },
+      { icon: 'play', value: count(s.courses), label: 'دورات عملية' },
+      { icon: 'briefcase', value: count(s.projects), label: 'مشروعاً منجزاً' },
+      { icon: 'article', value: count(s.articles), label: 'مقالاً تقنياً' },
+    ]
+  })
+}

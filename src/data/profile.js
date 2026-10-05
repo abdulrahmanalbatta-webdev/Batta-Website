@@ -1,6 +1,6 @@
 // بياناتك الشخصية: عدّل هذا الملف ليظهر التعديل في كل الموقع.
 // الصورة: ضع صورتك في src/assets/images/ باسم profile.jpg (أو .png / .webp) وستظهر تلقائياً.
-import { siGithub, siX, siYoutube, siWhatsapp } from 'simple-icons'
+import { siGithub, siX, siYoutube } from 'simple-icons'
 
 export const profile = {
   name: 'عبدالرحمن البطة',
@@ -42,7 +42,7 @@ export const profile = {
 
   skills: ['Vue', 'Next.js', 'React', 'Node.js', 'PostgreSQL', 'TypeScript', 'Tailwind CSS', 'Figma', 'Git', 'REST & GraphQL'],
 
-  // TODO: ضع روابط حساباتك الحقيقية
+  // TODO: ضع روابط حساباتك الحقيقية (واتساب والبريد يأتيان من إعدادات لوحة التحكم)
   socials: [
     { name: 'GitHub', url: 'https://github.com/', path: siGithub.path },
     {
@@ -52,6 +52,5 @@ export const profile = {
     },
     { name: 'X', url: 'https://x.com/', path: siX.path },
     { name: 'YouTube', url: 'https://www.youtube.com/', path: siYoutube.path },
-    { name: 'WhatsApp', url: 'https://wa.me/', path: siWhatsapp.path },
   ],
 }

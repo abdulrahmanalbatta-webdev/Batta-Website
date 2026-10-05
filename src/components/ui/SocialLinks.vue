@@ -1,14 +1,26 @@
 <script setup>
+import { computed } from 'vue'
+import { siWhatsapp } from 'simple-icons'
 import { profile } from '@/data/profile'
+import { useContact } from '@/composables/useSettings'
 
 defineProps({
   dark: { type: Boolean, default: false },
 })
+
+const MAIL = 'M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.2-8 5-8-5V6l8 5 8-5z'
+const { email, whatsappUrl } = useContact()
+// الحسابات من profile.js، وواتساب والبريد من إعدادات اللوحة
+const links = computed(() => [
+  ...profile.socials,
+  ...(whatsappUrl.value ? [{ name: 'WhatsApp', url: whatsappUrl.value, path: siWhatsapp.path }] : []),
+  ...(email.value ? [{ name: 'البريد', url: `mailto:${email.value}`, path: MAIL }] : []),
+])
 </script>
 
 <template>
   <ul class="socials" :class="{ dark }">
-    <li v-for="s in profile.socials" :key="s.name">
+    <li v-for="s in links" :key="s.name">
       <a :href="s.url" target="_blank" rel="noopener noreferrer" :aria-label="s.name" :title="s.name">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path :d="s.path" /></svg>
       </a>

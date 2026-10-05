@@ -1,9 +1,11 @@
 <script setup>
 import BrandLogo from '@/components/ui/BrandLogo.vue'
 import SocialLinks from '@/components/ui/SocialLinks.vue'
+import { useContact } from '@/composables/useSettings'
 import { profile } from '@/data/profile'
 
 const year = new Date().getFullYear()
+const { email, whatsapp, whatsappUrl } = useContact()
 </script>
 
 <template>
@@ -13,6 +15,10 @@ const year = new Date().getFullYear()
         <div>
           <BrandLogo inverse />
           <p>{{ profile.role }}. خدمات تطوير ويب ومنصة تعليمية باللغة العربية.</p>
+          <ul class="contact">
+            <li v-if="email"><a :href="`mailto:${email}`" dir="ltr">{{ email }}</a></li>
+            <li v-if="whatsappUrl"><a :href="whatsappUrl" target="_blank" rel="noopener" dir="ltr">{{ whatsapp }}</a></li>
+          </ul>
           <SocialLinks dark class="socials" />
         </div>
         <div>
@@ -70,6 +76,12 @@ h4 {
   font-size: 15px;
   color: #fff;
   margin-bottom: 12px;
+}
+.contact {
+  margin: 14px 0 0 !important;
+}
+.contact a {
+  unicode-bidi: isolate;
 }
 .cols > div > ul:not(.socials) {
   list-style: none;

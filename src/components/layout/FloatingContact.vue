@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
+import { useContact } from '@/composables/useSettings'
+
+const { whatsappUrl } = useContact()
 
 const showTop = ref(false)
 const onScroll = () => (showTop.value = window.scrollY > 700)
@@ -11,7 +14,11 @@ const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 <template>
   <div class="floating">
-    <RouterLink class="chat" :to="{ path: '/services', hash: '#contact' }" aria-label="تواصل معي">
+    <a v-if="whatsappUrl" class="chat" :href="whatsappUrl" target="_blank" rel="noopener" aria-label="تواصل معي على واتساب">
+      <BaseIcon name="chat" :size="22" />
+      <span class="tip">واتساب</span>
+    </a>
+    <RouterLink v-else class="chat" :to="{ path: '/services', hash: '#contact' }" aria-label="تواصل معي">
       <BaseIcon name="chat" :size="22" />
       <span class="tip">تواصل معي</span>
     </RouterLink>

@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { api } from '@/lib/api'
 
 // إعدادات المنصة العامة من لوحة التحكم: التواصل، التسجيل، العملة، تعليمات الدفع، Google Analytics…
@@ -43,4 +43,16 @@ export function useSettings() {
 // مشاهدة صفحة لـ Google Analytics (تُستدعى بعد كل تنقّل)
 export function trackPageView(path) {
   window.gtag?.('event', 'page_view', { page_path: path, page_title: document.title })
+}
+
+// التواصل من إعدادات اللوحة (الإعدادات ← عام): البريد ورقم واتساب
+export function useContact() {
+  const { settings } = useSettings()
+  const email = computed(() => settings.value?.contact_email || '')
+  const whatsapp = computed(() => settings.value?.whatsapp || '')
+  const whatsappUrl = computed(() => {
+    const digits = whatsapp.value.replace(/\D/g, '')
+    return digits ? `https://wa.me/${digits}` : ''
+  })
+  return { email, whatsapp, whatsappUrl }
 }
