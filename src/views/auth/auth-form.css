@@ -106,3 +106,15 @@
 .strength[data-level='2'] .bars i.on { background: #f59e0b; }
 .strength[data-level='3'] .bars i.on { background: var(--primary); }
 .strength[data-level='4'] .bars i.on { background: var(--green); }
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+}
+.closed {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: var(--r);
+  background: var(--surface-2, #f4f6f9);
+  color: var(--text);
+  font-weight: 600;
+}

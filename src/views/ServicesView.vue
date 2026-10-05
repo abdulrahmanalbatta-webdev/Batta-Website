@@ -7,6 +7,7 @@ import BaseIcon from '@/components/ui/BaseIcon.vue'
 import FaqSection from '@/components/home/FaqSection.vue'
 import { packages, processSteps, services } from '@/data/site'
 import { useToast } from '@/composables/useToast'
+import { api } from '@/lib/api'
 
 const route = useRoute()
 const { showToast } = useToast()
@@ -14,7 +15,7 @@ const { showToast } = useToast()
 // "اطلب هذه الخدمة" passes ?service=id → the form's project type is pre-selected
 const projectTypes = services.map((s) => s.title)
 const typeFromQuery = () => services.find((s) => s.id === route.query.service)?.title ?? projectTypes[0]
-const emptyForm = () => ({ name: '', email: '', type: typeFromQuery(), budget: '500$ – 1,500$', details: '' })
+const emptyForm = () => ({ name: '', email: '', phone: '', company: '', type: typeFromQuery(), budget: '500$ – 1,500$', details: '', website: '' })
 const form = ref(emptyForm())
 watch(() => route.query.service, () => (form.value.type = typeFromQuery()))
 
@@ -34,11 +35,36 @@ watch(
   { immediate: true },
 )
 const budgets = ['أقل من 500$', '500$ – 1,500$', '1,500$ – 5,000$', 'أكثر من 5,000$']
+// the dashboard keeps the budget as a number: the top of the range (or the floor of the last one)
+const budgetValue = { 'أقل من 500$': 500, '500$ – 1,500$': 1500, '1,500$ – 5,000$': 5000, 'أكثر من 5,000$': 5000 }
+// the site's service ids → the dashboard's (LeadService)
+const serviceValue = { websites: 'websites', 'web-apps': 'web_apps', ecommerce: 'stores', dashboards: 'dashboards', maintenance: 'maintenance', training: 'training' }
 
-// TODO: أرسل الطلب إلى API أو خدمة نماذج (Formspree / Resend)
-function submit() {
-  showToast('وصل طلبك (نموذج تجريبي). سأرد خلال 24 ساعة')
-  form.value = emptyForm()
+const sending = ref(false)
+const errors = ref({})
+async function submit() {
+  sending.value = true
+  errors.value = {}
+  const service = services.find((s) => s.title === form.value.type)
+  try {
+    const res = await api.post('project-requests', {
+      name: form.value.name,
+      email: form.value.email,
+      phone: form.value.phone || null,
+      company: form.value.company || null,
+      service: serviceValue[service?.id] ?? 'websites',
+      budget: budgetValue[form.value.budget] ?? null,
+      details: `${form.value.details}\n\nالميزانية المتوقعة: ${form.value.budget}`,
+      website: form.value.website,
+    })
+    showToast(res.message, 4000)
+    form.value = emptyForm()
+  } catch (err) {
+    errors.value = err.errors
+    showToast(Object.values(err.errors)[0] || err.message, 4500)
+  } finally {
+    sending.value = false
+  }
 }
 </script>
 
@@ -113,7 +139,11 @@ function submit() {
 
             <form class="card form" @submit.prevent="submit">
               <label class="field-label">الاسم<input v-model="form.name" class="input" required /></label>
-              <label class="field-label">البريد الإلكتروني<input v-model="form.email" class="input" type="email" required /></label>
+              <label class="field-label">البريد الإلكتروني<input v-model="form.email" class="input" type="email" dir="ltr" required /></label>
+              <label class="field-label">رقم واتساب (اختياري)<input v-model="form.phone" class="input" type="tel" dir="ltr" placeholder="+970 59 000 0000" /></label>
+              <label class="field-label">الشركة (اختياري)<input v-model="form.company" class="input" /></label>
+              <!-- bot trap: hidden from people, left empty -->
+              <input v-model="form.website" class="trap" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
               <label class="field-label">نوع المشروع
                 <select v-model="form.type" class="input"><option v-for="t in projectTypes" :key="t">{{ t }}</option></select>
               </label>
@@ -121,9 +151,9 @@ function submit() {
                 <select v-model="form.budget" class="input"><option v-for="b in budgets" :key="b">{{ b }}</option></select>
               </label>
               <label class="field-label full">تفاصيل مختصرة
-                <textarea v-model="form.details" class="input" rows="4" placeholder="ما الذي تريد بناءه؟ ومتى تحتاجه؟" />
+                <textarea v-model="form.details" class="input" rows="4" placeholder="ما الذي تريد بناءه؟ ومتى تحتاجه؟" required minlength="10" />
               </label>
-              <div class="full"><button class="btn btn-primary btn-lg" type="submit">إرسال الطلب</button></div>
+              <div class="full"><button class="btn btn-primary btn-lg" type="submit" :disabled="sending">{{ sending ? 'جارٍ الإرسال…' : 'إرسال الطلب' }}</button></div>
             </form>
           </div>
         </div>
@@ -135,6 +165,13 @@ function submit() {
 </template>
 
 <style scoped>
+.trap {
+  position: absolute;
+  inset-inline-start: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
 .stack {
   gap: 72px;
 }

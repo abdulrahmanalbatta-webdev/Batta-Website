@@ -1,11 +1,14 @@
 <script setup>
 import { computed } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
+import { useSettings } from '@/composables/useSettings'
 
 const props = defineProps({
   workshop: { type: Object, required: true },
 })
 
+const { price } = useSettings()
+const priceLabel = computed(() => (props.workshop.free ? 'مجانية' : price(props.workshop.price)))
 const seatsLeft = computed(() => props.workshop.seats - props.workshop.taken)
 const fill = computed(() => Math.round((props.workshop.taken / props.workshop.seats) * 100))
 </script>
@@ -19,7 +22,7 @@ const fill = computed(() => Math.round((props.workshop.taken / props.workshop.se
 
     <div class="info">
       <div class="tags">
-        <span class="pill" :class="{ green: workshop.price === 'مجانية' }">{{ workshop.price }}</span>
+        <span class="pill" :class="{ green: workshop.free }">{{ priceLabel }}</span>
         <span class="pill line"><BaseIcon :name="workshop.online ? 'monitor' : 'pin'" :size="14" />{{ workshop.format }}</span>
       </div>
       <h3>{{ workshop.title }}</h3>
@@ -32,7 +35,8 @@ const fill = computed(() => Math.round((props.workshop.taken / props.workshop.se
         <span><b>{{ seatsLeft }}</b> متبقية من {{ workshop.seats }}</span>
       </div>
       <div class="meter"><i :style="{ width: `${fill}%` }" /></div>
-      <RouterLink class="btn btn-primary" :to="{ name: 'register', query: { next: '/workshops' } }">احجز مقعدك</RouterLink>
+      <span v-if="workshop.full" class="btn btn-ghost" aria-disabled="true">اكتملت المقاعد</span>
+      <RouterLink v-else class="btn btn-primary" :to="{ name: 'enroll', query: { workshop: workshop.id } }">احجز مقعدك</RouterLink>
     </div>
   </article>
 </template>

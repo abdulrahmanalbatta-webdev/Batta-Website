@@ -1,12 +1,15 @@
 <script setup>
 import { computed } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
+import { useSettings } from '@/composables/useSettings'
 
 const props = defineProps({
   course: { type: Object, required: true },
 })
 
-const isFree = computed(() => props.course.price === 0)
+const { price } = useSettings()
+const isFree = computed(() => !props.course.price)
+const page = computed(() => ({ name: 'course', params: { slug: props.course.slug } }))
 </script>
 
 <template>
@@ -17,7 +20,7 @@ const isFree = computed(() => props.course.price === 0)
     </div>
 
     <div class="body">
-      <h3>{{ course.title }}</h3>
+      <h3><RouterLink :to="page" class="title-link">{{ course.title }}</RouterLink></h3>
       <div class="meta">
         <span><BaseIcon name="clock" :size="16" />{{ course.hours }} ساعة</span>
         <span><BaseIcon name="play" :size="16" />{{ course.lessons }} درساً</span>
@@ -34,11 +37,11 @@ const isFree = computed(() => props.course.price === 0)
 
       <div class="card-foot">
         <div class="price">
-          {{ isFree ? 'مجاناً' : `${course.price}$` }}
-          <s v-if="course.oldPrice">{{ course.oldPrice }}$</s>
+          {{ price(course.price) }}
+          <s v-if="course.oldPrice">{{ price(course.oldPrice) }}</s>
         </div>
-        <RouterLink class="btn" :class="isFree ? 'btn-soft' : 'btn-primary'" :to="{ name: 'register', query: { next: '/courses' } }">
-          {{ isFree ? 'ابدأ الآن' : 'سجّل الآن' }}
+        <RouterLink class="btn" :class="isFree ? 'btn-soft' : 'btn-primary'" :to="page">
+          {{ isFree ? 'ابدأ الآن' : 'التفاصيل والتسجيل' }}
         </RouterLink>
       </div>
     </div>
@@ -139,5 +142,11 @@ const isFree = computed(() => props.course.price === 0)
   font-size: 15px;
   color: var(--muted);
   font-weight: 600;
+}
+.title-link {
+  color: inherit;
+}
+.title-link:hover {
+  color: var(--primary);
 }
 </style>
