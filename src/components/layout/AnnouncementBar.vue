@@ -1,19 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { announcement } from '@/data/site'
 
+// the text comes from the dashboard (محتوى الموقع ← شريط الإعلان); closing hides this text only, a new one shows again
 const STORAGE_KEY = 'announcement-dismissed'
-let dismissed = false
+const dismissedText = ref('')
 try {
-  dismissed = sessionStorage.getItem(STORAGE_KEY) === announcement.text
+  dismissedText.value = sessionStorage.getItem(STORAGE_KEY) ?? ''
 } catch {
   /* storage unavailable */
 }
-const visible = ref(!dismissed)
+const visible = computed(() => announcement.enabled && !!announcement.text && dismissedText.value !== announcement.text)
 
 function close() {
-  visible.value = false
+  dismissedText.value = announcement.text
   try {
     sessionStorage.setItem(STORAGE_KEY, announcement.text)
   } catch {

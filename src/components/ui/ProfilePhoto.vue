@@ -13,7 +13,8 @@ const full = Object.values(import.meta.glob('@/assets/images/profile.{jpg,jpeg,p
 const face = Object.values(import.meta.glob('@/assets/images/profile-face.{jpg,jpeg,png,webp}', { eager: true, import: 'default' }))[0] ?? null
 
 // small avatars (≤ 120px) use the face crop so the face fills the circle
-const src = computed(() => (typeof props.size === 'number' && props.size <= 120 ? face ?? full : full))
+// a photo uploaded on the dashboard wins over the bundled ones
+const src = computed(() => profile.photo || (typeof props.size === 'number' && props.size <= 120 ? face ?? full : full))
 const dim = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
 </script>
 

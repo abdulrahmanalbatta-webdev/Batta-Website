@@ -1,8 +1,10 @@
 // القائمة الرئيسية. العناصر التي لها children تفتح قائمة منسدلة بسيطة
 // (على الجوال تتحول إلى قائمة قابلة للطي). match = المسارات التي تجعل العنصر "نشطاً".
+import { computed } from 'vue'
 import { services } from './site'
 
-export const nav = [
+// computed: قائمة الخدمات المنسدلة تتبع الخدمات القادمة من لوحة التحكم
+export const nav = computed(() => [
   { label: 'الرئيسية', to: '/' },
   {
     label: 'الخدمات',
@@ -32,4 +34,4 @@ export const nav = [
     ],
   },
   { label: 'من أنا', to: '/about' },
-]
+])

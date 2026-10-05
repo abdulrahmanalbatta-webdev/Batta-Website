@@ -20,7 +20,7 @@ const stats = useStats()
           <nav class="crumbs" aria-label="مسار التنقل">
             <RouterLink to="/">الرئيسية</RouterLink><span>/</span><span>من أنا</span>
           </nav>
-          <span class="status">{{ profile.available }}</span>
+          <span v-if="profile.available" class="status">{{ profile.available }}</span>
           <h1>{{ profile.name }}</h1>
           <p class="role">{{ profile.role }}</p>
           <p class="lead">{{ profile.short }}</p>

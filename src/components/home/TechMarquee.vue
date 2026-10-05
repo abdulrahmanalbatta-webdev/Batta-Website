@@ -1,8 +1,9 @@
 <script setup>
+import { computed } from 'vue'
 import { technologies } from '@/data/site'
 
 // the list is rendered twice so the strip loops without a gap
-const loop = [...technologies, ...technologies]
+const loop = computed(() => [...technologies, ...technologies])
 </script>
 
 <template>
