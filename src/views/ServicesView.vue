@@ -16,9 +16,15 @@ const { showToast } = useToast()
 // "اطلب هذه الخدمة" passes ?service=id → the form's project type is pre-selected
 const projectTypes = computed(() => services.map((s) => s.title))
 const typeFromQuery = () => services.find((s) => s.id === route.query.service)?.title ?? projectTypes.value[0]
-const emptyForm = () => ({ name: '', email: '', phone: '', company: '', type: typeFromQuery(), budget: '500$ – 1,500$', details: '', website: '' })
+// budget options from the dashboard (page texts → contact); the second one is the usual starting point
+const budgets = computed(() => texts.pages.contact.budgets)
+const defaultBudget = () => (budgets.value[1] ?? budgets.value[0])?.label ?? ''
+const emptyForm = () => ({ name: '', email: '', phone: '', company: '', type: typeFromQuery(), budget: defaultBudget(), details: '', website: '' })
 const form = ref(emptyForm())
 watch(() => route.query.service, () => (form.value.type = typeFromQuery()))
+// the dashboard's options can arrive after the form was filled with the bundled ones
+watch(budgets, (list) => list.some((b) => b.label === form.value.budget) || (form.value.budget = defaultBudget()))
+watch(projectTypes, (types) => types.includes(form.value.type) || (form.value.type = typeFromQuery()))
 
 // briefly highlight the service card the visitor jumped to (/services#ecommerce)
 const flashed = ref('')
@@ -35,9 +41,6 @@ watch(
   },
   { immediate: true },
 )
-const budgets = ['أقل من 500$', '500$ – 1,500$', '1,500$ – 5,000$', 'أكثر من 5,000$']
-// the dashboard keeps the budget as a number: the top of the range (or the floor of the last one)
-const budgetValue = { 'أقل من 500$': 500, '500$ – 1,500$': 1500, '1,500$ – 5,000$': 5000, 'أكثر من 5,000$': 5000 }
 
 const sending = ref(false)
 const errors = ref({})
@@ -53,7 +56,8 @@ async function submit() {
       company: form.value.company || null,
       // the dashboard's project types are these same services (by id)
       service: service?.id ?? services[0]?.id,
-      budget: budgetValue[form.value.budget] ?? null,
+      // the dashboard keeps the budget as a number (the amount set beside each option)
+      budget: Number(budgets.value.find((b) => b.label === form.value.budget)?.amount) || null,
       details: `${form.value.details}\n\nالميزانية المتوقعة: ${form.value.budget}`,
       website: form.value.website,
     })
@@ -149,7 +153,7 @@ async function submit() {
                 <select v-model="form.type" class="input"><option v-for="t in projectTypes" :key="t">{{ t }}</option></select>
               </label>
               <label class="field-label">الميزانية التقريبية
-                <select v-model="form.budget" class="input"><option v-for="b in budgets" :key="b">{{ b }}</option></select>
+                <select v-model="form.budget" class="input"><option v-for="b in budgets" :key="b.label">{{ b.label }}</option></select>
               </label>
               <label class="field-label full">تفاصيل مختصرة
                 <textarea v-model="form.details" class="input" rows="4" placeholder="ما الذي تريد بناءه؟ ومتى تحتاجه؟" required minlength="10" />

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import { profile } from '@/data/profile'
+import { texts } from '@/data/texts'
 import { useAuth } from '@/composables/useAuth'
 import { trackPageView } from '@/composables/useSettings'
 
@@ -62,8 +63,8 @@ const router = createRouter({
   },
 })
 
-// عنوان التبويب: "اسم الصفحة | الاسم"، والرئيسية: "الاسم | المسمّى"
-export const siteTitle = (page) => (page ? `${page} | ${profile.name}` : `${profile.name} | ${profile.role}`)
+// عنوان التبويب: "اسم الصفحة | الاسم"، والرئيسية: عنوان الموقع من اللوحة (محركات البحث والمشاركة)
+export const siteTitle = (page) => (page ? `${page} | ${profile.name}` : texts.seo.title)
 
 // صفحات الحساب: الضيف يُرسل لإنشاء حساب ثم يعود لنفس الصفحة
 router.beforeEach(async (to) => {

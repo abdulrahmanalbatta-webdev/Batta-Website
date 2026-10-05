@@ -9,6 +9,7 @@ import FinalCta from '@/components/home/FinalCta.vue'
 import ToastHost from '@/components/ui/ToastHost.vue'
 import BrandLogo from '@/components/ui/BrandLogo.vue'
 import { useSettings } from '@/composables/useSettings'
+import { texts } from '@/data/texts'
 
 const route = useRoute()
 // صفحات الدخول والتسجيل تعرض بدون الهيدر والفوتر (meta.bare في الراوتر)
@@ -22,8 +23,8 @@ const maintenance = computed(() => settings.value?.maintenance_mode === true)
 <template>
   <main v-if="maintenance" class="maintenance">
     <BrandLogo />
-    <h1>نعود قريباً</h1>
-    <p>نعمل على تحسينات في الموقع، وسنعود خلال وقت قصير.</p>
+    <h1>{{ texts.general.maintenance.title }}</h1>
+    <p>{{ texts.general.maintenance.text }}</p>
     <a v-if="settings.contact_email" class="btn btn-ghost" :href="`mailto:${settings.contact_email}`" dir="ltr">{{ settings.contact_email }}</a>
   </main>
   <template v-else>
