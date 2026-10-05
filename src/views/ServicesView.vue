@@ -142,8 +142,8 @@ async function submit() {
               <label class="field-label">البريد الإلكتروني<input v-model="form.email" class="input" type="email" dir="ltr" required /></label>
               <label class="field-label">رقم واتساب (اختياري)<input v-model="form.phone" class="input" type="tel" dir="ltr" placeholder="+970 59 000 0000" /></label>
               <label class="field-label">الشركة (اختياري)<input v-model="form.company" class="input" /></label>
-              <!-- bot trap: hidden from people, left empty -->
-              <input v-model="form.website" class="trap" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <!-- bot trap: never shown (display: none, so browsers and password managers don't autofill it); a filled one means a bot -->
+              <div hidden aria-hidden="true"><input v-model="form.website" type="text" name="hp_extra" tabindex="-1" autocomplete="off" /></div>
               <label class="field-label">نوع المشروع
                 <select v-model="form.type" class="input"><option v-for="t in projectTypes" :key="t">{{ t }}</option></select>
               </label>
@@ -165,13 +165,6 @@ async function submit() {
 </template>
 
 <style scoped>
-.trap {
-  position: absolute;
-  inset-inline-start: -9999px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
 .stack {
   gap: 72px;
 }
