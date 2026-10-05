@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount, watchEffect } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, watch, watchEffect } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import TopoPattern from '@/components/ui/TopoPattern.vue'
@@ -7,7 +7,10 @@ import ArticleCard from '@/components/cards/ArticleCard.vue'
 import ArticleBody from '@/components/article/ArticleBody.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
-import { articles, getArticle, author } from '@/data/articles'
+import LoadState from '@/components/ui/LoadState.vue'
+import { profile } from '@/data/profile'
+import { api } from '@/lib/api'
+import { toArticle, useArticles } from '@/composables/useContent'
 import { useToast } from '@/composables/useToast'
 import { siteTitle } from '@/router'
 
@@ -16,7 +19,29 @@ const props = defineProps({
 })
 
 const { showToast } = useToast()
-const article = computed(() => getArticle(props.id))
+const { items: articles } = useArticles()
+const author = { name: profile.name, role: profile.role }
+
+// the full article (body included) from the dashboard; each visit counts one view there
+const article = ref(null)
+const loading = ref(true)
+const error = ref('')
+const missing = ref(false)
+async function load() {
+  loading.value = true
+  error.value = ''
+  missing.value = false
+  try {
+    article.value = toArticle((await api.get(`articles/${encodeURIComponent(props.id)}`)).data)
+  } catch (err) {
+    article.value = null
+    if (err.status === 404) missing.value = true
+    else error.value = err.message
+  } finally {
+    loading.value = false
+  }
+}
+watch(() => props.id, load, { immediate: true })
 
 watchEffect(() => {
   if (article.value) document.title = siteTitle(article.value.title)
@@ -24,13 +49,13 @@ watchEffect(() => {
 
 const toc = computed(() => (article.value?.body ?? []).filter((b) => b.type === 'h2').map((b, i) => ({ id: `section-${i + 1}`, text: b.text })))
 
-const index = computed(() => articles.findIndex((a) => a.id === props.id))
-const newer = computed(() => articles[index.value - 1])
-const older = computed(() => articles[index.value + 1])
+const index = computed(() => articles.value.findIndex((a) => a.id === props.id))
+const newer = computed(() => (index.value > 0 ? articles.value[index.value - 1] : null))
+const older = computed(() => (index.value >= 0 ? articles.value[index.value + 1] : null))
 
 const related = computed(() => {
-  const same = articles.filter((a) => a.id !== props.id && a.category === article.value?.category)
-  const others = articles.filter((a) => a.id !== props.id && a.category !== article.value?.category)
+  const same = articles.value.filter((a) => a.id !== props.id && a.category === article.value?.category)
+  const others = articles.value.filter((a) => a.id !== props.id && a.category !== article.value?.category)
   return [...same, ...others].slice(0, 3)
 })
 
@@ -54,7 +79,8 @@ async function copyLink() {
 </script>
 
 <template>
-  <NotFoundView v-if="!article" />
+  <NotFoundView v-if="missing" />
+  <section v-else-if="!article" class="page-body"><div class="container"><LoadState :loading="loading" :error="error" @retry="load" /></div></section>
 
   <div v-else>
     <div class="progress" :style="{ width: `${progress}%` }" />
@@ -73,7 +99,7 @@ async function copyLink() {
         <div class="byline">
           <ProfilePhoto :size="44" />
           <div>
-            <b>{{ author.name }}</b>
+            <b>{{ article.author || author.name }}</b>
             <div class="meta">
               <span><BaseIcon name="calendar" :size="15" />{{ article.date }}</span>
               <span><BaseIcon name="clock" :size="15" />{{ article.minutes }} دقيقة قراءة</span>
@@ -133,7 +159,7 @@ async function copyLink() {
       </div>
     </section>
 
-    <section class="section tinted">
+    <section v-if="related.length" class="section tinted">
       <div class="container">
         <SectionHeading eyebrow="اقرأ أيضاً" title="مقالات قد تهمك" />
         <div class="grid g3">

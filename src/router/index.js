@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import { profile } from '@/data/profile'
+import { useAuth } from '@/composables/useAuth'
+import { trackPageView } from '@/composables/useSettings'
 
 // old combined pages (/academy?tab=…, /resources?tab=…) → the matching standalone page, keeping filters/search
 const fromTabs = (map, fallback) => (to) => {
@@ -15,6 +17,7 @@ const routes = [
 
   // الأكاديمية
   { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { title: 'الدورات' } },
+  { path: '/courses/:slug', name: 'course', component: () => import('@/views/CourseView.vue'), props: true, meta: { title: 'الدورات' } },
   { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { title: 'الورش' } },
   { path: '/academy', redirect: fromTabs({ workshops: '/workshops' }, '/courses') },
 
@@ -28,6 +31,12 @@ const routes = [
   { path: '/about', name: 'about', component: () => import('@/views/AboutView.vue'), meta: { title: 'من أنا' } },
   { path: '/login', name: 'login', component: () => import('@/views/auth/LoginView.vue'), meta: { title: 'تسجيل الدخول', bare: true } },
   { path: '/register', name: 'register', component: () => import('@/views/auth/RegisterView.vue'), meta: { title: 'إنشاء حساب', bare: true } },
+  { path: '/reset-password', name: 'reset-password', component: () => import('@/views/auth/ResetPasswordView.vue'), meta: { title: 'كلمة مرور جديدة', bare: true } },
+
+  // حساب الطالب (يتطلب الدخول)
+  { path: '/enroll', name: 'enroll', component: () => import('@/views/EnrollView.vue'), meta: { title: 'التسجيل', auth: true } },
+  { path: '/my-courses', name: 'my-courses', component: () => import('@/views/MyCoursesView.vue'), meta: { title: 'دوراتي', auth: true } },
+  { path: '/my-courses/:slug', name: 'learn', component: () => import('@/views/LearnView.vue'), props: true, meta: { title: 'دوراتي', auth: true } },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/NotFoundView.vue'), meta: { title: 'الصفحة غير موجودة' } },
 ]
 
@@ -56,8 +65,17 @@ const router = createRouter({
 // عنوان التبويب: "اسم الصفحة | الاسم"، والرئيسية: "الاسم | المسمّى"
 export const siteTitle = (page) => (page ? `${page} | ${profile.name}` : `${profile.name} | ${profile.role}`)
 
+// صفحات الحساب: الضيف يُرسل لإنشاء حساب ثم يعود لنفس الصفحة
+router.beforeEach(async (to) => {
+  if (!to.meta.auth) return true
+  const auth = useAuth()
+  await auth.loaded()
+  return auth.isSignedIn.value || { name: 'register', query: { next: to.fullPath } }
+})
+
 router.afterEach((to) => {
   document.title = siteTitle(to.meta.title)
+  trackPageView(to.fullPath)
 })
 
 export default router

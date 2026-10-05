@@ -2,7 +2,9 @@
 import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import WorkshopsPanel from '@/components/academy/WorkshopsPanel.vue'
-import { workshops } from '@/data/site'
+import { useWorkshops } from '@/composables/useContent'
+
+const { items: workshops } = useWorkshops()
 </script>
 
 <template>

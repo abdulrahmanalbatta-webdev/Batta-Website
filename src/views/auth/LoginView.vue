@@ -2,16 +2,18 @@
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/components/auth/AuthLayout.vue'
-import OAuthButtons from '@/components/auth/OAuthButtons.vue'
 import PasswordField from '@/components/auth/PasswordField.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { useToast } from '@/composables/useToast'
+import { useAuth } from '@/composables/useAuth'
+import { api } from '@/lib/api'
 
 const route = useRoute()
 const router = useRouter()
 const { showToast } = useToast()
+const { signIn } = useAuth()
 
-const form = reactive({ email: '', password: '', remember: true })
+const form = reactive({ email: '', password: '' })
 const errors = reactive({ email: '', password: '' })
 const loading = ref(false)
 
@@ -23,29 +25,42 @@ function validate() {
   return !errors.email && !errors.password
 }
 
-// TODO: استبدل المحاكاة باستدعاء خدمة المصادقة الفعلية
+// only paths inside the site (never a full URL from the query string)
+const next = () => (typeof route.query.next === 'string' && route.query.next.startsWith('/') && !route.query.next.startsWith('//') ? route.query.next : '/my-courses')
+
 async function submit() {
   if (!validate()) return
   loading.value = true
-  await new Promise((r) => setTimeout(r, 600))
-  loading.value = false
-  showToast('تم تسجيل الدخول (نموذج تجريبي)')
-  router.push(typeof route.query.next === 'string' ? route.query.next : '/')
+  try {
+    await signIn(form)
+    showToast('أهلاً بعودتك')
+    router.push(next())
+  } catch (err) {
+    errors.email = err.errors.email || err.message
+  } finally {
+    loading.value = false
+  }
 }
 
-function forgotPassword() {
+const sending = ref(false)
+async function forgotPassword() {
   if (!emailPattern.test(form.email)) {
     errors.email = 'اكتب بريدك أولاً، وسنرسل لك رابط الاستعادة عليه'
     return
   }
-  showToast('أرسلنا رابط استعادة كلمة المرور إلى بريدك (نموذج تجريبي)')
+  sending.value = true
+  try {
+    showToast((await api.post('auth/forgot-password', { email: form.email })).message, 5000)
+  } catch (err) {
+    errors.email = err.errors.email || err.message
+  } finally {
+    sending.value = false
+  }
 }
 </script>
 
 <template>
   <AuthLayout title="أهلاً بعودتك" subtitle="سجّل دخولك لتكمل دوراتك وتتابع حجوزاتك.">
-    <OAuthButtons />
-
     <form class="fields" novalidate @submit.prevent="submit">
       <div class="field">
         <label for="login-email" class="field-label">البريد الإلكتروني</label>
@@ -59,16 +74,11 @@ function forgotPassword() {
       <div class="field">
         <div class="label-row">
           <label for="login-password" class="field-label">كلمة المرور</label>
-          <button type="button" class="text-btn" @click="forgotPassword">نسيت كلمة المرور؟</button>
+          <button type="button" class="text-btn" :disabled="sending" @click="forgotPassword">{{ sending ? 'جارٍ الإرسال…' : 'نسيت كلمة المرور؟' }}</button>
         </div>
         <PasswordField id="login-password" v-model="form.password" :invalid="!!errors.password" />
         <span v-if="errors.password" class="error">{{ errors.password }}</span>
       </div>
-
-      <label class="check">
-        <input v-model="form.remember" type="checkbox" />
-        تذكّرني على هذا الجهاز
-      </label>
 
       <button class="btn btn-primary btn-lg btn-block" type="submit" :disabled="loading">
         {{ loading ? 'جارٍ الدخول…' : 'تسجيل الدخول' }}

@@ -17,10 +17,27 @@
 | `/tools` | أدواتي (تصنيف `?cat=`) — ضمن قائمة "الموارد" |
 | `/about` | من أنا |
 | `/login` | تسجيل الدخول (صفحة مستقلة بدون هيدر وفوتر) |
-| `/register` | إنشاء حساب (تحقق من البيانات وقوة كلمة المرور) |
+| `/register` | إنشاء حساب (مع رقم واتساب للتواصل والدفع) |
+| `/reset-password` | كلمة مرور جديدة (من رابط "نسيت كلمة المرور" في البريد) |
+| `/courses/:slug` | صفحة الدورة: المنهج، الآراء، والتسجيل |
+| `/enroll?course=…` أو `?workshop=…` | طلب التسجيل والدفع اليدوي (يتطلب حساباً) |
+| `/my-courses` | دوراتي مع التقدّم (يتطلب حساباً) |
+| `/my-courses/:slug` | التعلّم: إنهاء الدروس وتقييم الدورة |
 
 الروابط القديمة `/academy` و `/resources` و `/stack` تحوّل تلقائياً إلى الصفحة الصحيحة.
 القائمة الرئيسية وقوائمها المنسدلة معرّفة في `src/data/navigation.js`.
+
+## الربط مع لوحة التحكم
+
+الموقع يقرأ الدورات والورش والمقالات والأدوات والإعدادات من API لوحة التحكم (مستودع `batta-platform`)، ويرسل إليها التسجيل وطلبات المشاريع ورسائل التسجيل في الدورات.
+
+1. انسخ `.env.example` إلى `.env` وضع عنوان الـ API في `VITE_API_URL` (محلياً: `http://localhost:8000/api/v1`).
+2. في `.env` لوحة التحكم أضف عنوان الموقع إلى `CORS_ALLOWED_ORIGINS` (محلياً: `http://localhost:5173`).
+3. على Vercel أضف `VITE_API_URL` في إعدادات المشروع (Environment Variables) بعنوان الـ API الحقيقي.
+
+**الدفع يدوي:** الطالب ينشئ حساباً (برقم واتساب) ويرسل طلب التسجيل من صفحة الدورة، فيصلك تنبيه ورسالة في اللوحة. بعد استلام المبلغ تسجّل "طلباً يدوياً" من اللوحة فتظهر الدورة في "دوراتي". تعليمات الدفع تُكتب في اللوحة: الإعدادات ← الدفع.
+
+الطالب يدخل بـ token يُحفظ في المتصفح (`localStorage`) ويُرسل مع كل طلب. Google Analytics يُحمَّل تلقائياً إذا أضفت معرّف القياس في اللوحة (الإعدادات ← الإحصاءات).
 
 ## التشغيل
 
@@ -51,16 +68,18 @@ src/
 │   ├── cards/              CourseCard, ArticleCard, WorkshopCard, ToolCard, CaseStudyCard
 │   ├── home/               أقسام الصفحة الرئيسية
 │   ├── article/            ArticleBody (عرض محتوى المقال: عناوين، فقرات، قوائم، كود، نصائح)
-│   └── auth/               AuthLayout, PasswordField, OAuthButtons
-├── composables/            حالة مشتركة: useToast
-├── data/                   بيانات تجريبية: courses, articles (مع محتوى كل مقال), site (ورش، أدوات، أعمال، باقات...)
+│   └── auth/               AuthLayout, PasswordField
+├── lib/                    api.js (الاتصال بلوحة التحكم)، markdown.js (محتوى المقال → كتل)
+├── composables/            حالة مشتركة: useToast, useAuth (الطالب), useSettings (إعدادات المنصة), useContent (الدورات والورش والمقالات والأدوات)
+├── data/                   محتوى ثابت: profile, navigation, site (الخدمات، الأعمال، الباقات، الأسئلة...)
 └── views/                  صفحات الموقع، و views/auth لصفحتي الدخول والتسجيل
 ```
 
 ## التعديل
 
 - **الألوان والخط:** `src/assets/styles/tokens.css`
-- **المحتوى:** ملفات `src/data/`. لاحقاً استبدلها باستدعاءات API أو CMS دون تغيير المكونات.
+- **الدورات والورش والمقالات والأدوات:** من لوحة التحكم (لا تُعدَّل هنا).
+- **المحتوى الثابت** (الخدمات، الأعمال، الباقات، الأسئلة، الإحصائيات، شريط الإعلان): ملفات `src/data/`.
 - **أيقونة جديدة:** أضف مسارها في `src/components/ui/BaseIcon.vue`.
 - **صفحة جديدة:** أنشئ ملفاً في `src/views/` وأضف مساره في `src/router/index.js` ورابطه في `AppHeader.vue`.
 
@@ -70,11 +89,7 @@ src/
 
 | الميزة | الملف | خيارات مقترحة |
 | --- | --- | --- |
-| تسجيل الدخول والحسابات | `views/auth/LoginView.vue`، `views/auth/RegisterView.vue`، `components/auth/OAuthButtons.vue` | Supabase Auth، Firebase، أو API خاص |
 | النشرة البريدية | `components/home/NewsletterCta.vue` | ConvertKit، Buttondown، Mailchimp |
-| نموذج طلب مشروع | `views/ServicesView.vue` | Formspree، Resend، أو API خاص |
-| الدفع للدورات والورش | `cards/CourseCard.vue`، `cards/WorkshopCard.vue` | Lemon Squeezy، Paddle |
-| محتوى المقالات | `data/articles.js` | ملفات Markdown أو CMS مثل Sanity / Strapi |
 
 ## النشر
 

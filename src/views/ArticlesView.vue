@@ -2,7 +2,9 @@
 import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import ArticlesPanel from '@/components/resources/ArticlesPanel.vue'
-import { articles } from '@/data/articles'
+import { useArticles } from '@/composables/useContent'
+
+const { items: articles } = useArticles()
 </script>
 
 <template>

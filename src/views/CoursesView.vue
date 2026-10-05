@@ -2,9 +2,11 @@
 import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import CoursesPanel from '@/components/academy/CoursesPanel.vue'
-import { courses } from '@/data/courses'
+import { computed } from 'vue'
+import { useCourses } from '@/composables/useContent'
 
-const totalHours = courses.reduce((sum, c) => sum + c.hours, 0)
+const { items: courses } = useCourses()
+const totalHours = computed(() => Math.round(courses.value.reduce((sum, c) => sum + c.hours, 0)))
 </script>
 
 <template>

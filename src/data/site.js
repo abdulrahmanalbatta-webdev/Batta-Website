@@ -1,4 +1,4 @@
-// بيانات تجريبية لبقية أقسام المنصة
+// محتوى ثابت للموقع (الخدمات، الأعمال، الأسئلة…). الدورات والورش والمقالات والأدوات تأتي من لوحة التحكم.
 import {
   siVuedotjs,
   siNextdotjs,
@@ -13,27 +13,6 @@ import {
   siVercel,
   siFigma,
 } from 'simple-icons'
-
-export const workshops = [
-  { id: 'portfolio', day: '14', month: 'أكتوبر', title: 'ابنِ ملف أعمالك في ساعتين', format: 'أونلاين · Zoom', online: true, time: 'الثلاثاء · 7:00 مساءً بتوقيت مكة', price: 'مجانية', seats: 100, taken: 82 },
-  { id: 'server-actions', day: '28', month: 'أكتوبر', title: 'Server Actions في Next.js عملياً', format: 'أونلاين · Zoom', online: true, time: 'الثلاثاء · 7:00 مساءً بتوقيت مكة', price: '19$', seats: 40, taken: 31 },
-  { id: 'idea-to-product', day: '09', month: 'نوفمبر', title: 'يوم كامل: من الفكرة إلى منتج منشور', format: 'حضوري · عمّان', online: false, time: 'الأحد · 10:00 صباحاً – 5:00 مساءً', price: '49$', seats: 25, taken: 11 },
-]
-
-export const tools = [
-  { name: 'VS Code', short: 'VS', category: 'المحرر', why: 'محرري الأساسي مع إعدادات مشتركة في كل مستودع.', since: 2019 },
-  { name: 'Cursor', short: 'Cu', category: 'المحرر', why: 'للمهام المتكررة وإعادة الهيكلة بمساعدة AI.', since: 2024 },
-  { name: 'Next.js', short: 'N', category: 'الواجهات', why: 'إطار العمل الافتراضي لكل مشاريع العملاء.', since: 2021 },
-  { name: 'Vue', short: 'V', category: 'الواجهات', why: 'للواجهات التفاعلية والمشاريع التي تحتاج بساطة وسرعة.', since: 2020 },
-  { name: 'Tailwind CSS', short: 'tw', category: 'الواجهات', why: 'تصميم سريع ومتسق بدون ملفات CSS ضخمة.', since: 2021 },
-  { name: 'Node.js', short: 'JS', category: 'الخلفية', why: 'للـ APIs والمهام الخلفية.', since: 2020 },
-  { name: 'PostgreSQL', short: 'PG', category: 'الخلفية', why: 'قاعدة البيانات الأولى لأي مشروع جاد.', since: 2020 },
-  { name: 'Prisma', short: 'Pr', category: 'الخلفية', why: 'تعامل آمن ومكتوب الأنواع مع قاعدة البيانات.', since: 2022 },
-  { name: 'Vercel', short: '▲', category: 'النشر', why: 'نشر تلقائي مع كل دفعة إلى GitHub.', since: 2021, affiliate: true },
-  { name: 'GitHub Actions', short: 'GH', category: 'النشر', why: 'اختبارات تلقائية قبل كل دمج.', since: 2022 },
-  { name: 'Figma', short: 'Fg', category: 'التصميم', why: 'تصميم الواجهات ومشاركتها مع العميل.', since: 2020 },
-  { name: 'Lemon Squeezy', short: 'LS', category: 'الإنتاجية', why: 'بيع الدورات وتحصيل المدفوعات دولياً.', since: 2025, affiliate: true },
-]
 
 export const announcement = {
   text: 'دفعة "برنامج المطوّر المستقل" تبدأ 15 نوفمبر، وبقي 7 مقاعد فقط.',

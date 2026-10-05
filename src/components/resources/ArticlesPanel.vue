@@ -4,10 +4,13 @@ import { useRoute, useRouter } from 'vue-router'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import ArticleCard from '@/components/cards/ArticleCard.vue'
-import { articles, articleCategories } from '@/data/articles'
+import LoadState from '@/components/ui/LoadState.vue'
+import { useArticles } from '@/composables/useContent'
 
 const route = useRoute()
 const router = useRouter()
+const { items: articles, loading, error, reload } = useArticles()
+const articleCategories = ['دروس عملية', 'خلف الكواليس', 'العمل الحر', 'أدوات و AI']
 
 // ?cat= in the link pre-selects the category
 const catFromQuery = () => (articleCategories.includes(route.query.cat) ? route.query.cat : 'الكل')
@@ -24,12 +27,12 @@ watch(query, (q) => {
   router.replace({ query: next })
 })
 
-const featured = articles.find((a) => a.featured)
+const featured = computed(() => articles.value.find((a) => a.featured))
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
-  return articles.filter(
+  return articles.value.filter(
     (a) =>
-      (q || !a.featured) &&
+      (q || a !== featured.value) &&
       (category.value === 'الكل' || a.category === category.value) &&
       (!q || a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q)),
   )
@@ -68,7 +71,8 @@ const filtered = computed(() => {
 
     <div class="grid g3">
       <ArticleCard v-for="a in filtered" :key="a.id" :article="a" />
-      <div v-if="!filtered.length" class="empty">لا توجد مقالات مطابقة. جرّب كلمة أخرى أو قسماً مختلفاً.</div>
+      <LoadState v-if="loading || error" :loading="loading" :error="error" @retry="reload" />
+      <div v-else-if="!filtered.length" class="empty">لا توجد مقالات مطابقة. جرّب كلمة أخرى أو قسماً مختلفاً.</div>
     </div>
   </div>
 </template>

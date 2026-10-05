@@ -2,7 +2,9 @@
 import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import ToolsPanel from '@/components/resources/ToolsPanel.vue'
-import { tools } from '@/data/site'
+import { useTools } from '@/composables/useContent'
+
+const { items: tools } = useTools()
 </script>
 
 <template>

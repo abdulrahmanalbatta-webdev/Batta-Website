@@ -1,11 +1,21 @@
 <script setup>
-defineProps({
+import { api } from '@/lib/api'
+
+const props = defineProps({
   tool: { type: Object, required: true },
 })
+
+// counts the visit in the dashboard's "clicks" column; never blocks the link
+const countClick = () => api.post(`tools/${props.tool.id}/click`).catch(() => {})
 </script>
 
 <template>
-  <article class="card hover tool">
+  <component
+    :is="tool.url ? 'a' : 'article'"
+    class="card hover tool"
+    v-bind="tool.url ? { href: tool.url, target: '_blank', rel: tool.affiliate ? 'sponsored noopener' : 'noopener' } : {}"
+    @click="tool.url && countClick()"
+  >
     <span class="logo">{{ tool.short }}</span>
     <div class="body">
       <div class="name">
@@ -18,11 +28,13 @@ defineProps({
         <span class="mono since">since {{ tool.since }}</span>
       </div>
     </div>
-  </article>
+  </component>
 </template>
 
 <style scoped>
 .tool {
+  color: inherit;
+  text-decoration: none;
   flex-direction: row;
   align-items: flex-start;
   gap: 16px;

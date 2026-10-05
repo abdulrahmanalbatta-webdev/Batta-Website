@@ -2,17 +2,21 @@
 import { reactive, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/components/auth/AuthLayout.vue'
-import OAuthButtons from '@/components/auth/OAuthButtons.vue'
 import PasswordField from '@/components/auth/PasswordField.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { useToast } from '@/composables/useToast'
+import { useAuth } from '@/composables/useAuth'
+import { useSettings } from '@/composables/useSettings'
 
 const route = useRoute()
 const router = useRouter()
 const { showToast } = useToast()
+const { register } = useAuth()
+const { settings } = useSettings()
 
-const form = reactive({ name: '', email: '', password: '', confirm: '', terms: false, newsletter: true })
-const errors = reactive({ name: '', email: '', password: '', confirm: '', terms: '' })
+const form = reactive({ name: '', email: '', phone: '', password: '', confirm: '', terms: false })
+const errors = reactive({ name: '', email: '', phone: '', password: '', confirm: '', terms: '' })
+const phonePattern = /^\+?[0-9 ]{7,20}$/
 const loading = ref(false)
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -32,26 +36,38 @@ const strengthLabel = computed(() => ['', 'ضعيفة', 'متوسطة', 'جيد�
 function validate() {
   errors.name = form.name.trim().length >= 2 ? '' : 'اكتب اسمك'
   errors.email = emailPattern.test(form.email) ? '' : 'أدخل بريداً إلكترونياً صحيحاً'
-  errors.password = form.password.length >= 8 ? '' : 'كلمة المرور 8 أحرف على الأقل'
+  errors.phone = phonePattern.test(form.phone.trim()) ? '' : 'اكتب رقم واتساب مع مقدّمة الدولة، مثل ‎+970 59 000 0000'
+  errors.password = form.password.length >= 8 && /\d/.test(form.password) && /[a-z]/.test(form.password) && /[A-Z]/.test(form.password) ? '' : '8 أحرف على الأقل، فيها رقم وحرف كبير وحرف صغير'
   errors.confirm = form.confirm === form.password && form.confirm ? '' : 'كلمتا المرور غير متطابقتين'
   errors.terms = form.terms ? '' : 'يجب الموافقة على الشروط للمتابعة'
   return Object.values(errors).every((e) => !e)
 }
 
-// TODO: استبدل المحاكاة باستدعاء خدمة المصادقة الفعلية
+const next = () => (typeof route.query.next === 'string' && route.query.next.startsWith('/') && !route.query.next.startsWith('//') ? route.query.next : '/my-courses')
+
 async function submit() {
   if (!validate()) return
   loading.value = true
-  await new Promise((r) => setTimeout(r, 700))
-  loading.value = false
-  showToast(`أهلاً ${form.name.trim()}، تم إنشاء حسابك (نموذج تجريبي)`)
-  router.push(typeof route.query.next === 'string' ? route.query.next : '/')
+  try {
+    await register({ name: form.name.trim(), email: form.email.toLowerCase(), phone: form.phone.trim(), password: form.password, password_confirmation: form.confirm })
+    showToast(`أهلاً ${form.name.trim()}، تم إنشاء حسابك وسنتواصل معك على واتساب`, 4500)
+    router.push(next())
+  } catch (err) {
+    // field errors from the dashboard (e.g. the email is already registered)
+    Object.entries(err.errors).forEach(([key, message]) => {
+      const field = key === 'password_confirmation' ? 'confirm' : key
+      if (field in errors) errors[field] = message
+    })
+    if (!Object.keys(err.errors).length) showToast(err.message, 4500)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <template>
   <AuthLayout title="أنشئ حسابك" subtitle="مجاناً، وخلال أقل من دقيقة.">
-    <OAuthButtons />
+    <p v-if="settings && !settings.registration_open" class="closed">التسجيل مغلق حالياً. تواصل معنا إذا أردت الانضمام.</p>
 
     <form class="fields" novalidate @submit.prevent="submit">
       <div class="field">
@@ -73,6 +89,16 @@ async function submit() {
       </div>
 
       <div class="field">
+        <label for="reg-phone" class="field-label">رقم واتساب</label>
+        <div class="with-icon" :class="{ invalid: errors.phone }">
+          <BaseIcon name="chat" :size="18" />
+          <input id="reg-phone" v-model="form.phone" type="tel" autocomplete="tel" dir="ltr" placeholder="+970 59 000 0000" :aria-invalid="!!errors.phone" />
+        </div>
+        <span v-if="errors.phone" class="error">{{ errors.phone }}</span>
+        <span v-else class="hint">نتواصل معك عليه لإتمام التسجيل والدفع.</span>
+      </div>
+
+      <div class="field">
         <label for="reg-password" class="field-label">كلمة المرور</label>
         <PasswordField id="reg-password" v-model="form.password" autocomplete="new-password" :invalid="!!errors.password" />
         <div v-if="form.password" class="strength" :data-level="strength">
@@ -88,10 +114,6 @@ async function submit() {
         <span v-if="errors.confirm" class="error">{{ errors.confirm }}</span>
       </div>
 
-      <label class="check">
-        <input v-model="form.newsletter" type="checkbox" />
-        اشترك في نشرة البطّة الأسبوعية
-      </label>
       <label class="check" :class="{ invalid: errors.terms }">
         <input v-model="form.terms" type="checkbox" />
         أوافق على الشروط وسياسة الخصوصية

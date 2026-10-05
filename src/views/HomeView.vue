@@ -13,11 +13,13 @@ import BaseIcon from '@/components/ui/BaseIcon.vue'
 import CourseCard from '@/components/cards/CourseCard.vue'
 import ArticleCard from '@/components/cards/ArticleCard.vue'
 import WorkshopCard from '@/components/cards/WorkshopCard.vue'
-import { courses } from '@/data/courses'
-import { articles } from '@/data/articles'
-import { workshops } from '@/data/site'
+import { computed } from 'vue'
+import { useArticles, useCourses, useWorkshops } from '@/composables/useContent'
 
-const latestArticles = articles.filter((a) => !a.featured).slice(0, 3)
+const { items: courses } = useCourses()
+const { items: articles } = useArticles()
+const { items: workshops } = useWorkshops()
+const latestArticles = computed(() => articles.value.slice(0, 3))
 </script>
 
 <template>
@@ -54,7 +56,7 @@ const latestArticles = articles.filter((a) => !a.featured).slice(0, 3)
       </div>
     </section>
 
-    <section class="section tinted">
+    <section v-if="workshops.length" class="section tinted">
       <div class="container">
         <SectionHeading eyebrow="الورشة القادمة" title="احجز مقعدك قبل اكتمال العدد" />
         <WorkshopCard :workshop="workshops[0]" />

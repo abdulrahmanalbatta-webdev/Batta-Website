@@ -1,12 +1,16 @@
 <script setup>
 import WorkshopCard from '@/components/cards/WorkshopCard.vue'
-import { workshops } from '@/data/site'
+import LoadState from '@/components/ui/LoadState.vue'
+import { useWorkshops } from '@/composables/useContent'
+
+const { items: workshops, loading, error, reload } = useWorkshops()
 </script>
 
 <template>
   <div class="panel">
     <div class="list">
       <WorkshopCard v-for="w in workshops" :key="w.id" :workshop="w" />
+      <LoadState :loading="loading" :error="error" :empty="!workshops.length" empty-text="لا توجد ورش قادمة حالياً، تابعنا لتعرف بالورشة التالية." @retry="reload" />
     </div>
 
     <div class="ink-panel cta">
