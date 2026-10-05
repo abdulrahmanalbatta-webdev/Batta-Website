@@ -110,6 +110,7 @@ const open = ref(0)
 
         <aside class="side">
           <div class="card buy">
+            <img v-if="course.cover" class="buy-cover" :src="course.cover" :alt="course.title" />
             <div class="price">{{ price(course.price) }} <s v-if="course.oldPrice">{{ price(course.oldPrice) }}</s></div>
             <ul class="facts">
               <li><BaseIcon name="users" :size="16" />{{ course.students }} طالب</li>
@@ -288,5 +289,13 @@ const open = ref(0)
   .outcomes {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+.buy-cover {
+  width: calc(100% + 44px);
+  max-width: none;
+  margin: -22px -22px 0;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--r) var(--r) 0 0;
 }
 </style>
