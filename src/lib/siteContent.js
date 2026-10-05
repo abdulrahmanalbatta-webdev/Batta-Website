@@ -69,7 +69,10 @@ export async function loadSiteContent() {
   replace(packages, c.packages.map(({ price_note: priceNote, ...p }) => ({ ...p, priceNote })))
   replace(caseStudies, c.case_studies.map((s) => ({ ...s, kpis: s.kpis.map((k) => [k.value, k.label]) })))
   replace(testimonials, c.testimonials.map((t) => ({ ...t, initial: initial(t.name) })))
-  Object.assign(texts, { home: c.texts_home, pages: c.texts_pages, learning: c.texts_learning, general: c.texts_general })
+  Object.assign(texts, { home: c.texts_home, pages: c.texts_pages, learning: c.texts_learning, general: c.texts_general, seo: c.seo })
+  // the build already wrote these into index.html (vite.config.js); this keeps a running dev server current too
+  document.querySelector('meta[name="description"]')?.setAttribute('content', c.seo.description)
+  if (location.pathname === '/') document.title = c.seo.title
 
   Object.assign(profile, {
     ...c.profile,

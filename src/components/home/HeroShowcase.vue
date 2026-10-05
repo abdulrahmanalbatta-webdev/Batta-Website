@@ -1,24 +1,47 @@
 <script setup>
+import { computed } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import BrandLogo from '@/components/ui/BrandLogo.vue'
 import StarRating from '@/components/ui/StarRating.vue'
-import { useStatsNumbers } from '@/composables/useContent'
+import { caseStudies } from '@/data/site'
+import { useCourses, useStatsNumbers } from '@/composables/useContent'
+import { useAuth } from '@/composables/useAuth'
+import { useSettings } from '@/composables/useSettings'
 
-// the real average of the published reviews
+// a preview of the student area, drawn from the real platform: your courses, their lessons and hours,
+// the numbers from the dashboard, the latest case study, and the visitor's own name when signed in
 const numbers = useStatsNumbers()
+const { items: courses } = useCourses()
+const { student } = useAuth()
+const { settings } = useSettings()
 
-// weekly learning hours for the mini chart
-const days = ['سبت', 'أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة']
-const hours = [1.5, 2.8, 2.1, 3.6, 3.1, 4.4, 3.9]
+const host = computed(() => {
+  try {
+    return new URL(settings.value?.site_url).host
+  } catch {
+    return 'batta.dev'
+  }
+})
+const firstName = computed(() => student.value?.name?.trim().split(/\s+/)[0] ?? '')
+const count = (n) => (typeof n === 'number' ? n.toLocaleString('en-US') : '—')
+const lessons = computed(() => (courses.value.length ? courses.value.reduce((sum, c) => sum + (c.lessons || 0), 0) : null))
+const course = computed(() => courses.value[0])
+const project = computed(() => caseStudies[0])
+
+// content hours per course (up to 7), as the mini chart
+const series = computed(() => courses.value.slice(0, 7).map((c) => ({ label: c.glyph || c.title.slice(0, 6), hours: Number(c.hours) || 0 })))
 const W = 300
 const H = 92
-const max = 5
-// RTL: the week runs from right (Saturday) to left (Friday)
-const pts = hours.map((h, i) => [W - (i / (hours.length - 1)) * W, H - (h / max) * H])
-const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')
-const area = `${line} L0 ${H} L${W} ${H} Z`
-const last = pts.at(-1)
-const total = hours.reduce((a, b) => a + b, 0).toFixed(1)
+const chart = computed(() => {
+  const list = series.value.length === 1 ? [series.value[0], series.value[0]] : series.value
+  if (!list.length) return null
+  const max = Math.max(...list.map((p) => p.hours), 1) * 1.15
+  // RTL: the first course on the right
+  const pts = list.map((p, i) => [W - (i / (list.length - 1)) * W, H - (p.hours / max) * H])
+  const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')
+  return { line, area: `${line} L0 ${H} L${W} ${H} Z`, last: pts.at(-1) }
+})
+const totalHours = computed(() => series.value.reduce((sum, p) => sum + p.hours, 0))
 </script>
 
 <template>
@@ -41,7 +64,7 @@ const total = hours.reduce((a, b) => a + b, 0).toFixed(1)
     <div class="browser">
       <div class="br-bar">
         <span class="dots"><i /><i /><i /></span>
-        <span class="url"><BaseIcon name="lock" :size="12" /> batta.dev/dashboard</span>
+        <span class="url"><BaseIcon name="lock" :size="12" /> {{ host }}/my-courses</span>
       </div>
 
       <div class="app">
@@ -56,22 +79,22 @@ const total = hours.reduce((a, b) => a + b, 0).toFixed(1)
         <div class="main">
           <div class="greet">
             <div>
-              <b>مرحباً، أحمد</b>
+              <b>{{ firstName ? `مرحباً، ${firstName}` : 'مرحباً بك' }}</b>
               <span>واصل من حيث توقفت</span>
             </div>
-            <span class="avatar">أ</span>
+            <span class="avatar">{{ firstName ? [...firstName][0] : '' }}<BaseIcon v-if="!firstName" name="user" :size="16" /></span>
           </div>
 
           <div class="kpis">
-            <div class="kpi"><span>التقدّم</span><b>68%</b></div>
-            <div class="kpi"><span>الدروس</span><b>38<small>/56</small></b></div>
-            <div class="kpi"><span>الشهادات</span><b>2</b></div>
+            <div class="kpi"><span>الدورات</span><b>{{ count(numbers.courses) }}</b></div>
+            <div class="kpi"><span>الدروس</span><b>{{ count(lessons) }}</b></div>
+            <div class="kpi"><span>الطلاب</span><b>{{ count(numbers.students) }}</b></div>
           </div>
 
-          <div class="chart-card">
+          <div v-if="chart" class="chart-card">
             <div class="chart-head">
-              <span>ساعات التعلّم هذا الأسبوع</span>
-              <b>{{ total }} ساعة</b>
+              <span>ساعات المحتوى في كل دورة</span>
+              <b>{{ count(totalHours) }} ساعة</b>
             </div>
             <svg class="chart" :viewBox="`-4 -8 ${W + 8} ${H + 12}`" preserveAspectRatio="none">
               <defs>
@@ -81,31 +104,31 @@ const total = hours.reduce((a, b) => a + b, 0).toFixed(1)
                 </linearGradient>
               </defs>
               <line v-for="g in 3" :key="g" x1="0" :x2="W" :y1="(H / 3) * g - H / 3" :y2="(H / 3) * g - H / 3" class="grid" />
-              <path :d="area" fill="url(#hero-area)" />
-              <path :d="line" class="stroke" />
-              <circle :cx="last[0]" :cy="last[1]" r="4.5" class="dot" />
+              <path :d="chart.area" fill="url(#hero-area)" />
+              <path :d="chart.line" class="stroke" />
+              <circle :cx="chart.last[0]" :cy="chart.last[1]" r="4.5" class="dot" />
             </svg>
-            <div class="days"><span v-for="d in days" :key="d">{{ d }}</span></div>
+            <div class="days"><span v-for="(p, i) in series" :key="i">{{ p.label }}</span></div>
           </div>
 
-          <div class="next">
+          <div v-if="course" class="next">
             <span class="play"><BaseIcon name="play" :size="16" /></span>
             <div>
-              <b>الدرس 39: Server Actions</b>
-              <span>Next.js من الصفر إلى الإنتاج</span>
+              <b>{{ course.title }}</b>
+              <span>{{ course.lessons }} درساً · {{ course.level }}</span>
             </div>
-            <span class="dur">12 د</span>
+            <span class="dur">{{ course.hours }} س</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- floating notifications -->
-    <div class="toast deploy">
+    <div v-if="project" class="toast deploy">
       <span class="ok"><BaseIcon name="check" :size="16" /></span>
       <div>
-        <b>تم نشر المشروع بنجاح</b>
-        <span><span class="mono">store.client.com</span> · منذ دقيقتين</span>
+        <b>مشروع منجز: {{ project.title }}</b>
+        <span>{{ project.tag }} · {{ project.sector }}</span>
       </div>
     </div>
 
@@ -490,5 +513,25 @@ const total = hours.reduce((a, b) => a + b, 0).toFixed(1)
   .toast {
     animation: none;
   }
+}
+/* real course and project titles can be long */
+.next > div,
+.toast.deploy > div {
+  min-width: 0;
+}
+.next b,
+.toast.deploy b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.toast.deploy {
+  max-width: 280px;
+}
+.days span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 48px;
 }
 </style>
