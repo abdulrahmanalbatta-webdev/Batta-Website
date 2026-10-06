@@ -15,7 +15,7 @@ const toggle = (i) => (open.value = open.value === i ? -1 : i)
         <span class="eyebrow">{{ texts.home.faq.eyebrow }}</span>
         <h2>{{ texts.home.faq.title }}</h2>
         <p>{{ texts.home.faq.text }}</p>
-        <RouterLink class="btn btn-dark" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.ask }} <BaseIcon name="arrow" :size="16" /></RouterLink>
+        <RouterLink class="btn btn-dark" :to="{ name: 'contact' }">{{ texts.ui.buttons.ask }} <BaseIcon name="arrow" :size="16" /></RouterLink>
       </div>
 
       <div class="list">

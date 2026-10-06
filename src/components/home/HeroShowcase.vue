@@ -8,9 +8,8 @@ import { useCourses, useStatsNumbers } from '@/composables/useContent'
 
 // بطاقة تعريف معلّقة بشريط (فكرة بطاقة مؤتمر Vercel Ship): تسقط عند فتح الصفحة وتتمرجح، والزائر يسحبها بالماوس
 // أو بإصبعه فتتأرجح بفيزياء بسيطة، وبالضغط تنقلب لتظهر الأرقام الحقيقية من لوحة التحكم على ظهرها.
-// الصورة: من لوحة التحكم (محتوى الموقع ← عنك ← صورتك بدون خلفية) وإلا src/assets/images/profile-cutout.(png|webp).
-const bundled = Object.values(import.meta.glob('@/assets/images/profile-cutout.{png,webp}', { eager: true, import: 'default' }))[0] ?? null
-const cutout = computed(() => profile.cutout || bundled)
+// الصورة من لوحة التحكم فقط (محتوى الموقع ← عنك ← صورة البطاقة المعلّقة في الرئيسية)؛ بدونها يظهر أول حرف من اسمك.
+const cutout = computed(() => profile.cutout)
 const numbers = useStatsNumbers()
 const { items: courses } = useCourses()
 const course = computed(() => courses.value[0])
@@ -228,6 +227,7 @@ onBeforeUnmount(() => {
             </div>
             <div class="photo">
               <img v-if="cutout" :src="cutout" :alt="profile.name" draggable="false" fetchpriority="high" />
+              <span v-else class="monogram" aria-hidden="true">{{ profile.initial }}</span>
             </div>
             <div class="who">
               <b>{{ profile.name }}</b>
@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
               <span class="kicker"><BaseIcon name="award" :size="13" />أحدث دورة</span>
               <b>{{ course.title }}</b>
             </RouterLink>
-            <RouterLink class="talk" :to="{ path: '/services', hash: '#contact' }" @pointerdown.stop>
+            <RouterLink class="talk" :to="{ name: 'contact' }" @pointerdown.stop>
               لنبدأ مشروعك <BaseIcon name="arrow" :size="15" />
             </RouterLink>
           </div>
@@ -443,6 +443,17 @@ onBeforeUnmount(() => {
     linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px) 0 0 / 22px 22px,
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px) 0 0 / 22px 22px,
     radial-gradient(circle at 50% 30%, #3b82f6, #0052cc 55%, #1e1b6b);
+}
+.monogram {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 120px;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 12px 40px rgba(0, 0, 30, 0.35);
 }
 .photo img {
   position: absolute;

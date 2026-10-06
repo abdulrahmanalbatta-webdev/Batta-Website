@@ -40,7 +40,8 @@ const maintenance = computed(() => settings.value?.maintenance_mode === true)
     </RouterView>
   </main>
   <template v-if="!bare">
-    <FinalCta />
+    <!-- the contact page already is the call to action -->
+    <FinalCta v-if="route.name !== 'contact'" />
     <AppFooter />
     <FloatingContact />
   </template>

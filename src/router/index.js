@@ -30,6 +30,7 @@ const routes = [
   { path: '/stack', redirect: '/tools' },
   { path: '/articles/:id', name: 'article', component: () => import('@/views/ArticleView.vue'), props: true, meta: { title: 'المقالات' } },
 
+  { path: '/contact', name: 'contact', component: () => import('@/views/ContactView.vue'), meta: { page: 'contact', title: 'تواصل معي' } },
   { path: '/about', name: 'about', component: () => import('@/views/AboutView.vue'), meta: { page: 'about', title: 'من أنا' } },
   { path: '/login', name: 'login', component: () => import('@/views/auth/LoginView.vue'), meta: { title: 'تسجيل الدخول', bare: true } },
   { path: '/register', name: 'register', component: () => import('@/views/auth/RegisterView.vue'), meta: { title: 'إنشاء حساب', bare: true } },
@@ -69,6 +70,8 @@ export const siteTitle = (page) => (page ? `${page} | ${profile.name}` : texts.s
 
 // صفحات الحساب: الضيف يُرسل لإنشاء حساب ثم يعود لنفس الصفحة
 router.beforeEach(async (to) => {
+  // the contact form used to sit at the bottom of the services page
+  if (to.path === '/services' && to.hash === '#contact') return { name: 'contact', query: to.query }
   if (!to.meta.auth) return true
   const auth = useAuth()
   await auth.loaded()

@@ -143,7 +143,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <h2>{{ texts.pages.work.cta_title }}</h2>
             <p>{{ texts.pages.work.cta_text }}</p>
           </div>
-          <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.work_cta }}</RouterLink>
+          <RouterLink class="btn btn-primary btn-lg" :to="{ name: 'contact' }">{{ texts.ui.buttons.work_cta }}</RouterLink>
         </div>
       </div>
     </section>

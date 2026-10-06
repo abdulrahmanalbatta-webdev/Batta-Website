@@ -19,7 +19,7 @@ const { items: workshops, loading, error, reload } = useWorkshops()
         <h2>{{ texts.learning.workshops.private_title }}</h2>
         <p>{{ texts.learning.workshops.private_text }}</p>
       </div>
-      <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.private_workshop }}</RouterLink>
+      <RouterLink class="btn btn-primary btn-lg" :to="{ name: 'contact' }">{{ texts.ui.buttons.private_workshop }}</RouterLink>
     </div>
   </div>
 </template>

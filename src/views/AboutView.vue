@@ -26,7 +26,7 @@ const stats = useStats()
           <p class="role">{{ profile.role }}</p>
           <p class="lead">{{ profile.short }}</p>
           <div class="actions">
-            <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.about_work }} <BaseIcon name="arrow" :size="18" /></RouterLink>
+            <RouterLink class="btn btn-primary btn-lg" :to="{ name: 'contact' }">{{ texts.ui.buttons.about_work }} <BaseIcon name="arrow" :size="18" /></RouterLink>
             <RouterLink class="btn btn-outline-light btn-lg" to="/courses">{{ texts.ui.buttons.about_learn }}</RouterLink>
           </div>
           <SocialLinks dark />

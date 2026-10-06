@@ -19,7 +19,7 @@ const stats = useStats()
             <span class="check"><BaseIcon name="check" :size="16" /></span>{{ r }}
           </li>
         </ul>
-        <RouterLink class="btn btn-dark btn-lg" :to="{ path: '/services', hash: '#contact' }">
+        <RouterLink class="btn btn-dark btn-lg" :to="{ name: 'contact' }">
           {{ texts.ui.buttons.consult }} <BaseIcon name="arrow" :size="18" />
         </RouterLink>
       </div>

@@ -1,17 +1,12 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import PageHero from '@/components/ui/PageHero.vue'
-import FilterChips from '@/components/ui/FilterChips.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import ProjectCover from '@/components/work/ProjectCover.vue'
 import { caseStudies } from '@/data/site'
 import { texts } from '@/data/texts'
 
-// الأعمال من لوحة التحكم (محتوى الموقع ← الأعمال): شبكة بصور المشاريع وفلترة حسب النوع، وكل مشروع يفتح صفحته
-const ALL = 'الكل'
-const category = ref(ALL)
-const categories = computed(() => [...new Set(caseStudies.map((p) => p.tag).filter(Boolean))])
-const shown = computed(() => (category.value === ALL ? caseStudies : caseStudies.filter((p) => p.tag === category.value)))
+// الأعمال من لوحة التحكم (محتوى الموقع ← الأعمال): شبكة بصور المشاريع، وكل مشروع يفتح صفحته
 const sectors = computed(() => new Set(caseStudies.map((p) => p.sector).filter(Boolean)).size)
 </script>
 
@@ -24,15 +19,13 @@ const sectors = computed(() => new Set(caseStudies.map((p) => p.sector).filter(B
 
     <section class="page-body">
       <div class="container">
-        <FilterChips v-if="categories.length > 1" v-model="category" :options="categories" :all-label="ALL" />
-
-        <TransitionGroup tag="div" name="projects" class="projects">
+        <div class="projects">
           <RouterLink
-            v-for="(p, i) in shown"
+            v-for="(p, i) in caseStudies"
             :key="p.id"
             :to="{ name: 'project', params: { id: p.id } }"
             class="project"
-            :class="{ wide: i === 0 && shown.length > 2 }"
+            :class="{ wide: i === 0 && caseStudies.length > 2 }"
           >
             <div class="media">
               <ProjectCover :project="p" :eager="i < 2" />
@@ -53,14 +46,14 @@ const sectors = computed(() => new Set(caseStudies.map((p) => p.sector).filter(B
               </div>
             </div>
           </RouterLink>
-        </TransitionGroup>
+        </div>
 
         <div class="ink-panel cta">
           <div>
             <h2>{{ texts.pages.work.cta_title }}</h2>
             <p>{{ texts.pages.work.cta_text }}</p>
           </div>
-          <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.work_cta }}</RouterLink>
+          <RouterLink class="btn btn-primary btn-lg" :to="{ name: 'contact' }">{{ texts.ui.buttons.work_cta }}</RouterLink>
         </div>
       </div>
     </section>
@@ -192,20 +185,6 @@ const sectors = computed(() => new Set(caseStudies.map((p) => p.sector).filter(B
 }
 .project.wide .info h2 {
   font-size: 28px;
-}
-
-.projects-move,
-.projects-enter-active {
-  transition:
-    opacity 0.35s,
-    transform 0.35s;
-}
-.projects-enter-from {
-  opacity: 0;
-  transform: translateY(12px);
-}
-.projects-leave-active {
-  display: none;
 }
 
 .cta {

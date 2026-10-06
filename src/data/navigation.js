@@ -1,22 +1,12 @@
 // القائمة الرئيسية. العناصر التي لها children تفتح قائمة منسدلة بسيطة
 // (على الجوال تتحول إلى قائمة قابلة للطي). match = المسارات التي تجعل العنصر "نشطاً".
 import { computed } from 'vue'
-import { services } from './site'
 import { texts } from './texts'
 
-// computed: قائمة الخدمات المنسدلة تتبع الخدمات القادمة من لوحة التحكم
+// computed: أسماء الصفحات من لوحة التحكم (محتوى الموقع ← نصوص الصفحات ← أسماء الصفحات)
 export const nav = computed(() => [
   { label: 'الرئيسية', to: '/' },
-  {
-    label: texts.ui.pages.services,
-    to: '/services',
-    match: ['/services'],
-    wide: true,
-    children: [
-      ...services.map((s) => ({ label: s.title, desc: s.text, icon: s.icon, to: { path: '/services', hash: `#${s.id}` } })),
-    ],
-    footer: { label: texts.ui.buttons.quote, to: { path: '/services', hash: '#contact' } },
-  },
+  { label: texts.ui.pages.services, to: '/services' },
   { label: texts.ui.pages.work, to: '/work' },
   {
     label: texts.ui.pages.academy,
@@ -35,4 +25,5 @@ export const nav = computed(() => [
     ],
   },
   { label: texts.ui.pages.about, to: '/about' },
+  { label: texts.ui.pages.contact, to: '/contact' },
 ])

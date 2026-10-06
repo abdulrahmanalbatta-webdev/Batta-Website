@@ -210,6 +210,7 @@ export const texts = reactive({
       articles: 'المقالات',
       tools: 'أدواتي',
       resources: 'الموارد',
+      contact: 'تواصل معي',
     },
     menu: {
       courses: 'دورات مسجّلة تنتهي بمشروع حقيقي',
