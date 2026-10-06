@@ -16,7 +16,8 @@ const countClick = () => api.post(`tools/${props.tool.id}/click`).catch(() => {}
     v-bind="tool.url ? { href: tool.url, target: '_blank', rel: tool.affiliate ? 'sponsored noopener' : 'noopener' } : {}"
     @click="tool.url && countClick()"
   >
-    <span class="logo">{{ tool.short }}</span>
+    <!-- the logo uploaded in the dashboard, or the short letters -->
+    <span class="logo" :class="{ img: tool.logo }"><img v-if="tool.logo" :src="tool.logo" :alt="tool.name" loading="lazy" /><template v-else>{{ tool.short }}</template></span>
     <div class="body">
       <div class="name">
         <h3>{{ tool.name }}</h3>
@@ -53,6 +54,15 @@ const countClick = () => api.post(`tools/${props.tool.id}/click`).catch(() => {}
   background: var(--tint-2);
   color: var(--fg);
   border: 1px solid var(--line);
+}
+.logo.img {
+  background: var(--surface);
+  overflow: hidden;
+}
+.logo img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
 }
 .body {
   display: flex;
