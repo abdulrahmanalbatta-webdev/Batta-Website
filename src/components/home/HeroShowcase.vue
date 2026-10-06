@@ -1,544 +1,654 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import StarRating from '@/components/ui/StarRating.vue'
 import { profile } from '@/data/profile'
+import { useSettings } from '@/composables/useSettings'
 import { useCourses, useStatsNumbers } from '@/composables/useContent'
 
-// صورتك بدون خلفية وأنت تعرض بكفّك المفتوح: البطاقات تخرج من يدك وتطفو فوقها بأرقام حقيقية من لوحة التحكم
-// (التقييم، الطلاب، المشاريع)، وآخر دورة تحت يدك. كل بطاقة تختفي إن لم يكن لها رقم بعد، والطبقات تميل قليلاً مع الماوس.
+// بطاقة تعريف معلّقة بشريط (فكرة بطاقة مؤتمر Vercel Ship): تسقط عند فتح الصفحة وتتمرجح، والزائر يسحبها بالماوس
+// أو بإصبعه فتتأرجح بفيزياء بسيطة، وبالضغط تنقلب لتظهر الأرقام الحقيقية من لوحة التحكم على ظهرها.
 // الصورة: من لوحة التحكم (محتوى الموقع ← عنك ← صورتك بدون خلفية) وإلا src/assets/images/profile-cutout.(png|webp).
-// أماكن البطاقات مضبوطة على وضعية هذه الصورة: الكفّ عند 88% من العرض و50% من الارتفاع.
 const bundled = Object.values(import.meta.glob('@/assets/images/profile-cutout.{png,webp}', { eager: true, import: 'default' }))[0] ?? null
 const cutout = computed(() => profile.cutout || bundled)
 const numbers = useStatsNumbers()
 const { items: courses } = useCourses()
 const course = computed(() => courses.value[0])
+const { settings } = useSettings()
+const brand = computed(() => settings.value?.site_name || 'Batta')
 const count = (n) => n.toLocaleString('en-US')
+const year = new Date().getFullYear()
+const strapId = `strap-${useId()}`
 
-// a slight depth effect: the cards follow the pointer a little more than the photo does
 const stage = ref(null)
-const tilt = ref({ x: 0, y: 0 })
+const badge = ref(null)
+const strap = ref(null)
+const flipped = ref(false)
+const touched = ref(false)
+
+/**
+ * The badge's clip is a point on a rope hanging from an anchor above the stage (Verlet integration:
+ * the rope pulls, never pushes). The card turns towards the rope's direction with a little lag.
+ */
+const GRAVITY = 0.9
+const DAMPING = 0.985
+const anchor = { x: 0, y: 0 }
+let ropeLength = 0
+let position = { x: 0, y: 0 }
+let previous = { x: 0, y: 0 }
+let angle = 0
+let spin = 0
+let dragging = null
 let frame = 0
-function follow(event) {
+let still = 0
+let observer = null
+let visible = true
+const calm = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+function measure() {
   const box = stage.value?.getBoundingClientRect()
-  if (!box) {
+  if (!box?.width) {
+    return false
+  }
+  const narrow = box.width < 420
+  anchor.x = box.width / 2
+  anchor.y = narrow ? -80 : -170
+  ropeLength = (narrow ? 36 : 56) - anchor.y
+  return true
+}
+
+function rest() {
+  position = { x: anchor.x, y: anchor.y + ropeLength }
+  previous = { ...position }
+  angle = 0
+  spin = 0
+}
+
+function step() {
+  if (!dragging) {
+    const velocity = { x: (position.x - previous.x) * DAMPING, y: (position.y - previous.y) * DAMPING }
+    previous = { ...position }
+    position = { x: position.x + velocity.x, y: position.y + velocity.y + GRAVITY }
+  }
+  const dx = position.x - anchor.x
+  const dy = position.y - anchor.y
+  const distance = Math.hypot(dx, dy)
+  const limit = dragging ? ropeLength * 1.12 : ropeLength
+  if (distance > limit) {
+    position = { x: anchor.x + (dx / distance) * limit, y: anchor.y + (dy / distance) * limit }
+  }
+  // the card follows the rope, swings a little past it, and leans with its own speed
+  const target = -Math.atan2(position.x - anchor.x, position.y - anchor.y) - (position.x - previous.x) * 0.012
+  spin = (spin + (target - angle) * 0.09) * 0.86
+  angle += spin
+}
+
+function draw() {
+  const card = badge.value
+  if (!card) {
     return
   }
-  cancelAnimationFrame(frame)
-  frame = requestAnimationFrame(() => {
-    tilt.value = {
-      x: Math.max(-1, Math.min(1, (event.clientX - box.left - box.width / 2) / (box.width / 2))),
-      y: Math.max(-1, Math.min(1, (event.clientY - box.top - box.height / 2) / (box.height / 2))),
+  card.style.transform = `translate(${position.x - card.offsetWidth / 2}px, ${position.y}px) rotate(${angle}rad)`
+  const slack = Math.max(0, ropeLength - Math.hypot(position.x - anchor.x, position.y - anchor.y))
+  const middle = { x: (anchor.x + position.x) / 2, y: (anchor.y + position.y) / 2 + slack * 0.7 }
+  strap.value?.setAttribute('d', `M ${anchor.x} ${anchor.y} Q ${middle.x} ${middle.y} ${position.x} ${position.y + 4}`)
+}
+
+function tick() {
+  step()
+  draw()
+  const moving = Math.hypot(position.x - previous.x, position.y - previous.y) + Math.abs(spin) * 40
+  still = moving < 0.03 ? still + 1 : 0
+  frame = !dragging && (still > 90 || !visible) ? 0 : requestAnimationFrame(tick)
+}
+
+function wake() {
+  still = 0
+  if (!frame && visible && !calm) {
+    frame = requestAnimationFrame(tick)
+  }
+}
+
+function pointFrom(event) {
+  const box = stage.value.getBoundingClientRect()
+  return { x: event.clientX - box.left, y: event.clientY - box.top }
+}
+
+function grab(event) {
+  if (event.button > 0) {
+    return
+  }
+  const point = pointFrom(event)
+  dragging = { offset: { x: point.x - position.x, y: point.y - position.y }, from: point, at: performance.now(), moved: false }
+  badge.value.setPointerCapture(event.pointerId)
+  touched.value = true
+  wake()
+}
+
+function drag(event) {
+  if (!dragging || calm) {
+    return
+  }
+  const point = pointFrom(event)
+  if (Math.hypot(point.x - dragging.from.x, point.y - dragging.from.y) > 6) {
+    dragging.moved = true
+  }
+  previous = { ...position }
+  position = { x: point.x - dragging.offset.x, y: point.y - dragging.offset.y }
+}
+
+function drop() {
+  if (!dragging) {
+    return
+  }
+  const tapped = !dragging.moved && performance.now() - dragging.at < 400
+  dragging = null
+  if (tapped) {
+    flip()
+  }
+  wake()
+}
+
+function flip() {
+  flipped.value = !flipped.value
+  touched.value = true
+  // a small push, as if turned by hand
+  previous = { x: position.x + 3, y: position.y }
+  wake()
+}
+
+function resize() {
+  if (measure()) {
+    rest()
+    draw()
+  }
+}
+
+onMounted(() => {
+  if (!measure()) {
+    return
+  }
+  rest()
+  if (!calm) {
+    // drops in from above and swings into place
+    position = { x: anchor.x + 80, y: anchor.y + ropeLength - 520 }
+    previous = { ...position }
+  }
+  draw()
+  observer = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting
+    if (visible) {
+      wake()
     }
   })
-}
-function settle() {
-  tilt.value = { x: 0, y: 0 }
-}
-const moves = typeof window !== 'undefined' && window.matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)').matches
-onMounted(() => {
-  if (moves) {
-    window.addEventListener('pointermove', follow, { passive: true })
-    document.addEventListener('pointerleave', settle)
-  }
+  observer.observe(stage.value)
+  window.addEventListener('resize', resize, { passive: true })
+  wake()
 })
+
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame)
-  window.removeEventListener('pointermove', follow)
-  document.removeEventListener('pointerleave', settle)
+  observer?.disconnect()
+  window.removeEventListener('resize', resize)
 })
-const depth = computed(() => ({ '--tx': tilt.value.x, '--ty': tilt.value.y }))
 </script>
 
 <template>
   <div class="showcase">
-    <div ref="stage" class="stage" :style="depth">
-      <div class="halo" aria-hidden="true" />
+    <div ref="stage" class="stage">
+      <svg class="strap" aria-hidden="true">
+        <path :id="strapId" ref="strap" class="band" d="" />
+        <text dy="4">
+          <textPath :href="`#${strapId}`" startOffset="1%">{{ `${brand.toUpperCase()}  ✦  `.repeat(10) }}</textPath>
+        </text>
+      </svg>
 
-      <img v-if="cutout" class="portrait" :src="cutout" :alt="profile.name" fetchpriority="high" />
+      <div
+        ref="badge"
+        class="badge"
+        :class="{ flipped }"
+        role="button"
+        tabindex="0"
+        :aria-label="flipped ? 'اقلب البطاقة للوجه الأمامي' : 'اقلب البطاقة لترى الأرقام'"
+        :aria-pressed="flipped"
+        @pointerdown="grab"
+        @pointermove="drag"
+        @pointerup="drop"
+        @pointercancel="drop"
+        @keydown.enter.prevent="flip"
+        @keydown.space.prevent="flip"
+      >
+        <span class="clip" aria-hidden="true" />
+        <div class="flipper">
+          <div class="face front">
+            <div class="top">
+              <span class="slot" />
+              <b class="brand">{{ brand }}<i>.</i></b>
+              <span class="year">{{ year }}</span>
+            </div>
+            <div class="photo">
+              <img v-if="cutout" :src="cutout" :alt="profile.name" draggable="false" fetchpriority="high" />
+            </div>
+            <div class="who">
+              <b>{{ profile.name }}</b>
+              <span>{{ profile.role }}</span>
+            </div>
+            <div class="foot">
+              <span v-if="profile.available" class="available"><i />{{ profile.available }}</span>
+              <span class="turn">↻ اقلبني</span>
+            </div>
+          </div>
 
-      <!-- the light rising from your palm, with a few sparks -->
-      <div class="beam" aria-hidden="true" />
-      <div class="palm" aria-hidden="true">
-        <span class="ring" />
-        <i v-for="n in 5" :key="n" :style="{ '--n': n }" />
+          <div class="face back" :inert="!flipped">
+            <div class="top">
+              <span class="slot" />
+              <b class="brand">{{ brand }}<i>.</i></b>
+              <span class="year">{{ year }}</span>
+            </div>
+            <ul class="numbers">
+              <li v-if="numbers.reviews">
+                <b>{{ numbers.rating }}<small>/5</small></b>
+                <span><StarRating :size="11" /> {{ count(numbers.reviews) }} تقييم</span>
+              </li>
+              <li v-if="numbers.students">
+                <b>{{ count(numbers.students) }}</b>
+                <span>طالب ومتدرب</span>
+              </li>
+              <li v-if="numbers.projects">
+                <b>{{ count(numbers.projects) }}</b>
+                <span>مشروعاً منجزاً</span>
+              </li>
+            </ul>
+            <RouterLink v-if="course" class="course" :to="{ name: 'course', params: { slug: course.slug } }" @pointerdown.stop>
+              <span class="kicker"><BaseIcon name="award" :size="13" />أحدث دورة</span>
+              <b>{{ course.title }}</b>
+            </RouterLink>
+            <RouterLink class="talk" :to="{ path: '/services', hash: '#contact' }" @pointerdown.stop>
+              لنبدأ مشروعك <BaseIcon name="arrow" :size="15" />
+            </RouterLink>
+          </div>
+        </div>
       </div>
 
-      <div class="cards">
-        <div v-if="numbers.reviews" class="float card-rating">
-          <span class="ico amber"><BaseIcon name="star" :size="18" filled /></span>
-          <div>
-            <b>{{ numbers.rating }} <small>/ 5</small></b>
-            <span class="sub"><StarRating :size="11" /> من {{ count(numbers.reviews) }} تقييم</span>
-          </div>
-        </div>
-
-        <div v-if="numbers.students" class="float card-students">
-          <span class="ico blue"><BaseIcon name="users" :size="18" /></span>
-          <div>
-            <b>{{ count(numbers.students) }}</b>
-            <span>طالب ومتدرب</span>
-          </div>
-        </div>
-
-        <div v-if="numbers.projects" class="float card-projects">
-          <span class="ico green"><BaseIcon name="briefcase" :size="18" /></span>
-          <div>
-            <b>{{ count(numbers.projects) }}</b>
-            <span>مشروعاً منجزاً</span>
-          </div>
-        </div>
-
-        <RouterLink v-if="course" :to="{ name: 'course', params: { slug: course.slug } }" class="float card-course">
-          <span class="cover">
-            <img v-if="course.cover" :src="course.cover" alt="" />
-            <span v-else class="glyph">{{ course.glyph }}</span>
-          </span>
-          <div>
-            <span class="kicker"><BaseIcon name="award" :size="13" />أحدث دورة</span>
-            <b>{{ course.title }}</b>
-          </div>
-        </RouterLink>
-      </div>
-
-      <span v-if="profile.available" class="available"><i />{{ profile.available }}</span>
+      <span class="hint" :class="{ gone: touched }" aria-hidden="true">اسحب البطاقة أو اضغط عليها</span>
     </div>
   </div>
 </template>
 
 <style scoped>
 .showcase {
-  display: grid;
-  place-items: end center;
-  padding: 16px 40px 0 8px;
   min-width: 0;
 }
-
-/* the photo's own proportions, so every position below is a point on the photo */
 .stage {
-  --tx: 0;
-  --ty: 0;
+  --card-w: 300px;
+  --card-h: 440px;
   position: relative;
-  width: min(100%, 500px);
-  aspect-ratio: 1065 / 1288;
+  height: 580px;
   direction: ltr;
-  container-type: inline-size;
 }
 
-.halo {
-  position: absolute;
-  left: 2%;
-  top: 6%;
-  width: 78%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 45% 40%, rgba(0, 102, 255, 0.2), transparent 62%),
-    radial-gradient(circle at 75% 70%, rgba(124, 58, 237, 0.12), transparent 60%);
-  animation: breathe 9s ease-in-out infinite;
-}
-
-/* you: rises in once, then barely moves with the pointer */
-.portrait {
+/* the strap: a thick band with the site's name printed along it */
+.strap {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  transform: translate(calc(var(--tx) * -4px), calc(var(--ty) * -3px));
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  /* the photo is cut at the left shoulder and the waist: fade those edges into the page */
-  mask-image: linear-gradient(to bottom, #000 82%, transparent 100%), linear-gradient(to right, transparent 0, #000 10%);
-  mask-composite: intersect;
-  -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%), linear-gradient(to right, transparent 0, #000 10%);
-  -webkit-mask-composite: source-in;
-  animation: rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  overflow: visible;
+  pointer-events: none;
+}
+.band {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 22;
+  stroke-linecap: round;
+}
+.strap text {
+  fill: #fff;
+  font-family: var(--font);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  opacity: 0.85;
 }
 
-/* a soft column of light from the palm up to the cards */
-.beam {
+.badge {
   position: absolute;
-  left: 72%;
-  top: 2%;
-  width: 34%;
-  height: 47%;
-  border-radius: 50% 50% 40% 40%;
-  background: linear-gradient(to top, rgba(0, 102, 255, 0.22), rgba(0, 102, 255, 0.06) 60%, transparent);
-  filter: blur(14px);
-  transform-origin: 50% 100%;
-  animation:
-    beam-in 0.9s ease-out 0.6s both,
-    beam 5s ease-in-out 1.5s infinite;
-}
-.palm {
-  position: absolute;
-  left: 88.5%;
-  top: 47.5%;
-  width: 0;
-  height: 0;
-}
-.ring {
-  position: absolute;
-  left: -34px;
-  top: -34px;
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(0, 102, 255, 0.45);
-  animation:
-    pop 0.6s ease-out 0.5s both,
-    spin 14s linear infinite;
-}
-.palm::before {
-  content: '';
-  position: absolute;
-  left: -22px;
-  top: -22px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 102, 255, 0.45), rgba(0, 102, 255, 0) 70%);
-  animation: glow 3s ease-in-out infinite;
-}
-.palm i {
-  position: absolute;
-  left: calc((var(--n) - 3) * 9px);
   top: 0;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--primary);
-  opacity: 0;
-  animation: spark 3.2s ease-out calc(var(--n) * 0.6s + 1s) infinite;
+  left: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  transform-origin: 50% 0;
+  perspective: 1400px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
 }
-
-/* the cards come out of your palm, one after another, then float; they lean a little with the pointer */
-.cards {
-  position: absolute;
-  inset: 0;
-  direction: rtl;
-  transform: translate(calc(var(--tx) * 10px), calc(var(--ty) * 8px));
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+.badge:active {
+  cursor: grabbing;
 }
-.float {
+.badge:focus-visible .face {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+.clip {
   position: absolute;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px 12px 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  color: inherit;
-  white-space: nowrap;
-  animation:
-    emerge 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.15) var(--in) both,
-    float 6s ease-in-out calc(var(--in) + 0.8s) infinite;
+  left: 50%;
+  top: -14px;
+  width: 34px;
+  height: 30px;
+  translate: -50% 0;
+  border-radius: 7px 7px 5px 5px;
+  background: linear-gradient(180deg, #eef1f5, #9aa4b2 55%, #c9d0da);
+  box-shadow:
+    inset 0 -2px 0 rgba(0, 0, 0, 0.18),
+    0 3px 6px rgba(0, 0, 0, 0.25);
 }
-.float > div {
+.clip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 7px;
+  width: 14px;
+  height: 6px;
+  translate: -50% 0;
+  border-radius: 3px;
+  background: #5b6472;
+}
+
+.flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.3, 1.3, 0.4, 1);
+}
+.badge.flipped .flipper {
+  transform: rotateY(180deg);
+}
+.face {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  direction: rtl;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow:
+    0 40px 60px -28px rgba(11, 20, 50, 0.45),
+    0 12px 24px -12px rgba(11, 20, 50, 0.25);
 }
-.float b {
-  font-size: 20px;
-  line-height: 1.2;
+.back {
+  transform: rotateY(180deg);
+  background: var(--ink-panel);
+  border-color: #1f2735;
+  color: #fff;
+}
+
+.top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 20px 12px;
+}
+.slot {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  width: 46px;
+  height: 8px;
+  translate: -50% 0;
+  border-radius: 99px;
+  background: var(--bg);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+.back .slot {
+  background: #1a212d;
+}
+.brand {
+  font-size: 18px;
+  font-weight: 900;
+  direction: ltr;
+  color: inherit;
+}
+.brand i {
+  font-style: normal;
+  color: var(--primary);
+}
+.year {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.back .year {
+  color: var(--ink-text);
+}
+
+/* front: you, on a blue panel with a fine grid */
+.photo {
+  position: relative;
+  flex: 1;
+  margin: 0 14px;
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px) 0 0 / 22px 22px,
+    radial-gradient(circle at 50% 30%, #3b82f6, #0052cc 55%, #1e1b6b);
+}
+.photo img {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 104%;
+  max-width: none;
+  translate: -50% 0;
+  pointer-events: none;
+}
+.who {
+  padding: 14px 20px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.who b {
+  font-size: 21px;
+  line-height: 1.3;
   color: var(--fg);
 }
-.float b small {
+.who span {
   font-size: 13px;
   color: var(--muted);
-  font-weight: 600;
 }
-.float > div > span:not(.kicker) {
-  font-size: 13px;
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 20px 18px;
+}
+.available {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+}
+.available i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: ping 2.4s ease-out infinite;
+}
+.turn {
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 3px 10px;
+}
+
+/* back: the real numbers */
+.numbers {
+  list-style: none;
+  margin: 4px 20px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.numbers li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #1f2735;
+}
+.numbers b {
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 900;
+  direction: ltr;
+}
+.numbers small {
+  font-size: 14px;
+  color: var(--ink-text);
+  margin-inline-start: 2px;
+}
+.numbers span {
+  font-size: 13px;
+  color: var(--ink-text);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-.ico {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-}
-.ico.amber {
-  background: #fff4e0;
-  color: #d97706;
-}
-.ico.blue {
-  background: var(--primary-soft);
-  color: var(--primary);
-}
-.ico.green {
-  background: var(--green-soft);
-  color: var(--green);
-}
-
-/* --from-x / --from-y: from the palm to the card's centre, in stage widths (cqw) so it holds at every size */
-.card-rating {
-  top: 2%;
-  right: -2%;
-  --in: 0.8s;
-  --from-x: 2.5cqw;
-  --from-y: 49cqw;
-}
-.card-students {
-  top: 16.5%;
-  right: 14%;
-  --in: 1s;
-  --from-x: 14cqw;
-  --from-y: 32cqw;
-}
-.card-projects {
-  top: 31%;
-  right: -4%;
-  --in: 1.2s;
-  --from-x: -3.5cqw;
-  --from-y: 14cqw;
-}
-.card-course {
-  top: 72%;
-  right: -8%;
-  max-width: 250px;
-  --in: 1.4s;
-  --from-x: 5cqw;
-  --from-y: -35cqw;
-  transition:
-    box-shadow 0.2s,
-    border-color 0.2s;
-}
-.card-course:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-lg);
-}
-.card-course .cover {
-  flex: none;
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--cover);
-  display: grid;
-  place-items: center;
-}
-.card-course .cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.glyph {
+.course {
+  margin: 14px 20px 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #151b26;
+  border: 1px solid #222b3a;
   color: #fff;
-  font-family: var(--mono);
-  font-size: 13px;
-  direction: ltr;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
-.kicker {
+.course .kicker {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--primary-600);
+  color: #6ea8ff;
 }
-.card-course b {
-  font-size: 15px;
+.course b {
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.talk {
+  margin: auto 20px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px;
+  border-radius: 99px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
 }
 
-.available {
+.hint {
   position: absolute;
-  z-index: 3;
-  bottom: 5%;
-  left: 12%;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 99px;
-  background: rgba(11, 13, 18, 0.82);
-  backdrop-filter: blur(10px);
-  color: #fff;
+  left: 50%;
+  bottom: 4px;
+  translate: -50% 0;
   font-size: 13px;
   font-weight: 700;
-  white-space: nowrap;
+  color: var(--muted);
   direction: rtl;
-  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.35);
-  animation: pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) 1.6s both;
+  white-space: nowrap;
+  transition: opacity 0.5s;
+  animation: nudge 2.6s ease-in-out 2s infinite;
 }
-.available i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  animation: ping 2.4s ease-out infinite;
+.hint.gone {
+  opacity: 0;
 }
 
-@keyframes emerge {
-  from {
-    opacity: 0;
-    transform: translate(var(--from-x), var(--from-y)) scale(0.3);
-  }
-  60% {
-    opacity: 1;
-  }
-}
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes breathe {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.06);
-    opacity: 0.8;
-  }
-}
-@keyframes beam-in {
-  from {
-    opacity: 0;
-    transform: scaleY(0.2);
-  }
-}
-@keyframes beam {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-@keyframes glow {
-  0%,
-  100% {
-    transform: scale(0.85);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-}
-@keyframes spark {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(0.6);
-  }
-  15% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-120px) scale(1);
-  }
-}
-@keyframes pop {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.92);
-  }
-}
 @keyframes ping {
   0% {
     box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
   }
   80%,
   100% {
-    box-shadow: 0 0 0 9px rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 7px rgba(34, 197, 94, 0);
+  }
+}
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
   }
 }
 
 @media (max-width: 980px) {
-  .showcase {
-    max-width: 540px;
+  .stage {
+    max-width: 520px;
     margin-inline: auto;
-    width: 100%;
+  }
+  /* the text sits above: the strap fades in instead of crossing it */
+  .strap {
+    mask-image: linear-gradient(to bottom, transparent -60px, #000 24px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent -60px, #000 24px);
   }
 }
-@media (max-width: 560px) {
-  .showcase {
-    padding: 8px 28px 0 0;
+@media (max-width: 420px) {
+  .stage {
+    --card-w: 256px;
+    --card-h: 380px;
+    height: 470px;
   }
-  .float {
-    padding: 8px 10px 8px 9px;
-    gap: 8px;
-    border-radius: 13px;
+  .who b {
+    font-size: 18px;
   }
-  .float b {
-    font-size: 15px;
+  .numbers b {
+    font-size: 24px;
   }
-  .float > div > span:not(.kicker) {
-    font-size: 11px;
+  .numbers li {
+    padding: 9px 0;
   }
-  .ico {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-  }
-  .card-course {
-    right: -1%;
-    max-width: 190px;
-  }
-  .card-course b {
-    font-size: 13px;
-  }
-  .card-course .cover {
-    width: 36px;
-    height: 36px;
-  }
-  .available {
-    font-size: 11px;
-    padding: 6px 12px;
-  }
-  .ring {
-    left: -24px;
-    top: -24px;
-    width: 48px;
-    height: 48px;
+}
+/* on touch screens a vertical swipe still scrolls the page; sideways swings the card */
+@media (pointer: coarse) {
+  .badge {
+    touch-action: pan-y;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .float,
-  .halo,
-  .portrait,
-  .beam,
-  .ring,
-  .palm::before,
-  .palm i,
-  .available,
-  .available i {
-    animation: none;
+  .flipper {
+    transition: none;
   }
-  .palm i {
-    display: none;
+  .available i,
+  .hint {
+    animation: none;
   }
 }
 </style>
