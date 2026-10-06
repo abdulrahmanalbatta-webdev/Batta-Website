@@ -1,13 +1,15 @@
 <script setup>
 import { computed } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import StarRating from '@/components/ui/StarRating.vue'
 import { profile } from '@/data/profile'
 import { useCourses, useStatsNumbers } from '@/composables/useContent'
 
-// صورتك بإطار أنيق، وحولها بطاقات تطفو بهدوء بأرقام حقيقية من لوحة التحكم:
+// صورتك بدون خلفية تقف مباشرة على خلفية القسم، وحولها بطاقات تطفو بهدوء بأرقام حقيقية من لوحة التحكم:
 // التقييم، الطلاب، المشاريع، وآخر دورة. كل بطاقة تختفي إن لم يكن لها رقم بعد.
+// الصورة: من لوحة التحكم (محتوى الموقع ← عنك ← صورتك بدون خلفية) وإلا src/assets/images/profile-cutout.(png|webp)
+const bundled = Object.values(import.meta.glob('@/assets/images/profile-cutout.{png,webp}', { eager: true, import: 'default' }))[0] ?? null
+const cutout = computed(() => profile.cutout || bundled)
 const numbers = useStatsNumbers()
 const { items: courses } = useCourses()
 const course = computed(() => courses.value[0])
@@ -16,11 +18,11 @@ const count = (n) => n.toLocaleString('en-US')
 
 <template>
   <div class="showcase">
-    <div class="glow" aria-hidden="true" />
-    <div class="ring" aria-hidden="true" />
+    <div class="halo" aria-hidden="true" />
+    <div class="orbit" aria-hidden="true"><i /></div>
 
     <figure class="portrait">
-      <ProfilePhoto size="100%" rounded="28px" />
+      <img v-if="cutout" :src="cutout" :alt="profile.name" fetchpriority="high" />
       <figcaption v-if="profile.available" class="available"><i />{{ profile.available }}</figcaption>
     </figure>
 
@@ -65,68 +67,89 @@ const count = (n) => n.toLocaleString('en-US')
 .showcase {
   position: relative;
   display: grid;
-  place-items: center;
-  padding: 40px 48px;
+  place-items: end center;
+  padding: 24px 48px 0;
   min-width: 0;
+  min-height: 520px;
 }
 
-/* soft light and a thin ring behind the frame */
-.glow {
+/* a soft circle of light behind you, and a thin orbit with a travelling dot */
+.halo {
   position: absolute;
-  width: 78%;
+  bottom: 6%;
+  width: min(82%, 440px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 102, 255, 0.28), transparent 65%);
-  filter: blur(20px);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(0, 102, 255, 0.22), transparent 62%),
+    radial-gradient(circle at 70% 75%, rgba(124, 58, 237, 0.12), transparent 60%);
+  animation: breathe 9s ease-in-out infinite;
 }
-.ring {
+.orbit {
   position: absolute;
-  width: 88%;
+  bottom: 2%;
+  width: min(94%, 500px);
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 1.5px dashed rgba(0, 102, 255, 0.22);
-  animation: spin 60s linear infinite;
+  border: 1px solid rgba(0, 102, 255, 0.16);
+  animation: spin 40s linear infinite;
+}
+.orbit i {
+  position: absolute;
+  top: 50%;
+  left: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 5px rgba(0, 102, 255, 0.15);
 }
 
+/* you, without a background: rises in once, then floats very slightly */
 .portrait {
   position: relative;
+  z-index: 1;
   margin: 0;
-  width: min(100%, 380px);
-  aspect-ratio: 4 / 5;
-  padding: 10px;
-  border-radius: 36px;
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow:
-    0 40px 80px -30px rgba(0, 82, 204, 0.45),
-    0 0 0 1px rgba(0, 102, 255, 0.08);
-  backdrop-filter: blur(8px);
+  width: min(100%, 420px);
+  animation: rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
-.portrait :deep(.photo) {
+.portrait img {
   display: block;
-  height: 100%;
+  width: 100%;
+  height: auto;
+  /* the photo ends at the waist: fade it into the page */
+  /* the photo is cut at the waist and the shoulder: fade those edges into the page */
+  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%), linear-gradient(to right, transparent 0, #000 9%, #000 94%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%), linear-gradient(to right, transparent 0, #000 9%, #000 94%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  animation: drift 8s ease-in-out 1s infinite;
 }
 .available {
   position: absolute;
-  bottom: 24px;
-  inset-inline-start: 24px;
+  bottom: 4%;
+  left: 50%;
+  translate: -50% 0;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 99px;
-  background: rgba(11, 13, 18, 0.7);
+  background: rgba(11, 13, 18, 0.82);
   backdrop-filter: blur(10px);
   color: #fff;
   font-size: 13px;
   font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.35);
+  animation: pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.9s both;
 }
 .available i {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: #22c55e;
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+  animation: ping 2.4s ease-out infinite;
 }
 
 /* the floating cards */
@@ -142,7 +165,9 @@ const count = (n) => n.toLocaleString('en-US')
   border-radius: 18px;
   box-shadow: var(--shadow);
   color: inherit;
-  animation: float 6s ease-in-out infinite;
+  animation:
+    pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) var(--in, 0.4s) both,
+    float 6s ease-in-out calc(var(--in, 0.4s) + 0.6s) infinite;
 }
 .float > div {
   display: flex;
@@ -188,24 +213,25 @@ const count = (n) => n.toLocaleString('en-US')
 }
 
 .card-rating {
-  top: 7%;
+  top: 10%;
   inset-inline-start: 0;
+  --in: 0.35s;
 }
 .card-students {
-  top: 27%;
+  top: 30%;
   inset-inline-end: -4px;
-  animation-delay: -1.5s;
+  --in: 0.5s;
 }
 .card-projects {
-  top: 50%;
+  top: 54%;
   inset-inline-start: -8px;
-  animation-delay: -3s;
+  --in: 0.65s;
 }
 .card-course {
-  bottom: 0;
+  top: 70%;
   inset-inline-end: 0;
   max-width: 250px;
-  animation-delay: -4.5s;
+  --in: 0.8s;
   transition:
     box-shadow 0.2s,
     border-color 0.2s;
@@ -264,6 +290,47 @@ const count = (n) => n.toLocaleString('en-US')
     transform: rotate(360deg);
   }
 }
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.8;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+}
+@keyframes ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+  }
+  80%,
+  100% {
+    box-shadow: 0 0 0 9px rgba(34, 197, 94, 0);
+  }
+}
 
 @media (max-width: 980px) {
   .showcase {
@@ -274,10 +341,11 @@ const count = (n) => n.toLocaleString('en-US')
 }
 @media (max-width: 560px) {
   .showcase {
-    padding: 24px 6px 64px;
+    padding: 16px 6px 0;
+    min-height: 0;
   }
   .portrait {
-    width: 78%;
+    width: 80%;
   }
   .float {
     padding: 9px 12px 9px 10px;
@@ -296,9 +364,8 @@ const count = (n) => n.toLocaleString('en-US')
     top: 3%;
   }
   .available {
-    bottom: 14px;
-    inset-inline-start: 14px;
     font-size: 12px;
+    bottom: 3%;
   }
   .card-students {
     inset-inline-end: 0;
@@ -307,9 +374,12 @@ const count = (n) => n.toLocaleString('en-US')
     inset-inline-start: 0;
   }
   .card-course {
-    bottom: 0;
+    top: 72%;
     inset-inline-end: 0;
     max-width: 230px;
+  }
+  .card-projects {
+    top: 50%;
   }
   .card-course .cover {
     width: 40px;
@@ -318,7 +388,12 @@ const count = (n) => n.toLocaleString('en-US')
 }
 @media (prefers-reduced-motion: reduce) {
   .float,
-  .ring {
+  .halo,
+  .orbit,
+  .portrait,
+  .portrait img,
+  .available,
+  .available i {
     animation: none;
   }
 }
