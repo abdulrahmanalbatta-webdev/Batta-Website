@@ -23,7 +23,7 @@ import { texts } from '@/data/texts'
       </div>
 
       <div class="center-row">
-        <RouterLink class="btn btn-primary btn-lg" :to="{ path: '/services', hash: '#contact' }">
+        <RouterLink class="btn btn-primary btn-lg" :to="{ name: 'contact' }">
           {{ texts.ui.buttons.request_service }} <BaseIcon name="arrow" :size="18" />
         </RouterLink>
       </div>

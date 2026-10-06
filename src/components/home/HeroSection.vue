@@ -42,7 +42,7 @@ onBeforeUnmount(() => clearInterval(timer))
         <p>{{ texts.home.hero.text }}</p>
 
         <div class="actions">
-          <RouterLink class="btn btn-dark btn-lg" :to="{ path: '/services', hash: '#contact' }">
+          <RouterLink class="btn btn-dark btn-lg" :to="{ name: 'contact' }">
             {{ texts.ui.buttons.quote }} <BaseIcon name="arrow" :size="18" />
           </RouterLink>
           <RouterLink class="btn btn-ghost btn-lg" to="/work">{{ texts.ui.buttons.see_work }}</RouterLink>

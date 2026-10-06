@@ -18,7 +18,7 @@ const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
       <BaseIcon name="chat" :size="22" />
       <span class="tip">واتساب</span>
     </a>
-    <RouterLink v-else class="chat" :to="{ path: '/services', hash: '#contact' }" aria-label="تواصل معي">
+    <RouterLink v-else class="chat" :to="{ name: 'contact' }" aria-label="تواصل معي">
       <BaseIcon name="chat" :size="22" />
       <span class="tip">تواصل معي</span>
     </RouterLink>

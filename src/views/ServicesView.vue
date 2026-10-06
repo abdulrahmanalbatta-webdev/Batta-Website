@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import PageHero from '@/components/ui/PageHero.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
@@ -7,24 +7,8 @@ import BaseIcon from '@/components/ui/BaseIcon.vue'
 import FaqSection from '@/components/home/FaqSection.vue'
 import { packages, processSteps, services } from '@/data/site'
 import { texts } from '@/data/texts'
-import { useToast } from '@/composables/useToast'
-import { api } from '@/lib/api'
 
 const route = useRoute()
-const { showToast } = useToast()
-
-// "اطلب هذه الخدمة" passes ?service=id → the form's project type is pre-selected
-const projectTypes = computed(() => services.map((s) => s.title))
-const typeFromQuery = () => services.find((s) => s.id === route.query.service)?.title ?? projectTypes.value[0]
-// budget options from the dashboard (page texts → contact); the second one is the usual starting point
-const budgets = computed(() => texts.pages.contact.budgets)
-const defaultBudget = () => (budgets.value[1] ?? budgets.value[0])?.label ?? ''
-const emptyForm = () => ({ name: '', email: '', phone: '', company: '', type: typeFromQuery(), budget: defaultBudget(), details: '', website: '' })
-const form = ref(emptyForm())
-watch(() => route.query.service, () => (form.value.type = typeFromQuery()))
-// the dashboard's options can arrive after the form was filled with the bundled ones
-watch(budgets, (list) => list.some((b) => b.label === form.value.budget) || (form.value.budget = defaultBudget()))
-watch(projectTypes, (types) => types.includes(form.value.type) || (form.value.type = typeFromQuery()))
 
 // briefly highlight the service card the visitor jumped to (/services#ecommerce)
 const flashed = ref('')
@@ -41,35 +25,6 @@ watch(
   },
   { immediate: true },
 )
-
-const sending = ref(false)
-const errors = ref({})
-async function submit() {
-  sending.value = true
-  errors.value = {}
-  const service = services.find((s) => s.title === form.value.type)
-  try {
-    const res = await api.post('project-requests', {
-      name: form.value.name,
-      email: form.value.email,
-      phone: form.value.phone || null,
-      company: form.value.company || null,
-      // the dashboard's project types are these same services (by id)
-      service: service?.id ?? services[0]?.id,
-      // the dashboard keeps the budget as a number (the amount set beside each option)
-      budget: Number(budgets.value.find((b) => b.label === form.value.budget)?.amount) || null,
-      details: `${form.value.details}\n\nالميزانية المتوقعة: ${form.value.budget}`,
-      website: form.value.website,
-    })
-    showToast(res.message, 4000)
-    form.value = emptyForm()
-  } catch (err) {
-    errors.value = err.errors
-    showToast(Object.values(err.errors)[0] || err.message, 4500)
-  } finally {
-    sending.value = false
-  }
-}
 </script>
 
 <template>
@@ -99,7 +54,7 @@ async function submit() {
                 <span><small>يبدأ من</small><b>{{ s.from }}</b></span>
                 <span><small>المدة</small><b>{{ s.duration }}</b></span>
               </div>
-              <RouterLink class="btn btn-dark" :to="{ query: { service: s.id }, hash: '#contact' }">
+              <RouterLink class="btn btn-dark" :to="{ name: 'contact', query: { service: s.id } }">
                 {{ texts.ui.buttons.order_service }} <BaseIcon name="arrow" :size="16" />
               </RouterLink>
             </div>
@@ -117,7 +72,7 @@ async function submit() {
             <ul>
               <li v-for="f in p.features" :key="f"><BaseIcon name="check" :size="18" />{{ f }}</li>
             </ul>
-            <RouterLink class="btn" :class="p.popular ? 'btn-primary' : 'btn-ghost'" :to="{ hash: '#contact' }">{{ texts.ui.buttons.book_call }}</RouterLink>
+            <RouterLink class="btn" :class="p.popular ? 'btn-primary' : 'btn-ghost'" :to="{ name: 'contact' }">{{ texts.ui.buttons.book_call }}</RouterLink>
           </article>
         </div>
 
@@ -132,36 +87,6 @@ async function submit() {
           </ol>
         </div>
 
-        <div id="contact" class="block">
-          <SectionHeading :eyebrow="texts.pages.contact.eyebrow" :title="texts.pages.contact.title" :subtitle="texts.pages.contact.text" />
-          <div class="contact">
-            <aside v-if="texts.pages.contact.points.length" class="card side">
-              <div v-for="p in texts.pages.contact.points" :key="p.title" class="row">
-                <span class="ico-box"><BaseIcon :name="p.icon" /></span>
-                <div><h4>{{ p.title }}</h4><p>{{ p.text }}</p></div>
-              </div>
-            </aside>
-
-            <form class="card form" @submit.prevent="submit">
-              <label class="field-label">الاسم<input v-model="form.name" class="input" required /></label>
-              <label class="field-label">البريد الإلكتروني<input v-model="form.email" class="input" type="email" dir="ltr" required /></label>
-              <label class="field-label">رقم واتساب (اختياري)<input v-model="form.phone" class="input" type="tel" dir="ltr" placeholder="+970 59 000 0000" /></label>
-              <label class="field-label">الشركة (اختياري)<input v-model="form.company" class="input" /></label>
-              <!-- bot trap: never shown (display: none, so browsers and password managers don't autofill it); a filled one means a bot -->
-              <div hidden aria-hidden="true"><input v-model="form.website" type="text" name="hp_extra" tabindex="-1" autocomplete="off" /></div>
-              <label class="field-label">نوع المشروع
-                <select v-model="form.type" class="input"><option v-for="t in projectTypes" :key="t">{{ t }}</option></select>
-              </label>
-              <label class="field-label">الميزانية التقريبية
-                <select v-model="form.budget" class="input"><option v-for="b in budgets" :key="b.label">{{ b.label }}</option></select>
-              </label>
-              <label class="field-label full">تفاصيل مختصرة
-                <textarea v-model="form.details" class="input" rows="4" placeholder="ما الذي تريد بناءه؟ ومتى تحتاجه؟" required minlength="10" />
-              </label>
-              <div class="full"><button class="btn btn-primary btn-lg" type="submit" :disabled="sending">{{ sending ? 'جارٍ الإرسال…' : 'إرسال الطلب' }}</button></div>
-            </form>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -376,47 +301,12 @@ async function submit() {
   color: var(--muted);
   font-size: 15px;
 }
-.contact {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 24px;
-}
-.side {
-  gap: 18px;
-}
-.row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-.row h4 {
-  font-size: 15px;
-}
-.row p {
-  font-size: 14px;
-}
-.form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.full {
-  grid-column: 1 / -1;
-}
 @media (max-width: 860px) {
   .steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .step::after {
     display: none;
-  }
-  .contact {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 620px) {
-  .form {
-    grid-template-columns: 1fr;
   }
 }
 </style>

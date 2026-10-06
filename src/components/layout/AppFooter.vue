@@ -27,7 +27,7 @@ const { email, whatsapp, whatsappUrl } = useContact()
           <ul>
             <li><RouterLink to="/services">{{ texts.ui.pages.services }}</RouterLink></li>
             <li><RouterLink to="/work">{{ texts.ui.pages.work }}</RouterLink></li>
-            <li><RouterLink :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.quote }}</RouterLink></li>
+            <li><RouterLink :to="{ name: 'contact' }">{{ texts.ui.buttons.quote }}</RouterLink></li>
             <li><RouterLink to="/about">{{ texts.ui.pages.about }}</RouterLink></li>
           </ul>
         </div>

@@ -82,7 +82,7 @@ const isActive = (item) =>
             </button>
 
             <Transition name="drop">
-              <div v-if="openKey === item.label" class="dropdown" :class="{ wide: item.wide }">
+              <div v-if="openKey === item.label" class="dropdown">
                 <div class="drop-list">
                   <RouterLink v-for="c in item.children" :key="c.label" :to="c.to" class="drop-item" :class="{ current: route.path === c.to }">
                     <span class="d-ico"><BaseIcon :name="c.icon" :size="18" /></span>
@@ -92,9 +92,6 @@ const isActive = (item) =>
                     </span>
                   </RouterLink>
                 </div>
-                <RouterLink v-if="item.footer" :to="item.footer.to" class="drop-foot">
-                  {{ item.footer.label }} <BaseIcon name="arrow" :size="16" />
-                </RouterLink>
               </div>
             </Transition>
           </div>
@@ -104,13 +101,13 @@ const isActive = (item) =>
 
         <RouterLink v-if="student" class="nav-link mobile-only" to="/my-courses">دوراتي</RouterLink>
         <RouterLink v-else class="nav-link mobile-only" to="/login">تسجيل الدخول</RouterLink>
-        <RouterLink class="btn btn-dark mobile-only mobile-quote" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
+        <RouterLink class="btn btn-dark mobile-only mobile-quote" :to="{ name: 'contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
       </nav>
 
       <div class="end">
         <RouterLink v-if="student" class="login auth" to="/my-courses"><BaseIcon name="user" :size="18" />دوراتي</RouterLink>
         <RouterLink v-else class="login auth" to="/login"><BaseIcon name="user" :size="18" />دخول</RouterLink>
-        <RouterLink class="btn btn-dark quote" :to="{ path: '/services', hash: '#contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
+        <RouterLink class="btn btn-dark quote" :to="{ name: 'contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
         <button class="icon-btn menu-btn" type="button" aria-label="القائمة" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen">
           <BaseIcon :name="menuOpen ? 'close' : 'menu'" />
         </button>
@@ -206,15 +203,9 @@ const isActive = (item) =>
   padding: 8px;
   overflow: hidden;
 }
-.dropdown.wide {
-  width: 560px;
-}
 .drop-list {
   display: grid;
   gap: 2px;
-}
-.wide .drop-list {
-  grid-template-columns: 1fr 1fr;
 }
 .drop-item {
   display: flex;
@@ -258,22 +249,6 @@ const isActive = (item) =>
 .d-desc {
   font-size: 12.5px;
   color: var(--muted);
-}
-.drop-foot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin: 6px -8px -8px;
-  padding: 12px;
-  background: var(--tint-2);
-  border-top: 1px solid var(--line);
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--primary-600);
-}
-.drop-foot:hover {
-  background: var(--primary-soft);
 }
 .drop-enter-active,
 .drop-leave-active {
@@ -344,8 +319,7 @@ const isActive = (item) =>
   .nav-link.active::after {
     display: none;
   }
-  .dropdown,
-  .dropdown.wide {
+  .dropdown {
     position: static;
     width: auto;
     box-shadow: none;
@@ -353,9 +327,6 @@ const isActive = (item) =>
     background: var(--tint-2);
     margin: 2px 0 8px;
     padding: 6px;
-  }
-  .wide .drop-list {
-    grid-template-columns: 1fr;
   }
   .d-desc {
     display: none;
@@ -371,10 +342,6 @@ const isActive = (item) =>
   .drop-item:hover,
   .drop-item.current {
     background: var(--surface);
-  }
-  .drop-foot {
-    margin: 6px -6px -6px;
-    background: transparent;
   }
   .menu-btn {
     display: grid;
