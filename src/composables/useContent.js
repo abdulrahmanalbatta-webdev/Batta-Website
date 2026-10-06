@@ -48,6 +48,7 @@ export const toWorkshop = (w) => {
   const date = parseDate(w.date)
   return {
     id: w.id,
+    date: w.date,
     day: String(date.getDate()).padStart(2, '0'),
     month: MONTHS[date.getMonth()],
     title: w.title,

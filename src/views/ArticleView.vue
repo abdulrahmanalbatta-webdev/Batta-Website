@@ -5,7 +5,7 @@ import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import TopoPattern from '@/components/ui/TopoPattern.vue'
 import ArticleCard from '@/components/cards/ArticleCard.vue'
 import ArticleBody from '@/components/article/ArticleBody.vue'
-import ArticleComments from '@/components/article/ArticleComments.vue'
+import CommentsSection from '@/components/comments/CommentsSection.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import LoadState from '@/components/ui/LoadState.vue'
@@ -142,7 +142,7 @@ async function copyLink() {
             </RouterLink>
           </nav>
 
-          <ArticleComments :slug="props.id" />
+          <CommentsSection type="article" :target="props.id" />
         </article>
 
         <aside class="sidebar">
