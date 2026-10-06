@@ -80,7 +80,7 @@ export const toArticle = (a) => ({
 
 export const toTools = (categories) =>
   categories.flatMap((category) =>
-    category.tools.map((t) => ({ id: t.id, name: t.name, short: t.short, color: t.color, category: category.name, why: t.why, since: t.since, url: t.url, affiliate: t.is_affiliate })),
+    category.tools.map((t) => ({ id: t.id, name: t.name, short: t.short, color: t.color, logo: t.logo_url, category: category.name, why: t.why, since: t.since, url: t.url, affiliate: t.is_affiliate })),
   )
 
 // قائمة مشتركة: { items, loading, error, load() }
