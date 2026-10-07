@@ -4,6 +4,7 @@ import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import StarRating from '@/components/ui/StarRating.vue'
 import LoadState from '@/components/ui/LoadState.vue'
+import CommentsSection from '@/components/comments/CommentsSection.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import { api } from '@/lib/api'
 import { arabicDate, toCourse } from '@/composables/useContent'
@@ -106,6 +107,8 @@ const open = ref(0)
               <p v-if="r.reply" class="reply"><b>رد المدرّب:</b> {{ r.reply }}</p>
             </div>
           </div>
+
+          <CommentsSection type="course" :target="course.slug" />
         </div>
 
         <aside class="side">

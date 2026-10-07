@@ -21,6 +21,7 @@ const routes = [
   { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { page: 'courses', title: 'الدورات' } },
   { path: '/courses/:slug', name: 'course', component: () => import('@/views/CourseView.vue'), props: true, meta: { title: 'الدورات' } },
   { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { page: 'workshops', title: 'الورش' } },
+  { path: '/workshops/:id(\\d+)', name: 'workshop', component: () => import('@/views/WorkshopView.vue'), props: true, meta: { title: 'الورش' } },
   { path: '/academy', redirect: fromTabs({ workshops: '/workshops' }, '/courses') },
 
   // الموارد

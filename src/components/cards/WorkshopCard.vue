@@ -26,8 +26,11 @@ const fill = computed(() => Math.round((props.workshop.taken / props.workshop.se
         <span class="pill" :class="{ green: workshop.free }">{{ priceLabel }}</span>
         <span class="pill line"><BaseIcon :name="workshop.online ? 'monitor' : 'pin'" :size="14" />{{ workshop.format }}</span>
       </div>
-      <h3>{{ workshop.title }}</h3>
-      <span class="meta"><span><BaseIcon name="clock" :size="16" />{{ workshop.time }}</span></span>
+      <h3><RouterLink class="title-link" :to="{ name: 'workshop', params: { id: workshop.id } }">{{ workshop.title }}</RouterLink></h3>
+      <span class="meta">
+        <span><BaseIcon name="clock" :size="16" />{{ workshop.time }}</span>
+        <RouterLink class="details" :to="{ name: 'workshop', params: { id: workshop.id } }">التفاصيل والأسئلة <BaseIcon name="arrow" :size="14" /></RouterLink>
+      </span>
     </div>
 
     <div class="action">
@@ -43,6 +46,31 @@ const fill = computed(() => Math.round((props.workshop.taken / props.workshop.se
 </template>
 
 <style scoped>
+.title-link {
+  color: inherit;
+}
+.title-link:hover {
+  color: var(--primary-600);
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  color: var(--muted);
+}
+.meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.details {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary-600);
+  font-weight: 700;
+}
 .workshop {
   display: grid;
   grid-template-columns: auto 1fr auto;
