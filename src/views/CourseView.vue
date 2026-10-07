@@ -119,6 +119,7 @@ watch(
             </ul>
             <RegistrationButton type="course" :target="course.slug" :label="texts.ui.buttons.enroll" block large @change="course.students += $event" />
             <p class="muted small">التسجيل مجاني، وبعده نتواصل معك بتفاصيل الدورة وموعد البدء.</p>
+            <RouterLink class="ask" :to="{ name: 'contact', query: { type: 'student', course: course.slug } }"><BaseIcon name="chat" :size="16" />عندك سؤال عن الدورة؟</RouterLink>
           </div>
           <CourseReviewForm v-if="myCourse" :slug="course.slug" :initial="myCourse.my_review" />
         </aside>
@@ -210,6 +211,14 @@ watch(
   padding: 22px;
   display: grid;
   gap: 16px;
+}
+.ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-600);
 }
 .facts {
   list-style: none;
