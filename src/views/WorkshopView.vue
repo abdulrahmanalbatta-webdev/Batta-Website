@@ -7,7 +7,7 @@ import CommentsSection from '@/components/comments/CommentsSection.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import { api } from '@/lib/api'
 import { arabicDate, toWorkshop } from '@/composables/useContent'
-import { useSettings } from '@/composables/useSettings'
+import RegistrationButton from '@/components/registration/RegistrationButton.vue'
 import { siteTitle } from '@/router'
 import { texts } from '@/data/texts'
 
@@ -16,7 +16,6 @@ const props = defineProps({
   id: { type: String, required: true },
 })
 
-const { price } = useSettings()
 const workshop = ref(null)
 const loading = ref(true)
 const error = ref('')
@@ -41,9 +40,9 @@ watchEffect(() => {
   if (workshop.value) document.title = siteTitle(workshop.value.title)
 })
 
-const ended = computed(() => workshop.value && new Date(`${workshop.value.date}T23:59:59`) < new Date())
-const seatsLeft = computed(() => (workshop.value ? workshop.value.seats - workshop.value.taken : 0))
-const fill = computed(() => (workshop.value ? Math.round((workshop.value.taken / workshop.value.seats) * 100) : 0))
+const ended = computed(() => !!workshop.value?.ended)
+const seatsLeft = computed(() => (workshop.value ? Math.max(0, workshop.value.seats - workshop.value.taken) : 0))
+const fill = computed(() => (workshop.value ? Math.min(100, Math.round((workshop.value.taken / workshop.value.seats) * 100)) : 0))
 // the description is plain text from the dashboard: one paragraph per blank line
 const paragraphs = computed(() => (workshop.value?.description ?? '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean))
 </script>
@@ -76,15 +75,13 @@ const paragraphs = computed(() => (workshop.value?.description ?? '').split(/\n\
               <span class="day">{{ workshop.day }}</span>
               <span>{{ workshop.month }}</span>
             </div>
-            <div class="price">{{ workshop.free ? 'مجانية' : price(workshop.price) }}</div>
             <template v-if="!ended">
               <div class="seats">
                 <span>المقاعد</span>
                 <span><b>{{ seatsLeft }}</b> متبقية من {{ workshop.seats }}</span>
               </div>
               <div class="meter"><i :style="{ width: `${fill}%` }" /></div>
-              <span v-if="workshop.full" class="btn btn-ghost btn-lg btn-block" aria-disabled="true">{{ texts.ui.buttons.seats_full }}</span>
-              <RouterLink v-else class="btn btn-primary btn-lg btn-block" :to="{ name: 'enroll', query: { workshop: workshop.id } }">{{ texts.ui.buttons.book_seat }}</RouterLink>
+              <RegistrationButton type="workshop" :target="workshop.id" :label="texts.ui.buttons.book_seat" :closed="seatsLeft ? '' : texts.ui.buttons.seats_full" block large @change="workshop.taken += $event" />
             </template>
             <p v-else class="muted ended">انتهت هذه الورشة. تابع الورش القادمة من <RouterLink to="/workshops">صفحة الورش</RouterLink>.</p>
           </div>
@@ -145,11 +142,6 @@ const paragraphs = computed(() => (workshop.value?.description ?? '').split(/\n\
 .when .day {
   font-size: 28px;
   font-weight: 900;
-}
-.price {
-  font-size: 28px;
-  font-weight: 900;
-  color: var(--fg);
 }
 .seats {
   display: flex;

@@ -6,11 +6,11 @@ import StarRating from '@/components/ui/StarRating.vue'
 import LoadState from '@/components/ui/LoadState.vue'
 import CommentsSection from '@/components/comments/CommentsSection.vue'
 import CourseReviewForm from '@/components/course/CourseReviewForm.vue'
+import RegistrationButton from '@/components/registration/RegistrationButton.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import { api } from '@/lib/api'
 import { arabicDate, toCourse } from '@/composables/useContent'
-import { useSettings } from '@/composables/useSettings'
-import { useAuth } from '@/composables/useAuth'
+import { useRegistrations } from '@/composables/useRegistrations'
 import { siteTitle } from '@/router'
 import { texts } from '@/data/texts'
 
@@ -18,7 +18,6 @@ const props = defineProps({
   slug: { type: String, required: true },
 })
 
-const { price } = useSettings()
 const course = ref(null)
 const reviews = ref([])
 const loading = ref(true)
@@ -49,18 +48,19 @@ watchEffect(() => {
 // the description is plain text from the dashboard: one paragraph per blank line
 const paragraphs = computed(() => (course.value?.longDescription ?? '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean))
 
-// a signed-in student enrolled in the course can rate it here
-const { student } = useAuth()
+// a student registered in the course can rate it here
+const { isRegistered } = useRegistrations()
+const registered = computed(() => isRegistered('course', props.slug))
 const myCourse = ref(null)
 watch(
-  [() => props.slug, student],
-  async ([slug, signedIn]) => {
+  [() => props.slug, registered],
+  async ([slug, isIn]) => {
     myCourse.value = null
-    if (!signedIn) return
+    if (!isIn) return
     try {
       myCourse.value = (await api.get(`me/courses/${encodeURIComponent(slug)}`)).data
     } catch {
-      // not enrolled (403) or gone: no review form
+      // the registration was just cancelled, or the course is gone: no review form
     }
   },
   { immediate: true },
@@ -112,14 +112,13 @@ watch(
         <aside class="side">
           <div class="card buy">
             <img v-if="course.cover" class="buy-cover" :src="course.cover" :alt="course.title" />
-            <div class="price">{{ price(course.price) }} <s v-if="course.oldPrice">{{ price(course.oldPrice) }}</s></div>
             <ul class="facts">
-              <li><BaseIcon name="users" :size="16" />{{ course.students }} طالب</li>
+              <li><BaseIcon name="users" :size="16" />{{ course.students }} طالب مسجّل</li>
+              <li><BaseIcon name="award" :size="16" />{{ course.level }}</li>
               <li v-if="course.certificate"><BaseIcon name="award" :size="16" />شهادة إتمام</li>
-              <li v-if="course.includedInPro"><BaseIcon name="star" :size="16" />ضمن اشتراك Pro</li>
             </ul>
-            <RouterLink class="btn btn-primary btn-lg btn-block" :to="{ name: 'enroll', query: { course: course.slug } }">{{ texts.ui.buttons.enroll }}</RouterLink>
-            <p class="muted small">الدفع يدوي: بعد التسجيل نتواصل معك على واتساب لإتمام الدفع، ثم تُفتح لك الدورة.</p>
+            <RegistrationButton type="course" :target="course.slug" :label="texts.ui.buttons.enroll" block large @change="course.students += $event" />
+            <p class="muted small">التسجيل مجاني، وبعده نتواصل معك بتفاصيل الدورة وموعد البدء.</p>
           </div>
           <CourseReviewForm v-if="myCourse" :slug="course.slug" :initial="myCourse.my_review" />
         </aside>
@@ -211,16 +210,6 @@ watch(
   padding: 22px;
   display: grid;
   gap: 16px;
-}
-.price {
-  font-size: 30px;
-  font-weight: 800;
-  color: var(--fg);
-}
-.price s {
-  font-size: 17px;
-  color: var(--muted);
-  font-weight: 600;
 }
 .facts {
   list-style: none;

@@ -1,14 +1,14 @@
 <script setup>
 import { computed } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import { useSettings } from '@/composables/useSettings'
+import { useRegistrations } from '@/composables/useRegistrations'
 
 const props = defineProps({
   course: { type: Object, required: true },
 })
 
-const { price } = useSettings()
-const isFree = computed(() => !props.course.price)
+const { isRegistered } = useRegistrations()
+const registered = computed(() => isRegistered('course', props.course.slug))
 const page = computed(() => ({ name: 'course', params: { slug: props.course.slug } }))
 </script>
 
@@ -16,7 +16,7 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
   <article class="card hover course">
     <div class="cover" :class="{ 'has-image': course.cover }">
       <img v-if="course.cover" class="cover-img" :src="course.cover" alt="" loading="lazy" />
-      <span class="pill" :class="isFree ? 'free' : 'lvl'">{{ isFree ? 'مجانية' : course.level }}</span>
+      <span class="pill" :class="registered ? 'mine' : 'lvl'">{{ registered ? 'أنت مسجّل' : course.level }}</span>
       <span v-if="!course.cover" class="glyph">{{ course.glyph }}</span>
     </div>
 
@@ -37,12 +37,8 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
       </ul>
 
       <div class="card-foot">
-        <div class="price">
-          {{ price(course.price) }}
-          <s v-if="course.oldPrice">{{ price(course.oldPrice) }}</s>
-        </div>
-        <RouterLink class="btn" :class="isFree ? 'btn-soft' : 'btn-primary'" :to="page">
-          {{ isFree ? 'ابدأ الآن' : 'التفاصيل والتسجيل' }}
+        <RouterLink class="btn btn-block" :class="registered ? 'btn-soft' : 'btn-primary'" :to="page">
+          {{ registered ? 'صفحة الدورة' : 'التفاصيل والتسجيل' }}
         </RouterLink>
       </div>
     </div>
@@ -88,8 +84,8 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
-.pill.free {
-  background: var(--primary);
+.pill.mine {
+  background: var(--green);
   color: #fff;
 }
 .body {
@@ -129,20 +125,6 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
 }
 .outcomes .icon {
   color: var(--green);
-}
-.price {
-  font-weight: 800;
-  font-size: 24px;
-  color: var(--fg);
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  font-variant-numeric: tabular-nums;
-}
-.price s {
-  font-size: 15px;
-  color: var(--muted);
-  font-weight: 600;
 }
 .title-link {
   color: inherit;

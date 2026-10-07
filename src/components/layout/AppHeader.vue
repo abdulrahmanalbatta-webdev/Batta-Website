@@ -99,13 +99,13 @@ const isActive = (item) =>
           <RouterLink v-else :to="item.to" class="nav-link" :class="{ active: isActive(item) }">{{ item.label }}</RouterLink>
         </template>
 
-        <RouterLink v-if="student" class="nav-link mobile-only" to="/my-courses">دوراتي</RouterLink>
+        <RouterLink v-if="student" class="nav-link mobile-only" to="/my-courses">تسجيلاتي</RouterLink>
         <RouterLink v-else class="nav-link mobile-only" to="/login">تسجيل الدخول</RouterLink>
         <RouterLink class="btn btn-dark mobile-only mobile-quote" :to="{ name: 'contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
       </nav>
 
       <div class="end">
-        <RouterLink v-if="student" class="login auth" to="/my-courses"><BaseIcon name="user" :size="18" />دوراتي</RouterLink>
+        <RouterLink v-if="student" class="login auth" to="/my-courses"><BaseIcon name="user" :size="18" />تسجيلاتي</RouterLink>
         <RouterLink v-else class="login auth" to="/login"><BaseIcon name="user" :size="18" />دخول</RouterLink>
         <RouterLink class="btn btn-dark quote" :to="{ name: 'contact' }">{{ texts.ui.buttons.quote }}</RouterLink>
         <button class="icon-btn menu-btn" type="button" aria-label="القائمة" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen">

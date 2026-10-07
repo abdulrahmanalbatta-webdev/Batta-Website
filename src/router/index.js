@@ -38,8 +38,17 @@ const routes = [
   { path: '/reset-password', name: 'reset-password', component: () => import('@/views/auth/ResetPasswordView.vue'), meta: { title: 'كلمة مرور جديدة', bare: true } },
 
   // حساب الطالب (يتطلب الدخول)
-  { path: '/enroll', name: 'enroll', component: () => import('@/views/EnrollView.vue'), meta: { title: 'التسجيل', auth: true } },
-  { path: '/my-courses', name: 'my-courses', component: () => import('@/views/MyCoursesView.vue'), meta: { title: 'دوراتي', auth: true } },
+  // registering is now one click on the course or workshop page: old links land there
+  {
+    path: '/enroll',
+    redirect: (to) =>
+      to.query.course
+        ? { name: 'course', params: { slug: String(to.query.course) }, query: {} }
+        : to.query.workshop
+          ? { name: 'workshop', params: { id: String(to.query.workshop) }, query: {} }
+          : { path: '/courses', query: {} },
+  },
+  { path: '/my-courses', name: 'my-courses', component: () => import('@/views/MyCoursesView.vue'), meta: { title: 'تسجيلاتي', auth: true } },
   // courses have no lessons any more: old links go to the course page
   { path: '/my-courses/:slug', redirect: (to) => ({ name: 'course', params: { slug: to.params.slug } }) },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/NotFoundView.vue'), meta: { title: 'الصفحة غير موجودة' } },

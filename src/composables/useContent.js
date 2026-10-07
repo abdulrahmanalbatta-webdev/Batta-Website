@@ -31,14 +31,11 @@ export const toCourse = (c) => ({
   description: c.short_description,
   level: c.level_label,
   glyph: c.glyph,
-  price: c.price,
-  oldPrice: c.old_price,
   students: c.students,
   rating: c.rating,
   reviews: c.reviews,
   outcomes: c.outcomes ?? [],
   cover: c.cover_url,
-  includedInPro: c.is_included_in_pro,
   certificate: c.has_certificate,
 })
 
@@ -54,11 +51,11 @@ export const toWorkshop = (w) => {
     format: w.place ? `${w.format_label} · ${w.place}` : w.format_label,
     online: w.format === 'online',
     time: `${DAYS[date.getDay()]} · ${clock(w.time)}`,
-    price: w.price > 0 ? w.price : 'مجانية',
-    free: !(w.price > 0),
     seats: w.seats,
     taken: w.seats - w.seats_left,
     full: w.is_full,
+    // the day has passed (the dashboard closes registration from the next day)
+    ended: date < new Date(new Date().setHours(0, 0, 0, 0)),
   }
 }
 
