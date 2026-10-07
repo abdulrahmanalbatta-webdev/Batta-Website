@@ -96,7 +96,7 @@ async function submit() {
           <input id="reg-phone" v-model="form.phone" type="tel" autocomplete="tel" dir="ltr" placeholder="+970 59 000 0000" :aria-invalid="!!errors.phone" />
         </div>
         <span v-if="errors.phone" class="error">{{ errors.phone }}</span>
-        <span v-else class="hint">نتواصل معك عليه لإتمام التسجيل والدفع.</span>
+        <span v-else class="hint">نتواصل معك عليه بخصوص الدورات والورش التي تسجّل فيها.</span>
       </div>
 
       <div class="field">

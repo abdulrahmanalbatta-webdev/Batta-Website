@@ -1,17 +1,19 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import { useSettings } from '@/composables/useSettings'
+import RegistrationButton from '@/components/registration/RegistrationButton.vue'
 import { texts } from '@/data/texts'
 
 const props = defineProps({
   workshop: { type: Object, required: true },
 })
 
-const { price } = useSettings()
-const priceLabel = computed(() => (props.workshop.free ? 'مجانية' : price(props.workshop.price)))
-const seatsLeft = computed(() => props.workshop.seats - props.workshop.taken)
-const fill = computed(() => Math.round((props.workshop.taken / props.workshop.seats) * 100))
+// the student's own booking or cancelling moves the meter without reloading the list
+const delta = ref(0)
+const taken = computed(() => props.workshop.taken + delta.value)
+const seatsLeft = computed(() => Math.max(0, props.workshop.seats - taken.value))
+const fill = computed(() => Math.min(100, Math.round((taken.value / props.workshop.seats) * 100)))
+const closed = computed(() => (props.workshop.ended ? 'انتهت الورشة' : seatsLeft.value <= 0 ? texts.ui.buttons.seats_full : ''))
 </script>
 
 <template>
@@ -23,7 +25,6 @@ const fill = computed(() => Math.round((props.workshop.taken / props.workshop.se
 
     <div class="info">
       <div class="tags">
-        <span class="pill" :class="{ green: workshop.free }">{{ priceLabel }}</span>
         <span class="pill line"><BaseIcon :name="workshop.online ? 'monitor' : 'pin'" :size="14" />{{ workshop.format }}</span>
       </div>
       <h3><RouterLink class="title-link" :to="{ name: 'workshop', params: { id: workshop.id } }">{{ workshop.title }}</RouterLink></h3>
@@ -39,8 +40,7 @@ const fill = computed(() => Math.round((props.workshop.taken / props.workshop.se
         <span><b>{{ seatsLeft }}</b> متبقية من {{ workshop.seats }}</span>
       </div>
       <div class="meter"><i :style="{ width: `${fill}%` }" /></div>
-      <span v-if="workshop.full" class="btn btn-ghost" aria-disabled="true">{{ texts.ui.buttons.seats_full }}</span>
-      <RouterLink v-else class="btn btn-primary" :to="{ name: 'enroll', query: { workshop: workshop.id } }">{{ texts.ui.buttons.book_seat }}</RouterLink>
+      <RegistrationButton type="workshop" :target="workshop.id" :label="texts.ui.buttons.book_seat" :closed="closed" :locked="workshop.ended" block @change="delta += $event" />
     </div>
   </article>
 </template>

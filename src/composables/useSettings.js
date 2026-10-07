@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { api } from '@/lib/api'
 
-// إعدادات المنصة العامة من لوحة التحكم: التواصل، التسجيل، العملة، تعليمات الدفع، Google Analytics…
+// إعدادات المنصة العامة من لوحة التحكم: التواصل، التسجيل، التعليقات، Google Analytics…
 const settings = ref(null)
 let loading
 
@@ -30,14 +30,7 @@ export function useSettings() {
       settings.value = null
     })
 
-  // سعر بعملة المنصة: 49 → "49$"
-  const price = (amount) => {
-    if (!amount) return 'مجاناً'
-    const value = Number.isInteger(amount) ? amount : amount.toFixed(2)
-    return `${value}${settings.value?.currency_symbol ?? '$'}`
-  }
-
-  return { settings, loaded: () => loading, price }
+  return { settings, loaded: () => loading }
 }
 
 // مشاهدة صفحة لـ Google Analytics (تُستدعى بعد كل تنقّل)
