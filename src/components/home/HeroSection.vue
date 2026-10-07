@@ -45,7 +45,7 @@ onBeforeUnmount(() => clearInterval(timer))
           <RouterLink class="btn btn-dark btn-lg" :to="{ name: 'contact' }">
             {{ texts.ui.buttons.quote }} <BaseIcon name="arrow" :size="18" />
           </RouterLink>
-          <RouterLink class="btn btn-ghost btn-lg" to="/work">{{ texts.ui.buttons.see_work }}</RouterLink>
+          <RouterLink class="btn btn-ghost btn-lg" to="/services">{{ texts.ui.buttons.see_services }}</RouterLink>
         </div>
 
         <!-- real numbers from the dashboard; hidden until there is something to show -->

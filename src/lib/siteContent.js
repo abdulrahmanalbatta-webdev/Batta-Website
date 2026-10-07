@@ -39,7 +39,7 @@ import {
   siBehance,
   siDribbble,
 } from 'simple-icons'
-import { announcement, heroWords, technologies, services, reasons, faqs, caseStudies, packages, processSteps, testimonials } from '@/data/site'
+import { announcement, heroWords, technologies, services, reasons, faqs, packages, processSteps, testimonials } from '@/data/site'
 import { profile, LINKEDIN_PATH } from '@/data/profile'
 import { texts } from '@/data/texts'
 import { api } from '@/lib/api'
@@ -76,7 +76,6 @@ function apply(c) {
   replace(faqs, c.faqs)
   replace(processSteps, c.process)
   replace(packages, c.packages.map(({ price_note: priceNote, ...p }) => ({ ...p, priceNote })))
-  replace(caseStudies, c.case_studies.map((s) => ({ ...s, kpis: s.kpis.map((k) => [k.value, k.label]) })))
   replace(testimonials, c.testimonials.map((t) => ({ ...t, initial: initial(t.name) })))
   Object.assign(texts, { home: c.texts_home, pages: c.texts_pages, learning: c.texts_learning, general: c.texts_general, ui: c.texts_ui, seo: c.seo })
   // the build already wrote this into index.html (vite.config.js); this keeps a running dev server current too

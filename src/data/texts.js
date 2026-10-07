@@ -27,11 +27,6 @@ export const texts = reactive({
       title: 'تعلّم بالتطبيق، لا بالتلقين',
       text: 'دورات تنتهي بمشروع حقيقي تنشره وتضيفه لملف أعمالك.',
     },
-    projects: {
-      eyebrow: 'مشاريع مميزة',
-      title: 'نتائج حقيقية بأرقام واضحة',
-      text: 'أمثلة من مشاريع سلّمتها، وما الذي تغيّر بعدها.',
-    },
     articles: {
       eyebrow: 'المقالات',
       title: 'آخر ما كتبت',
@@ -111,11 +106,6 @@ export const texts = reactive({
           amount: '5000',
         },
       ],
-    },
-    work: {
-      text: 'دراسات حالة: المشكلة، ما بنيته، والنتيجة بالأرقام.',
-      cta_title: 'عندك مشروع مشابه؟',
-      cta_text: 'احكِ لي عنه، وأرسل لك خطة وسعراً واضحاً خلال يومين.',
     },
     story: {
       eyebrow: 'قصتي',
@@ -199,7 +189,6 @@ export const texts = reactive({
   ui: {
     pages: {
       services: 'الخدمات',
-      work: 'أعمالي',
       about: 'من أنا',
       courses: 'الدورات',
       workshops: 'الورش',
@@ -217,12 +206,11 @@ export const texts = reactive({
     },
     buttons: {
       quote: 'اطلب عرض سعر',
-      see_work: 'شاهد أعمالي',
+      see_services: 'تعرّف على خدماتي',
       service_more: 'اعرف المزيد',
       request_service: 'اطلب خدمتك',
       consult: 'احجز استشارة مجانية',
       read_story: 'اقرأ قصتي كاملة',
-      all_projects: 'ملف الأعمال كاملاً',
       ask: 'اسألني مباشرة',
       start_project: 'ابدأ مشروعك الآن',
       start_learning: 'أو ابدأ التعلّم',
@@ -231,7 +219,6 @@ export const texts = reactive({
       order_service: 'اطلب هذه الخدمة',
       book_call: 'احجز مكالمة',
       popular: 'الأكثر طلباً',
-      work_cta: 'ابدأ مشروعك',
       about_work: 'لنعمل معاً',
       about_learn: 'تعلّم معي',
       all_tools: 'كل أدواتي ولماذا اخترتها',
