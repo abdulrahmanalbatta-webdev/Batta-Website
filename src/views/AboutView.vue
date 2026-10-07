@@ -4,6 +4,7 @@ import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import SocialLinks from '@/components/ui/SocialLinks.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import TopoPattern from '@/components/ui/TopoPattern.vue'
+import TechMarquee from '@/components/ui/TechMarquee.vue'
 import { profile } from '@/data/profile'
 import { texts } from '@/data/texts'
 import { useStats } from '@/composables/useContent'
@@ -16,7 +17,7 @@ const stats = useStats()
     <!-- intro -->
     <section class="about-hero">
       <TopoPattern tone="dark" />
-      <div class="container grid-hero">
+      <div class="container grid-hero" :class="{ solo: !profile.photo }">
         <div class="copy">
           <nav class="crumbs" aria-label="مسار التنقل">
             <RouterLink to="/">الرئيسية</RouterLink><span>/</span><span>{{ texts.ui.pages.about }}</span>
@@ -32,7 +33,8 @@ const stats = useStats()
           <SocialLinks dark />
         </div>
 
-        <div class="portrait">
+        <!-- your photo from the dashboard; without one the text stands alone -->
+        <div v-if="profile.photo" class="portrait">
           <ProfilePhoto size="100%" rounded="28px" />
         </div>
       </div>
@@ -82,13 +84,13 @@ const stats = useStats()
       </div>
     </section>
 
-    <!-- skills -->
+    <!-- the tools I use: the logo strip -->
     <section class="section">
       <div class="container">
         <SectionHeading :eyebrow="texts.pages.skills.eyebrow" :title="texts.pages.skills.title" />
-        <ul class="skills">
-          <li v-for="s in profile.skills" :key="s">{{ s }}</li>
-        </ul>
+      </div>
+      <TechMarquee class="tools-strip" />
+      <div class="container">
         <div class="center-row">
           <RouterLink class="btn btn-ghost" to="/tools">{{ texts.ui.buttons.all_tools }} <BaseIcon name="arrow" :size="16" /></RouterLink>
         </div>
@@ -180,6 +182,12 @@ h1 {
   gap: 12px;
   flex-wrap: wrap;
   margin-block: 4px;
+}
+.grid-hero.solo {
+  grid-template-columns: minmax(0, 760px);
+}
+.tools-strip {
+  margin-block: 8px 32px;
 }
 .portrait {
   aspect-ratio: 4 / 5;
@@ -316,24 +324,6 @@ h1 {
   color: var(--primary);
   line-height: 1;
   font-variant-numeric: tabular-nums;
-}
-.skills {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
-.skills li {
-  padding: 8px 18px;
-  border-radius: 99px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  font-weight: 700;
-  color: var(--fg);
-  direction: ltr;
 }
 
 @media (max-width: 980px) {

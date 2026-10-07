@@ -2,46 +2,32 @@
 import { computed } from 'vue'
 import { technologies } from '@/data/site'
 
+// شريط شعارات الأدوات (من لوحة التحكم: محتوى الموقع ← عنك ← شريط الأدوات)، يتحرك بلا توقف ويقف عند المرور عليه
+
 // the list is rendered twice so the strip loops without a gap
 const loop = computed(() => [...technologies, ...technologies])
 </script>
 
 <template>
-  <section class="marquee-section" aria-label="التقنيات التي أعمل بها">
-    <p class="label">أبني بأحدث التقنيات المعتمدة عالمياً</p>
-
-    <div class="marquee">
-      <ul class="track">
-        <li
-          v-for="(t, i) in loop"
-          :key="i"
-          class="logo"
-          :style="{ '--brand': t.color }"
-          :title="t.name"
-          :aria-hidden="i >= technologies.length"
-        >
-          <svg viewBox="0 0 24 24" role="img" :aria-label="t.name">
-            <path :d="t.path" />
-          </svg>
-        </li>
-      </ul>
-    </div>
-  </section>
+  <div class="marquee" role="region" aria-label="الأدوات التي أعمل بها">
+    <ul class="track">
+      <li
+        v-for="(t, i) in loop"
+        :key="i"
+        class="logo"
+        :style="{ '--brand': t.color }"
+        :title="t.name"
+        :aria-hidden="i >= technologies.length"
+      >
+        <svg viewBox="0 0 24 24" role="img" :aria-label="t.name">
+          <path :d="t.path" />
+        </svg>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>
-.marquee-section {
-  padding-block: 44px;
-  border-block: 1px solid var(--line);
-  background: var(--surface);
-}
-.label {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--muted);
-  margin-bottom: 26px;
-}
 .marquee {
   overflow: hidden;
   direction: ltr;
