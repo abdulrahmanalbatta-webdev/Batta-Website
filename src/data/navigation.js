@@ -7,7 +7,6 @@ import { texts } from './texts'
 export const nav = computed(() => [
   { label: 'الرئيسية', to: '/' },
   { label: texts.ui.pages.services, to: '/services' },
-  { label: texts.ui.pages.work, to: '/work' },
   {
     label: texts.ui.pages.academy,
     match: ['/courses', '/workshops'],

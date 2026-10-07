@@ -56,7 +56,7 @@ watch(
   },
 )
 
-// whole-segment match, so /work is not "active" on /workshops
+// whole-segment match: an item is active on its own page and the pages under it
 const isActive = (item) =>
   item.to === '/' ? route.path === '/' : (item.match ?? [item.to]).some((p) => route.path === p || route.path.startsWith(`${p}/`))
 </script>

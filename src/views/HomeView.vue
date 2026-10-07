@@ -4,7 +4,6 @@ import TechMarquee from '@/components/home/TechMarquee.vue'
 import AboutSection from '@/components/home/AboutSection.vue'
 import ServicesDark from '@/components/home/ServicesDark.vue'
 import WhySection from '@/components/home/WhySection.vue'
-import FeaturedProjects from '@/components/home/FeaturedProjects.vue'
 import TestimonialsSection from '@/components/home/TestimonialsSection.vue'
 import FaqSection from '@/components/home/FaqSection.vue'
 import NewsletterCta from '@/components/home/NewsletterCta.vue'
@@ -43,7 +42,6 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
       </div>
     </section>
 
-    <FeaturedProjects />
 
     <section class="section">
       <div class="container">
