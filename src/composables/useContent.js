@@ -31,8 +31,6 @@ export const toCourse = (c) => ({
   description: c.short_description,
   level: c.level_label,
   glyph: c.glyph,
-  hours: c.hours,
-  lessons: c.lessons,
   price: c.price,
   oldPrice: c.old_price,
   students: c.students,

@@ -40,7 +40,8 @@ const routes = [
   // حساب الطالب (يتطلب الدخول)
   { path: '/enroll', name: 'enroll', component: () => import('@/views/EnrollView.vue'), meta: { title: 'التسجيل', auth: true } },
   { path: '/my-courses', name: 'my-courses', component: () => import('@/views/MyCoursesView.vue'), meta: { title: 'دوراتي', auth: true } },
-  { path: '/my-courses/:slug', name: 'learn', component: () => import('@/views/LearnView.vue'), props: true, meta: { title: 'دوراتي', auth: true } },
+  // courses have no lessons any more: old links go to the course page
+  { path: '/my-courses/:slug', redirect: (to) => ({ name: 'course', params: { slug: to.params.slug } }) },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/NotFoundView.vue'), meta: { title: 'الصفحة غير موجودة' } },
 ]
 

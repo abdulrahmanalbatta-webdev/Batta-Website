@@ -5,10 +5,12 @@ import BaseIcon from '@/components/ui/BaseIcon.vue'
 import StarRating from '@/components/ui/StarRating.vue'
 import LoadState from '@/components/ui/LoadState.vue'
 import CommentsSection from '@/components/comments/CommentsSection.vue'
+import CourseReviewForm from '@/components/course/CourseReviewForm.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import { api } from '@/lib/api'
 import { arabicDate, toCourse } from '@/composables/useContent'
 import { useSettings } from '@/composables/useSettings'
+import { useAuth } from '@/composables/useAuth'
 import { siteTitle } from '@/router'
 import { texts } from '@/data/texts'
 
@@ -18,7 +20,6 @@ const props = defineProps({
 
 const { price } = useSettings()
 const course = ref(null)
-const curriculum = ref([])
 const reviews = ref([])
 const loading = ref(true)
 const error = ref('')
@@ -31,7 +32,6 @@ async function load() {
   try {
     const [res, rev] = await Promise.all([api.get(`courses/${encodeURIComponent(props.slug)}`), api.get(`courses/${encodeURIComponent(props.slug)}/reviews`)])
     course.value = { ...toCourse(res.data), longDescription: res.data.description, tags: res.data.tags ?? [] }
-    curriculum.value = res.data.modules
     reviews.value = rev.data
   } catch (err) {
     course.value = null
@@ -48,7 +48,23 @@ watchEffect(() => {
 
 // the description is plain text from the dashboard: one paragraph per blank line
 const paragraphs = computed(() => (course.value?.longDescription ?? '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean))
-const open = ref(0)
+
+// a signed-in student enrolled in the course can rate it here
+const { student } = useAuth()
+const myCourse = ref(null)
+watch(
+  [() => props.slug, student],
+  async ([slug, signedIn]) => {
+    myCourse.value = null
+    if (!signedIn) return
+    try {
+      myCourse.value = (await api.get(`me/courses/${encodeURIComponent(slug)}`)).data
+    } catch {
+      // not enrolled (403) or gone: no review form
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -58,8 +74,6 @@ const open = ref(0)
   <div v-else>
     <PageHero :title="course.title" :eyebrow="texts.ui.pages.courses" :subtitle="course.description || ''">
       <span><BaseIcon name="award" :size="16" />{{ course.level }}</span>
-      <span><BaseIcon name="clock" :size="16" /><b>{{ course.hours }}</b> ساعة</span>
-      <span><BaseIcon name="play" :size="16" /><b>{{ course.lessons }}</b> درساً</span>
       <span v-if="course.reviews"><BaseIcon name="star" :size="16" /><b>{{ course.rating }}</b> ({{ course.reviews }} تقييم)</span>
     </PageHero>
 
@@ -76,22 +90,6 @@ const open = ref(0)
           <div v-if="paragraphs.length" class="block">
             <h2>عن الدورة</h2>
             <p v-for="(p, i) in paragraphs" :key="i" class="text">{{ p }}</p>
-          </div>
-
-          <div v-if="curriculum.length" class="block">
-            <h2>محتوى الدورة</h2>
-            <div class="modules">
-              <div v-for="(m, i) in curriculum" :key="m.id" class="card module">
-                <button type="button" class="module-head" :aria-expanded="open === i" @click="open = open === i ? -1 : i">
-                  <b>{{ m.title }}</b>
-                  <span class="muted">{{ m.lessons.length }} دروس</span>
-                  <BaseIcon name="chevron-down" :size="18" :class="{ flip: open === i }" />
-                </button>
-                <ol v-show="open === i" class="lessons">
-                  <li v-for="l in m.lessons" :key="l.id"><BaseIcon name="play" :size="15" /><span>{{ l.title }}</span><span class="muted mono">{{ l.duration }}</span></li>
-                </ol>
-              </div>
-            </div>
           </div>
 
           <div class="block">
@@ -123,6 +121,7 @@ const open = ref(0)
             <RouterLink class="btn btn-primary btn-lg btn-block" :to="{ name: 'enroll', query: { course: course.slug } }">{{ texts.ui.buttons.enroll }}</RouterLink>
             <p class="muted small">الدفع يدوي: بعد التسجيل نتواصل معك على واتساب لإتمام الدفع، ثم تُفتح لك الدورة.</p>
           </div>
+          <CourseReviewForm v-if="myCourse" :slug="course.slug" :initial="myCourse.my_review" />
         </aside>
       </div>
     </section>
@@ -172,48 +171,6 @@ const open = ref(0)
 .text + .text {
   margin-top: 12px;
 }
-.modules {
-  display: grid;
-  gap: 10px;
-}
-.module {
-  padding: 0;
-  overflow: hidden;
-}
-.module-head {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 18px;
-  border: 0;
-  background: none;
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-  color: var(--fg);
-}
-.module-head b {
-  flex: 1;
-}
-.flip {
-  transform: rotate(180deg);
-}
-.lessons {
-  list-style: none;
-  margin: 0;
-  padding: 0 18px 12px;
-}
-.lessons li {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-}
-.lessons li span:first-of-type {
-  flex: 1;
-}
 .review {
   padding: 18px;
   margin-bottom: 12px;
@@ -247,6 +204,8 @@ const open = ref(0)
 .side {
   position: sticky;
   top: calc(var(--header-h) + 24px);
+  display: grid;
+  gap: 16px;
 }
 .buy {
   padding: 22px;
