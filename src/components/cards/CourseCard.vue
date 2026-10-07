@@ -23,8 +23,8 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
     <div class="body">
       <h3><RouterLink :to="page" class="title-link">{{ course.title }}</RouterLink></h3>
       <div class="meta">
-        <span><BaseIcon name="clock" :size="16" />{{ course.hours }} ساعة</span>
-        <span><BaseIcon name="play" :size="16" />{{ course.lessons }} درساً</span>
+        <span><BaseIcon name="award" :size="16" />{{ course.level }}</span>
+        <span><BaseIcon name="users" :size="16" />{{ course.students }} طالب</span>
         <span class="rating"><BaseIcon name="star" :size="16" filled /><b>{{ course.rating }}</b></span>
       </div>
 

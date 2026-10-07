@@ -21,7 +21,7 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    courses.value = (await api.get('me/courses')).data.map((c) => ({ ...toCourse(c), progress: c.progress, access: c.access }))
+    courses.value = (await api.get('me/courses')).data.map((c) => ({ ...toCourse(c), access: c.access }))
   } catch (err) {
     error.value = err.message
   } finally {
@@ -47,13 +47,12 @@ async function logout() {
     <section class="page-body">
       <div class="container">
         <div class="grid g3">
-          <RouterLink v-for="c in courses" :key="c.id" class="card hover mine" :to="{ name: 'learn', params: { slug: c.slug } }">
+          <RouterLink v-for="c in courses" :key="c.id" class="card hover mine" :to="{ name: 'course', params: { slug: c.slug } }">
             <div class="cover"><span class="glyph">{{ c.glyph }}</span></div>
             <div class="body">
-              <span class="pill" :class="{ green: c.progress === 100 }">{{ c.progress === 100 ? 'مكتملة' : c.access === 'pro' ? 'ضمن Pro' : c.level }}</span>
+              <span class="pill">{{ c.access === 'pro' ? 'ضمن Pro' : c.level }}</span>
               <h3>{{ c.title }}</h3>
-              <div class="bar"><i :style="{ width: `${c.progress}%` }" /></div>
-              <div class="foot"><span>{{ c.progress }}% منجز</span><span class="link-more">{{ c.progress ? 'تابع' : 'ابدأ' }} <BaseIcon name="arrow" :size="16" /></span></div>
+              <div class="foot"><span>مسجّل</span><span class="link-more">صفحة الدورة <BaseIcon name="arrow" :size="16" /></span></div>
             </div>
           </RouterLink>
           <LoadState :loading="loading" :error="error" @retry="load" />
@@ -110,19 +109,6 @@ async function logout() {
 }
 .body h3 {
   font-size: 18px;
-}
-.bar {
-  width: 100%;
-  height: 8px;
-  border-radius: 99px;
-  background: var(--tint);
-  overflow: hidden;
-}
-.bar i {
-  display: block;
-  height: 100%;
-  background: var(--primary);
-  border-radius: 99px;
 }
 .foot {
   width: 100%;

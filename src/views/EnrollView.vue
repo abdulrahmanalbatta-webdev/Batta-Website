@@ -89,7 +89,7 @@ async function sendRequest() {
             <h2>الدورة مفتوحة في حسابك</h2>
             <p>يمكنك البدء مباشرة من صفحة دوراتي.</p>
           </div>
-          <RouterLink class="btn btn-primary" :to="{ name: 'learn', params: { slug: course.slug } }">ابدأ التعلّم</RouterLink>
+          <RouterLink class="btn btn-primary" :to="{ name: 'course', params: { slug: course.slug } }">صفحة الدورة</RouterLink>
         </div>
 
         <template v-else>
