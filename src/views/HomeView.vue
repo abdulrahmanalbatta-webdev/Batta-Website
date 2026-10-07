@@ -1,6 +1,5 @@
 <script setup>
 import HeroSection from '@/components/home/HeroSection.vue'
-import TechMarquee from '@/components/home/TechMarquee.vue'
 import AboutSection from '@/components/home/AboutSection.vue'
 import ServicesDark from '@/components/home/ServicesDark.vue'
 import WhySection from '@/components/home/WhySection.vue'
@@ -25,7 +24,6 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
 <template>
   <div>
     <HeroSection />
-    <TechMarquee />
     <AboutSection />
     <ServicesDark />
     <WhySection />

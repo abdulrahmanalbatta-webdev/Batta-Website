@@ -1,5 +1,5 @@
 // بياناتك الشخصية: نسخة احتياطية، والمحتوى الفعلي يُعدَّل من لوحة التحكم (محتوى الموقع ← عنك).
-// الصورة: ضع صورتك في src/assets/images/ باسم profile.jpg (أو .png / .webp) وستظهر تلقائياً.
+// الصورة تُرفع من لوحة التحكم (محتوى الموقع ← صورتك الشخصية)، وبدونها يظهر أول حرف من اسمك.
 import { siGithub, siX, siYoutube } from 'simple-icons'
 import { reactive } from 'vue'
 
@@ -47,7 +47,6 @@ export const profile = reactive({
     { title: 'التعليم المستمر', text: 'أشرح كل قرار تقني حتى تفهم منتجك وتملكه.' },
   ],
 
-  skills: ['Vue', 'Next.js', 'React', 'Node.js', 'PostgreSQL', 'TypeScript', 'Tailwind CSS', 'Figma', 'Git', 'REST & GraphQL'],
 
   // الحسابات تُعدَّل من لوحة التحكم (محتوى الموقع ← عنك)، وواتساب والبريد من إعداداتها
   socials: [

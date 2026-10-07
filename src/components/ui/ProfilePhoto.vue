@@ -2,19 +2,14 @@
 import { computed } from 'vue'
 import { profile } from '@/data/profile'
 
+// صورتك من لوحة التحكم (محتوى الموقع ← صورتك الشخصية)، وبدونها أول حرف من اسمك
+
 const props = defineProps({
   size: { type: [Number, String], default: 64 },
   rounded: { type: String, default: '50%' },
 })
 
-// الصورة الكاملة: src/assets/images/profile.(jpg|jpeg|png|webp)
-// صورة الوجه للدوائر الصغيرة: src/assets/images/profile-face.(jpg|jpeg|png|webp)
-const full = Object.values(import.meta.glob('@/assets/images/profile.{jpg,jpeg,png,webp}', { eager: true, import: 'default' }))[0] ?? null
-const face = Object.values(import.meta.glob('@/assets/images/profile-face.{jpg,jpeg,png,webp}', { eager: true, import: 'default' }))[0] ?? null
-
-// small avatars (≤ 120px) use the face crop so the face fills the circle
-// a photo uploaded on the dashboard wins over the bundled ones
-const src = computed(() => profile.photo || (typeof props.size === 'number' && props.size <= 120 ? face ?? full : full))
+const src = computed(() => profile.photo || null)
 const dim = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
 </script>
 

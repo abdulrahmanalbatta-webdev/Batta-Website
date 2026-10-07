@@ -119,7 +119,7 @@ export const texts = reactive({
       title: 'أربعة مبادئ لا أتنازل عنها',
     },
     skills: {
-      eyebrow: 'المهارات',
+      eyebrow: 'الأدوات',
       title: 'الأدوات التي أعمل بها يومياً',
     },
   },
