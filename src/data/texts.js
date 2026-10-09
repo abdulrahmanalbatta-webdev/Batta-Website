@@ -151,7 +151,6 @@ export const texts = reactive({
   general: {
     footer: {
       text: 'خدمات تطوير ويب ومنصة تعليمية باللغة العربية.',
-      made_with: 'صُنع بـ Vue',
     },
     maintenance: {
       title: 'نعود قريباً',

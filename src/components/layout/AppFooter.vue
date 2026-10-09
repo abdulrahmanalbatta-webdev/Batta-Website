@@ -50,7 +50,6 @@ const { email, whatsapp, whatsappUrl } = useContact()
       </div>
       <div class="bottom">
         <span>© {{ year }} {{ profile.name }}. جميع الحقوق محفوظة.</span>
-        <span v-if="texts.general.footer.made_with">{{ texts.general.footer.made_with }}</span>
       </div>
     </div>
   </footer>
