@@ -19,9 +19,6 @@ const stats = useStats()
       <TopoPattern tone="dark" />
       <div class="container grid-hero" :class="{ solo: !profile.photo }">
         <div class="copy">
-          <nav class="crumbs" aria-label="مسار التنقل">
-            <RouterLink to="/">الرئيسية</RouterLink><span>/</span><span>{{ texts.ui.pages.about }}</span>
-          </nav>
           <span v-if="profile.available" class="status">{{ profile.available }}</span>
           <h1>{{ profile.name }}</h1>
           <p class="role">{{ profile.role }}</p>
@@ -129,19 +126,6 @@ const stats = useStats()
   flex-direction: column;
   gap: 16px;
   align-items: flex-start;
-}
-.crumbs {
-  display: inline-flex;
-  gap: 8px;
-  font-size: 13.5px;
-  color: var(--ink-text);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 99px;
-  padding: 4px 14px;
-}
-.crumbs a:hover {
-  color: #fff;
 }
 .status {
   display: inline-flex;

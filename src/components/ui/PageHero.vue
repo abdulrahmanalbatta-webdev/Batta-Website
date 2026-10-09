@@ -12,11 +12,6 @@ defineProps({
   <section class="page-hero">
     <TopoPattern tone="dark" />
     <div class="container inner">
-      <nav class="crumbs" aria-label="مسار التنقل">
-        <RouterLink to="/">الرئيسية</RouterLink>
-        <span class="sep">/</span>
-        <span>{{ title }}</span>
-      </nav>
       <span v-if="eyebrow" class="eyebrow">{{ eyebrow }}</span>
       <h1>{{ title }}</h1>
       <p v-if="subtitle">{{ subtitle }}</p>
@@ -55,24 +50,6 @@ defineProps({
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-.crumbs {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  font-size: 13.5px;
-  color: var(--ink-text);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 99px;
-  padding: 4px 14px;
-}
-.crumbs a:hover {
-  color: #fff;
-}
-.sep {
-  opacity: 0.5;
 }
 .eyebrow {
   color: #6ea8ff;

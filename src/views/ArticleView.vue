@@ -90,11 +90,6 @@ async function copyLink() {
     <header class="article-hero">
       <TopoPattern tone="dark" />
       <div class="container narrow">
-        <nav class="crumbs" aria-label="مسار التنقل">
-          <RouterLink to="/">الرئيسية</RouterLink><span>/</span>
-          <RouterLink to="/articles">{{ texts.ui.pages.articles }}</RouterLink><span>/</span>
-          <span>{{ article.category }}</span>
-        </nav>
         <span class="pill">{{ article.category }}</span>
         <h1>{{ article.title }}</h1>
         <p class="lead">{{ article.excerpt }}</p>
@@ -207,22 +202,6 @@ async function copyLink() {
 }
 .narrow > * {
   max-width: 760px;
-}
-.crumbs {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  font-size: 13.5px;
-  color: var(--ink-text);
-  flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 99px;
-  padding: 4px 14px;
-}
-.crumbs a:hover {
-  color: #fff;
 }
 .article-hero .pill {
   background: var(--primary);
