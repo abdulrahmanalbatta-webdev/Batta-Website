@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import PageHero from '@/components/ui/PageHero.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import FaqSection from '@/components/home/FaqSection.vue'
 import { packages, processSteps, services } from '@/data/site'
 import { texts } from '@/data/texts'
 
@@ -90,7 +89,6 @@ watch(
       </div>
     </section>
 
-    <FaqSection class="tinted" />
   </div>
 </template>
 
