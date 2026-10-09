@@ -19,7 +19,6 @@ const stats = useStats()
       <TopoPattern tone="dark" />
       <div class="container grid-hero" :class="{ solo: !profile.photo }">
         <div class="copy">
-          <span v-if="profile.available" class="status">{{ profile.available }}</span>
           <h1>{{ profile.name }}</h1>
           <p class="role">{{ profile.role }}</p>
           <p class="lead">{{ profile.short }}</p>
@@ -126,24 +125,6 @@ const stats = useStats()
   flex-direction: column;
   gap: 16px;
   align-items: flex-start;
-}
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(52, 211, 153, 0.12);
-  color: #34d399;
-  border-radius: 99px;
-  padding: 3px 12px;
-  font-size: 13px;
-  font-weight: 700;
-}
-.status::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #34d399;
 }
 h1 {
   font-size: clamp(36px, 5vw, 56px);
