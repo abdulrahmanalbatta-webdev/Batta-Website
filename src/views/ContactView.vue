@@ -12,7 +12,8 @@ import { useCourses, useWorkshops } from '@/composables/useContent'
 import { useToast } from '@/composables/useToast'
 import { api } from '@/lib/api'
 
-// صفحة التواصل: لوحة واحدة، جانبها الداكن يتغيّر حسب الزائر (العنوان، الوعود، قنوات التواصل)، وفوق النموذج تبويبات:
+// صفحة التواصل: لوحة واحدة، جانبها الداكن يتغيّر حسب الزائر (العنوان، الوعود، قنوات التواصل)، وبجانبه خطوات على خط عمودي،
+// الضغط على خطوة يفتح نموذجها تحتها ويغلق الباقي:
 // - مشروع جديد: نموذج طلب المشروع (يصل لطلبات المشاريع في لوحة التحكم) بنوعه وميزانيته.
 // - أنا طالب: رسالة بموضوعها (دورة، ورشة، الحساب…) والدورة أو الورشة المقصودة (تصل للرسائل في اللوحة).
 // - استفسار عام: رسالة عادية.
@@ -38,7 +39,6 @@ const audienceFromRoute = () => {
   return student.value ? 'student' : 'project'
 }
 const audience = ref(audienceFromRoute())
-const audienceIndex = computed(() => AUDIENCES.findIndex((a) => a.id === audience.value))
 watch(() => route.query, () => (audience.value = audienceFromRoute()))
 // a signed-in student who landed on the default choice sees the student form once their account loads
 watch(student, (s) => s && !route.query.type && !route.query.service && (audience.value = 'student'))
@@ -47,16 +47,8 @@ function choose(id) {
   audience.value = id
   router.replace({ query: { ...route.query, type: id } })
 }
-// arrow keys move between the tabs, as in any tab list
-function onTabKey(e) {
-  const step = { ArrowLeft: 1, ArrowRight: -1 }[e.key]
-  if (!step) return
-  const next = AUDIENCES[(audienceIndex.value + step + AUDIENCES.length) % AUDIENCES.length]
-  choose(next.id)
-  document.getElementById(`tab-${next.id}`)?.focus()
-}
 
-// the dark side: its heading and promises follow the chosen tab (the texts come from the dashboard)
+// the dark side: its heading and promises follow the chosen step (the texts come from the dashboard)
 const STUDENT_PROMISES = [
   { icon: 'clock', title: 'رد خلال يوم عمل', text: 'على بريدك، ومعه رابط لما تحتاجه.' },
   { icon: 'award', title: 'التسجيل مجاني', text: 'في كل الدورات والورش، بضغطة من صفحتها.' },
@@ -221,126 +213,122 @@ async function sendMessage() {
           </aside>
 
           <div class="main">
-            <div class="tabs" role="tablist" aria-label="نوع التواصل" :style="{ '--i': audienceIndex }" @keydown="onTabKey">
-              <span class="thumb" aria-hidden="true" />
-              <button
-                v-for="a in AUDIENCES"
-                :id="`tab-${a.id}`"
-                :key="a.id"
-                type="button"
-                role="tab"
-                :aria-selected="audience === a.id"
-                :tabindex="audience === a.id ? 0 : -1"
-                aria-controls="contact-panel"
-                @click="choose(a.id)"
-              >
-                <BaseIcon :name="a.icon" :size="17" />{{ a.label }}
-              </button>
-            </div>
-            <p class="tab-hint">{{ AUDIENCES[audienceIndex].hint }}</p>
+            <h2 class="steps-title">كيف أقدر أساعدك؟</h2>
+            <ol class="steps">
+              <li v-for="a in AUDIENCES" :key="a.id" class="step" :class="{ open: audience === a.id }">
+                <button :id="`step-${a.id}`" type="button" class="step-head" :aria-expanded="audience === a.id" :aria-controls="`step-body-${a.id}`" @click="choose(a.id)">
+                  <span class="dot" aria-hidden="true"><i /></span>
+                  <span class="step-text">
+                    <b>{{ a.label }}</b>
+                    <small>{{ a.hint }}</small>
+                  </span>
+                </button>
 
-            <div id="contact-panel" role="tabpanel" :aria-labelledby="`tab-${audience}`">
-              <Transition name="swap" mode="out-in">
-                <!-- sent: a calm confirmation instead of the form -->
-                <div v-if="sent" key="sent" class="done">
-                  <span class="done-ico"><BaseIcon name="check" :size="30" /></span>
-                  <h3>{{ sent.title }}</h3>
-                  <p>{{ sent.text }}</p>
-                  <div class="done-actions">
-                    <button type="button" class="btn btn-ghost" @click="sent = null">إرسال رسالة أخرى</button>
-                    <RouterLink v-if="audience === 'student'" class="btn btn-soft" to="/courses">تصفّح الدورات</RouterLink>
-                    <RouterLink v-else class="btn btn-soft" to="/services">تعرّف على الخدمات</RouterLink>
+                <!-- the form opens under its step; closed ones keep their height at zero and stay out of the tab order -->
+                <div :id="`step-body-${a.id}`" class="step-body" role="region" :aria-labelledby="`step-${a.id}`" :inert="audience !== a.id">
+                  <div class="step-inner">
+                    <!-- sent: a calm confirmation instead of the form -->
+                    <div v-if="sent && audience === a.id" class="done">
+                      <span class="done-ico"><BaseIcon name="check" :size="30" /></span>
+                      <h3>{{ sent.title }}</h3>
+                      <p>{{ sent.text }}</p>
+                      <div class="done-actions">
+                        <button type="button" class="btn btn-ghost" @click="sent = null">إرسال رسالة أخرى</button>
+                        <RouterLink v-if="a.id === 'student'" class="btn btn-soft" to="/courses">تصفّح الدورات</RouterLink>
+                        <RouterLink v-else class="btn btn-soft" to="/services">تعرّف على الخدمات</RouterLink>
+                      </div>
+                    </div>
+
+                    <form v-else-if="a.id === 'project'" class="form" @submit.prevent="submit">
+                      <label class="field-label">الاسم<input v-model="form.name" class="input" autocomplete="name" required /></label>
+                      <label class="field-label">البريد الإلكتروني<input v-model="form.email" class="input" type="email" dir="ltr" autocomplete="email" required /></label>
+                      <label class="field-label"><span class="lbl">رقم واتساب <small>اختياري</small></span><input v-model="form.phone" class="input" type="tel" dir="ltr" autocomplete="tel" placeholder="+970 59 000 0000" /></label>
+                      <label class="field-label"><span class="lbl">الشركة <small>اختياري</small></span><input v-model="form.company" class="input" autocomplete="organization" /></label>
+                      <!-- bot trap: never shown (display: none, so browsers and password managers don't autofill it); a filled one means a bot -->
+                      <div hidden aria-hidden="true"><input v-model="form.website" type="text" name="hp_extra" tabindex="-1" autocomplete="off" /></div>
+                      <label class="field-label full">نوع المشروع
+                        <select v-model="form.type" class="input"><option v-for="t in projectTypes" :key="t">{{ t }}</option></select>
+                      </label>
+                      <fieldset class="full chips-field">
+                        <legend class="field-label">الميزانية التقريبية</legend>
+                        <div class="chips">
+                          <label v-for="b in budgets" :key="b.label" class="chip">
+                            <input v-model="form.budget" type="radio" name="budget" :value="b.label" />
+                            <span>{{ b.label }}</span>
+                          </label>
+                        </div>
+                      </fieldset>
+                      <label class="field-label full">تفاصيل مختصرة
+                        <textarea v-model="form.details" class="input" rows="5" placeholder="ما الذي تريد بناءه؟ ولمن؟ ومتى تحتاجه؟" required minlength="10" />
+                      </label>
+                      <div class="full submit">
+                        <button class="btn btn-primary btn-lg" type="submit" :disabled="sending">{{ sending ? 'جارٍ الإرسال…' : 'إرسال الطلب' }}<BaseIcon v-if="!sending" name="arrow" :size="18" /></button>
+                        <small>بدون أي التزام، الرد الأول مجاني.</small>
+                      </div>
+                    </form>
+
+                    <form v-else class="form" @submit.prevent="sendMessage">
+                      <p v-if="student" class="full signed">
+                        <span class="avatar">{{ student.name.slice(0, 1) }}</span>
+                        <span>ترسل باسم <b>{{ student.name }}</b>، والرد يصلك على <span dir="ltr">{{ student.email }}</span></span>
+                      </p>
+                      <template v-else>
+                        <label class="field-label">الاسم<input v-model="note.name" class="input" autocomplete="name" required /></label>
+                        <label class="field-label">البريد الإلكتروني<input v-model="note.email" class="input" type="email" dir="ltr" autocomplete="email" required /></label>
+                      </template>
+                      <div hidden aria-hidden="true"><input v-model="note.website" type="text" name="hp_extra" tabindex="-1" autocomplete="off" /></div>
+
+                      <template v-if="a.id === 'student'">
+                        <fieldset class="full chips-field">
+                          <legend class="field-label">سؤالك عن</legend>
+                          <div class="chips">
+                            <label v-for="t in TOPICS" :key="t.id" class="chip">
+                              <input v-model="note.topic" type="radio" name="topic" :value="t.id" />
+                              <span>{{ t.label }}</span>
+                            </label>
+                          </div>
+                        </fieldset>
+                        <Transition name="grow">
+                          <label v-if="note.topic === 'course'" key="course" class="field-label full">أي دورة؟
+                            <select v-model="note.course" class="input">
+                              <option value="">اختر الدورة (اختياري)</option>
+                              <option v-for="c in courseOptions" :key="c.slug" :value="c.slug">{{ c.title }}</option>
+                            </select>
+                          </label>
+                          <label v-else-if="note.topic === 'workshop'" key="workshop" class="field-label full">أي ورشة؟
+                            <select v-model="note.workshop" class="input">
+                              <option value="">اختر الورشة (اختياري)</option>
+                              <option v-for="w in workshopOptions" :key="w.id" :value="String(w.id)">{{ w.title }}</option>
+                            </select>
+                          </label>
+                        </Transition>
+                      </template>
+
+                      <label class="field-label full">رسالتك
+                        <textarea
+                          v-model="note.message"
+                          class="input"
+                          rows="6"
+                          :placeholder="a.id === 'student' ? 'اكتب سؤالك بالتفصيل، وإن كانت مشكلة فاذكر ما ظهر لك…' : 'كيف أقدر أساعدك؟'"
+                          required
+                          minlength="10"
+                          maxlength="5000"
+                        />
+                      </label>
+                      <div class="full submit">
+                        <button class="btn btn-primary btn-lg" type="submit" :disabled="sending">{{ sending ? 'جارٍ الإرسال…' : 'إرسال الرسالة' }}<BaseIcon v-if="!sending" name="arrow" :size="18" /></button>
+                        <span v-if="a.id === 'student'" class="quick">
+                          أسرع:
+                          <RouterLink v-if="student" to="/my-courses">تسجيلاتي</RouterLink>
+                          <RouterLink v-else :to="{ name: 'login', query: { next: '/contact?type=student' } }">تسجيل الدخول</RouterLink>
+                          · <RouterLink to="/courses">الدورات</RouterLink> · <RouterLink to="/workshops">الورش</RouterLink>
+                        </span>
+                      </div>
+                    </form>
                   </div>
                 </div>
-
-                <form v-else-if="audience === 'project'" key="project" class="form" @submit.prevent="submit">
-                  <label class="field-label">الاسم<input v-model="form.name" class="input" autocomplete="name" required /></label>
-                  <label class="field-label">البريد الإلكتروني<input v-model="form.email" class="input" type="email" dir="ltr" autocomplete="email" required /></label>
-                  <label class="field-label"><span class="lbl">رقم واتساب <small>اختياري</small></span><input v-model="form.phone" class="input" type="tel" dir="ltr" autocomplete="tel" placeholder="+970 59 000 0000" /></label>
-                  <label class="field-label"><span class="lbl">الشركة <small>اختياري</small></span><input v-model="form.company" class="input" autocomplete="organization" /></label>
-                  <!-- bot trap: never shown (display: none, so browsers and password managers don't autofill it); a filled one means a bot -->
-                  <div hidden aria-hidden="true"><input v-model="form.website" type="text" name="hp_extra" tabindex="-1" autocomplete="off" /></div>
-                  <label class="field-label full">نوع المشروع
-                    <select v-model="form.type" class="input"><option v-for="t in projectTypes" :key="t">{{ t }}</option></select>
-                  </label>
-                  <fieldset class="full chips-field">
-                    <legend class="field-label">الميزانية التقريبية</legend>
-                    <div class="chips">
-                      <label v-for="b in budgets" :key="b.label" class="chip">
-                        <input v-model="form.budget" type="radio" name="budget" :value="b.label" />
-                        <span>{{ b.label }}</span>
-                      </label>
-                    </div>
-                  </fieldset>
-                  <label class="field-label full">تفاصيل مختصرة
-                    <textarea v-model="form.details" class="input" rows="5" placeholder="ما الذي تريد بناءه؟ ولمن؟ ومتى تحتاجه؟" required minlength="10" />
-                  </label>
-                  <div class="full submit">
-                    <button class="btn btn-primary btn-lg" type="submit" :disabled="sending">{{ sending ? 'جارٍ الإرسال…' : 'إرسال الطلب' }}<BaseIcon v-if="!sending" name="arrow" :size="18" /></button>
-                    <small>بدون أي التزام، الرد الأول مجاني.</small>
-                  </div>
-                </form>
-
-                <form v-else :key="audience" class="form" @submit.prevent="sendMessage">
-                  <p v-if="student" class="full signed">
-                    <span class="avatar">{{ student.name.slice(0, 1) }}</span>
-                    <span>ترسل باسم <b>{{ student.name }}</b>، والرد يصلك على <span dir="ltr">{{ student.email }}</span></span>
-                  </p>
-                  <template v-else>
-                    <label class="field-label">الاسم<input v-model="note.name" class="input" autocomplete="name" required /></label>
-                    <label class="field-label">البريد الإلكتروني<input v-model="note.email" class="input" type="email" dir="ltr" autocomplete="email" required /></label>
-                  </template>
-                  <div hidden aria-hidden="true"><input v-model="note.website" type="text" name="hp_extra" tabindex="-1" autocomplete="off" /></div>
-
-                  <template v-if="audience === 'student'">
-                    <fieldset class="full chips-field">
-                      <legend class="field-label">سؤالك عن</legend>
-                      <div class="chips">
-                        <label v-for="t in TOPICS" :key="t.id" class="chip">
-                          <input v-model="note.topic" type="radio" name="topic" :value="t.id" />
-                          <span>{{ t.label }}</span>
-                        </label>
-                      </div>
-                    </fieldset>
-                    <Transition name="grow">
-                      <label v-if="note.topic === 'course'" key="course" class="field-label full">أي دورة؟
-                        <select v-model="note.course" class="input">
-                          <option value="">اختر الدورة (اختياري)</option>
-                          <option v-for="c in courseOptions" :key="c.slug" :value="c.slug">{{ c.title }}</option>
-                        </select>
-                      </label>
-                      <label v-else-if="note.topic === 'workshop'" key="workshop" class="field-label full">أي ورشة؟
-                        <select v-model="note.workshop" class="input">
-                          <option value="">اختر الورشة (اختياري)</option>
-                          <option v-for="w in workshopOptions" :key="w.id" :value="String(w.id)">{{ w.title }}</option>
-                        </select>
-                      </label>
-                    </Transition>
-                  </template>
-
-                  <label class="field-label full">رسالتك
-                    <textarea
-                      v-model="note.message"
-                      class="input"
-                      rows="6"
-                      :placeholder="audience === 'student' ? 'اكتب سؤالك بالتفصيل، وإن كانت مشكلة فاذكر ما ظهر لك…' : 'كيف أقدر أساعدك؟'"
-                      required
-                      minlength="10"
-                      maxlength="5000"
-                    />
-                  </label>
-                  <div class="full submit">
-                    <button class="btn btn-primary btn-lg" type="submit" :disabled="sending">{{ sending ? 'جارٍ الإرسال…' : 'إرسال الرسالة' }}<BaseIcon v-if="!sending" name="arrow" :size="18" /></button>
-                    <span v-if="audience === 'student'" class="quick">
-                      أسرع:
-                      <RouterLink v-if="student" to="/my-courses">تسجيلاتي</RouterLink>
-                      <RouterLink v-else :to="{ name: 'login', query: { next: '/contact?type=student' } }">تسجيل الدخول</RouterLink>
-                      · <RouterLink to="/courses">الدورات</RouterLink> · <RouterLink to="/workshops">الورش</RouterLink>
-                    </span>
-                  </div>
-                </form>
-              </Transition>
-            </div>
+              </li>
+            </ol>
           </div>
         </div>
       </div>
@@ -490,61 +478,130 @@ async function sendMessage() {
   padding: 32px 36px 36px;
   min-width: 0;
 }
-.tabs {
-  --i: 0;
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  padding: 5px;
-  border-radius: 14px;
-  background: var(--tint-2);
-  border: 1px solid var(--line);
+.steps-title {
+  font-size: 22px;
+  margin-bottom: 18px;
 }
-.thumb {
+/* a vertical rail: a dot per step on one line, the open step's dot glows */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.step {
+  position: relative;
+  padding-inline-start: 44px;
+}
+.step::before {
+  /* the line between this dot and the next one */
+  content: '';
   position: absolute;
-  top: 5px;
-  bottom: 5px;
-  right: 5px;
-  width: calc((100% - 10px) / 3);
-  border-radius: 10px;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm), 0 0 0 1px var(--line);
-  /* right-to-left: each step moves the thumb one tab to the left */
-  transform: translateX(calc(var(--i) * -100%));
-  transition: transform 0.35s cubic-bezier(0.3, 0.7, 0.2, 1);
+  top: 34px;
+  bottom: -2px;
+  inset-inline-start: 13px;
+  width: 2px;
+  background: var(--line);
 }
-.tabs button {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
+.step:last-child::before {
+  display: none;
+}
+.step.open::before {
+  background: linear-gradient(to bottom, var(--primary), var(--line) 70%);
+}
+.step-head {
+  width: 100%;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 11px 10px;
+  gap: 14px;
+  padding: 10px 0 18px;
   border: 0;
-  border-radius: 10px;
   background: none;
   font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--muted);
+  color: inherit;
+  text-align: start;
   cursor: pointer;
+}
+.dot {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--tint);
+  transition:
+    background 0.25s,
+    box-shadow 0.25s;
+}
+.dot i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--line-2);
+  transition:
+    background 0.25s,
+    transform 0.25s;
+}
+.step-head:hover .dot i {
+  background: var(--muted);
+}
+.step.open .dot {
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.step.open .dot i {
+  background: var(--primary);
+  transform: scale(1.1);
+}
+.step-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.step-text b {
+  font-size: 19px;
+  color: var(--muted);
   transition: color 0.2s;
 }
-.tabs button:hover {
-  color: var(--fg);
-}
-.tabs button[aria-selected='true'] {
-  color: var(--primary-600);
-}
-.tabs button:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-.tab-hint {
-  margin: 12px 4px 22px;
+.step-text small {
   font-size: 14px;
   color: var(--muted);
+}
+.step-head:hover .step-text b {
+  color: var(--fg);
+}
+.step.open .step-text b {
+  color: var(--primary-600);
+  font-size: 21px;
+}
+.step-head:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+  border-radius: 10px;
+}
+/* height animates from 0 to the form's own height */
+.step-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.4s cubic-bezier(0.3, 0.7, 0.2, 1),
+    opacity 0.3s;
+}
+.step.open .step-body {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.step-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+.step.open .step-inner {
+  padding-bottom: 26px;
 }
 
 .form {
@@ -706,20 +763,6 @@ textarea.input {
 .fade-leave-to {
   opacity: 0;
 }
-.swap-enter-active,
-.swap-leave-active {
-  transition:
-    opacity 0.22s,
-    transform 0.22s;
-}
-.swap-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-.swap-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
-}
 .grow-enter-active,
 .grow-leave-active {
   transition: opacity 0.2s;
@@ -729,9 +772,8 @@ textarea.input {
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  .thumb,
-  .swap-enter-active,
-  .swap-leave-active,
+  .step-body,
+  .dot,
   .fade-enter-active,
   .fade-leave-active,
   .done-ico {
@@ -757,11 +799,8 @@ textarea.input {
   .form {
     grid-template-columns: minmax(0, 1fr);
   }
-  .tabs button {
-    flex-direction: column;
-    gap: 4px;
-    font-size: 13px;
-    padding: 9px 4px;
+  .step {
+    padding-inline-start: 38px;
   }
 }
 </style>
