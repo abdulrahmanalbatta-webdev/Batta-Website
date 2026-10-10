@@ -45,7 +45,6 @@ const { email, whatsapp, whatsappUrl } = useContact()
           <ul>
             <li><RouterLink to="/login">تسجيل الدخول</RouterLink></li>
             <li><RouterLink to="/register">إنشاء حساب</RouterLink></li>
-            <li><RouterLink :to="{ path: '/', hash: '#newsletter' }">{{ texts.home.newsletter.title }}</RouterLink></li>
           </ul>
         </div>
       </div>

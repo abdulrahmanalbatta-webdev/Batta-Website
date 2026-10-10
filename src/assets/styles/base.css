@@ -255,7 +255,7 @@ button, input, select, textarea {
   color: var(--fg);
 }
 
-/* ---------- dark panel (newsletter, CTA) ---------- */
+/* ---------- dark panel (CTA) ---------- */
 .ink-panel {
   background: var(--ink-panel);
   color: var(--ink-text);

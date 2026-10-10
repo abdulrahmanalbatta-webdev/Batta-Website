@@ -150,11 +150,6 @@ async function copyLink() {
           <button class="btn btn-ghost btn-block" type="button" @click="copyLink">
             <BaseIcon name="link" :size="18" />نسخ رابط المقال
           </button>
-          <div class="ink-panel side-cta">
-            <h4>نشرة البطّة</h4>
-            <p>{{ texts.learning.articles.newsletter_text }}</p>
-            <RouterLink class="btn btn-primary btn-block" :to="{ path: '/', hash: '#newsletter' }">{{ texts.ui.buttons.subscribe }}</RouterLink>
-          </div>
         </aside>
       </div>
     </section>
@@ -327,21 +322,6 @@ h1 {
 .toc a:hover {
   color: var(--primary-600);
 }
-.side-cta {
-  padding: 24px;
-  border-radius: var(--r);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.side-cta h4 {
-  color: #fff;
-  font-size: 17px;
-}
-.side-cta p {
-  font-size: 14px;
-  margin-bottom: 6px;
-}
 
 @media (max-width: 980px) {
   .layout {
@@ -350,9 +330,6 @@ h1 {
   .sidebar {
     position: static;
     order: -1;
-  }
-  .side-cta {
-    display: none;
   }
 }
 @media (max-width: 620px) {
