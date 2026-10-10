@@ -40,12 +40,13 @@ import {
   siDribbble,
 } from 'simple-icons'
 import { announcement, heroWords, technologies, services, reasons, faqs, packages, processSteps, testimonials } from '@/data/site'
+import { paths } from '@/data/paths'
 import { profile, LINKEDIN_PATH } from '@/data/profile'
 import { texts } from '@/data/texts'
 import { api } from '@/lib/api'
 import { reactive } from 'vue'
 
-// true once the dashboard's content arrived (or failed): a page that needs it (a project) knows when to say "not found"
+// true once the dashboard's content arrived (or failed): a page that needs it (a path) knows when to say "not found"
 export const contentState = reactive({ loaded: false })
 
 // the logos the dashboard offers (SiteContent::TECHNOLOGIES and NETWORKS), by simple-icons slug;
@@ -77,6 +78,7 @@ function apply(c) {
   replace(processSteps, c.process)
   replace(packages, c.packages.map(({ price_note: priceNote, ...p }) => ({ ...p, priceNote })))
   replace(testimonials, c.testimonials.map((t) => ({ ...t, initial: initial(t.name) })))
+  replace(paths, c.paths)
   Object.assign(texts, { home: c.texts_home, pages: c.texts_pages, learning: c.texts_learning, general: c.texts_general, ui: c.texts_ui, seo: c.seo })
   // the build already wrote this into index.html (vite.config.js); this keeps a running dev server current too
   document.querySelector('meta[name="description"]')?.setAttribute('content', c.seo.description)

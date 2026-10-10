@@ -9,8 +9,9 @@ export const nav = computed(() => [
   { label: texts.ui.pages.services, to: '/services' },
   {
     label: texts.ui.pages.academy,
-    match: ['/courses', '/workshops'],
+    match: ['/paths', '/courses', '/workshops'],
     children: [
+      { label: texts.ui.pages.paths, desc: texts.ui.menu.paths, icon: 'pin', to: '/paths' },
       { label: texts.ui.pages.courses, desc: texts.ui.menu.courses, icon: 'play', to: '/courses' },
       { label: texts.ui.pages.workshops, desc: texts.ui.menu.workshops, icon: 'calendar', to: '/workshops' },
     ],
