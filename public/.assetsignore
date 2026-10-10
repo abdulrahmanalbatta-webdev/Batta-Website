@@ -1,2 +1,0 @@
-# Pages-only rules; Workers serve the SPA through not_found_handling in wrangler.jsonc
-_redirects
