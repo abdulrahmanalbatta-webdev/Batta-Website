@@ -1,26 +1,50 @@
 <script setup>
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
+import LoadState from '@/components/ui/LoadState.vue'
+import CourseCard from '@/components/cards/CourseCard.vue'
+import WorkshopCard from '@/components/cards/WorkshopCard.vue'
+import ArticleCard from '@/components/cards/ArticleCard.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
-import { paths } from '@/data/paths'
+import { api } from '@/lib/api'
+import { toPath, usePaths } from '@/composables/useContent'
 import { texts } from '@/data/texts'
-import { contentState } from '@/lib/siteContent'
 import { siteTitle } from '@/router'
 
-// خريطة مسار واحد: مراحله بالترتيب على خط عمودي، وفي كل مرحلة مواضيعها ومصادر مجانية تفتح في تبويب جديد
+// خريطة مسار واحد: مراحله بالترتيب على خط عمودي، وفي كل مرحلة مواضيعها ومصادر مجانية تفتح في تبويب جديد،
+// ودوراتي وورشي ومقالاتي المرتبطة بها من لوحة التحكم
 const props = defineProps({
   id: { type: String, required: true },
 })
 
-const path = computed(() => paths.find((p) => p.id === props.id))
-// a path added on the dashboard isn't in the bundled copy: wait for the content before saying "not found"
-const missing = computed(() => !path.value && contentState.loaded)
-const resources = computed(() => path.value?.stages.reduce((sum, stage) => sum + stage.resources.length, 0) ?? 0)
-const others = computed(() => paths.filter((p) => p.id !== props.id).slice(0, 3))
+const path = ref(null)
+const loading = ref(true)
+const error = ref('')
+const missing = ref(false)
+
+async function load() {
+  loading.value = true
+  error.value = ''
+  missing.value = false
+  try {
+    path.value = toPath((await api.get(`paths/${encodeURIComponent(props.id)}`)).data)
+  } catch (err) {
+    path.value = null
+    if (err.status === 404) missing.value = true
+    else error.value = err.message
+  } finally {
+    loading.value = false
+  }
+}
+watch(() => props.id, load, { immediate: true })
 watchEffect(() => {
   if (path.value) document.title = siteTitle(path.value.title)
 })
+
+const linkedIn = (stage) => stage.courses.length + stage.workshops.length + stage.articles.length
+const { items: allPaths } = usePaths()
+const others = computed(() => allPaths.value.filter((p) => p.id !== props.id).slice(0, 3))
 
 const TYPES = {
   video: { label: 'فيديو', icon: 'play' },
@@ -42,11 +66,14 @@ const host = (url) => {
 
 <template>
   <NotFoundView v-if="missing" />
-  <div v-else-if="path">
+  <section v-else-if="!path" class="page-body">
+    <div class="container"><LoadState :loading="loading" :error="error" @retry="load" /></div>
+  </section>
+  <div v-else>
     <PageHero :title="path.title" :eyebrow="texts.ui.pages.paths" :subtitle="path.summary">
       <span><BaseIcon name="clock" :size="16" />{{ path.duration }}</span>
       <span><BaseIcon name="pin" :size="16" /><b>{{ path.stages.length }}</b> مراحل</span>
-      <span><BaseIcon name="link" :size="16" /><b>{{ resources }}</b> مصدراً مجانياً</span>
+      <span><BaseIcon name="link" :size="16" /><b>{{ path.resources_count }}</b> مصدراً مجانياً</span>
     </PageHero>
 
     <section class="page-body">
@@ -75,6 +102,14 @@ const host = (url) => {
                   </span>
                   <span class="r-go" aria-hidden="true"><BaseIcon name="arrow" :size="16" /></span>
                 </a>
+              </div>
+              <div v-if="linkedIn(s)" class="linked">
+                <h3>تعلّم معي في هذه المرحلة</h3>
+                <div v-if="s.courses.length || s.articles.length" class="linked-grid">
+                  <CourseCard v-for="c in s.courses" :key="'c' + c.id" :course="c" />
+                  <ArticleCard v-for="a in s.articles" :key="'a' + a.id" :article="a" />
+                </div>
+                <WorkshopCard v-for="w in s.workshops" :key="'w' + w.id" :workshop="w" />
               </div>
             </div>
           </li>
@@ -263,6 +298,23 @@ const host = (url) => {
 }
 .r-go {
   color: var(--muted);
+}
+.linked {
+  margin-top: 10px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.linked h3 {
+  font-size: 14px;
+  color: var(--muted);
+}
+.linked-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
 }
 .finish .num {
   background: var(--green);

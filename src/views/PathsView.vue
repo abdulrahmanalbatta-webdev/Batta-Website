@@ -2,12 +2,13 @@
 import { computed } from 'vue'
 import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import { paths } from '@/data/paths'
+import LoadState from '@/components/ui/LoadState.vue'
+import { usePaths } from '@/composables/useContent'
 import { texts } from '@/data/texts'
 
-// صفحة المسارات: كرت لكل تخصص، يفتح خريطته بالمراحل والمصادر المجانية (من لوحة التحكم ← محتوى الموقع ← المسارات)
-const resourcesIn = (path) => path.stages.reduce((sum, stage) => sum + stage.resources.length, 0)
-const total = computed(() => paths.reduce((sum, path) => sum + resourcesIn(path), 0))
+// صفحة المسارات: كرت لكل تخصص، يفتح خريطته بالمراحل والمصادر المجانية (من لوحة التحكم ← المسارات)
+const { items: paths, loading, error, reload } = usePaths()
+const total = computed(() => paths.value.reduce((sum, path) => sum + path.resources_count, 0))
 </script>
 
 <template>
@@ -31,12 +32,12 @@ const total = computed(() => paths.reduce((sum, path) => sum + resourcesIn(path)
             </ol>
             <div class="foot">
               <span><BaseIcon name="clock" :size="15" />{{ p.duration }}</span>
-              <span>{{ p.stages.length }} مراحل · {{ resourcesIn(p) }} مصدراً</span>
+              <span>{{ p.stages.length }} مراحل · {{ p.resources_count }} مصدراً</span>
               <span class="go">الخريطة <BaseIcon name="arrow" :size="15" /></span>
             </div>
           </RouterLink>
+          <LoadState :loading="loading" :error="error" :empty="!paths.length" empty-text="لا توجد مسارات بعد." @retry="reload" />
         </div>
-        <p v-if="!paths.length" class="card empty">لا توجد مسارات بعد.</p>
       </div>
     </section>
   </div>
@@ -116,9 +117,5 @@ const total = computed(() => paths.reduce((sum, path) => sum + resourcesIn(path)
   margin-inline-start: auto;
   color: var(--primary-600);
   font-weight: 700;
-}
-.empty {
-  color: var(--muted);
-  text-align: center;
 }
 </style>

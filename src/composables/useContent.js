@@ -79,6 +79,12 @@ export const toTools = (categories) =>
     category.tools.map((t) => ({ id: t.id, name: t.name, short: t.short, color: t.color, logo: t.logo_url, category: category.name, why: t.why, since: t.since, url: t.url, affiliate: t.is_affiliate })),
   )
 
+// مسار واحد بخريطته: كل مرحلة فيها المحتوى المرتبط بنفس شكل بطاقاته
+export const toPath = (p) => ({
+  ...p,
+  stages: p.stages.map((s) => ({ ...s, courses: (s.courses ?? []).map(toCourse), workshops: (s.workshops ?? []).map(toWorkshop), articles: (s.articles ?? []).map(toArticle) })),
+})
+
 // قائمة مشتركة: { items, loading, error, load() }
 function shared(fetcher) {
   const state = { items: ref([]), loading: ref(false), error: ref(''), promise: null }
@@ -103,6 +109,7 @@ const courses = shared(async () => (await api.get('courses')).data.map(toCourse)
 const workshops = shared(async () => (await api.get('workshops')).data.map(toWorkshop))
 const articles = shared(async () => (await api.get('articles', { per_page: 50 })).data.map(toArticle))
 const tools = shared(async () => toTools((await api.get('tools')).data))
+const paths = shared(async () => (await api.get('paths')).data)
 
 const use = (state) => {
   state.load()
@@ -113,6 +120,7 @@ export const useCourses = () => use(courses)
 export const useWorkshops = () => use(workshops)
 export const useArticles = () => use(articles)
 export const useTools = () => use(tools)
+export const usePaths = () => use(paths)
 
 // أرقام حقيقية من اللوحة لشرائط الإحصائيات (تُحدَّث كل 10 دقائق هناك)
 const stats = shared(async () => (await api.get('stats')).data)
