@@ -5,7 +5,6 @@ import ServicesDark from '@/components/home/ServicesDark.vue'
 import WhySection from '@/components/home/WhySection.vue'
 import TestimonialsSection from '@/components/home/TestimonialsSection.vue'
 import FaqSection from '@/components/home/FaqSection.vue'
-import NewsletterCta from '@/components/home/NewsletterCta.vue'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import CourseCard from '@/components/cards/CourseCard.vue'
@@ -62,6 +61,5 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
 
     <TestimonialsSection />
     <FaqSection class="tinted" />
-    <NewsletterCta />
   </div>
 </template>

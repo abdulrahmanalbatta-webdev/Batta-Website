@@ -6,7 +6,7 @@ import logoDark from '@/assets/images/logo-dark.png'
 const props = defineProps({
   size: { type: Number, default: 42 },
   withName: { type: Boolean, default: true },
-  // inverse: light-on-dark version for dark panels (footer, newsletter, auth side panel)
+  // inverse: light-on-dark version for dark panels (footer, auth side panel)
   inverse: { type: Boolean, default: false },
 })
 
