@@ -18,6 +18,8 @@ const routes = [
   { path: '/work/:id?', redirect: '/services' },
 
   // الأكاديمية
+  { path: '/paths', name: 'paths', component: () => import('@/views/PathsView.vue'), meta: { page: 'paths', title: 'المسارات' } },
+  { path: '/paths/:id', name: 'path', component: () => import('@/views/PathView.vue'), props: true, meta: { title: 'المسارات' } },
   { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { page: 'courses', title: 'الدورات' } },
   { path: '/courses/:slug', name: 'course', component: () => import('@/views/CourseView.vue'), props: true, meta: { title: 'الدورات' } },
   { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { page: 'workshops', title: 'الورش' } },

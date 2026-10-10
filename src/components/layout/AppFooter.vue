@@ -33,6 +33,7 @@ const { email, whatsapp, whatsappUrl } = useContact()
         <div>
           <h4>تعلّم</h4>
           <ul>
+            <li><RouterLink to="/paths">{{ texts.ui.pages.paths }}</RouterLink></li>
             <li><RouterLink to="/courses">{{ texts.ui.pages.courses }}</RouterLink></li>
             <li><RouterLink to="/workshops">{{ texts.ui.pages.workshops }}</RouterLink></li>
             <li><RouterLink to="/articles">{{ texts.ui.pages.articles }}</RouterLink></li>
