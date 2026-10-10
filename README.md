@@ -89,4 +89,4 @@ src/
 ## النشر
 
 - **Vercel:** ارفع المشروع مباشرة؛ ملف `vercel.json` يوجّه كل المسارات إلى `index.html`.
-- **Netlify:** أمر البناء `npm run build` ومجلد النشر `dist`؛ ملف `public/_redirects` جاهز لتوجيه المسارات.
+- **Cloudflare (Workers):** أمر البناء `npm run build` وأمر النشر `npx wrangler deploy`؛ ملف `wrangler.jsonc` ينشر مجلد `dist` ويوجّه كل المسارات إلى `index.html`. ضع `VITE_API_URL` في متغيرات البناء.

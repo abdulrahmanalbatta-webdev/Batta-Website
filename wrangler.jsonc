@@ -1,8 +1,8 @@
 // Cloudflare Workers (static assets): serves the built site from dist/; unknown paths get index.html so the
-// Vue router handles them (the same job public/_redirects does on Cloudflare Pages)
+// Vue router handles them (no _redirects file: Workers reject its catch-all rule)
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "batta-website",
+  "name": "abdulrhman-dev",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
