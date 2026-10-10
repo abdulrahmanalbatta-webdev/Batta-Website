@@ -5,7 +5,7 @@ import { testimonials } from '@/data/site'
 import { texts } from '@/data/texts'
 import { useStatsNumbers } from '@/composables/useContent'
 
-// الآراء على لوحة داكنة: العنوان ومتوسط التقييم على جهة، وعلى الجهة الأخرى عمودان يتحرّكان باتجاهين متعاكسين.
+// الآراء على خلفية الصفحة: العنوان ومتوسط التقييم على جهة، وعلى الجهة الأخرى عمودان يتحرّكان باتجاهين متعاكسين.
 // كل عمود يحمل بطاقاته مرتين ليدور بلا انقطاع، ويتوقف عند المرور عليه
 const numbers = useStatsNumbers()
 
@@ -20,7 +20,7 @@ const columns = computed(() => {
 <template>
   <section class="section">
     <div class="container">
-      <div class="ink-panel panel">
+      <div class="panel">
         <header class="summary">
           <span class="eyebrow">{{ texts.home.testimonials.eyebrow }}</span>
           <h2>{{ texts.home.testimonials.title }}</h2>
@@ -62,7 +62,6 @@ const columns = computed(() => {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
   gap: 40px;
   align-items: center;
-  padding: 48px;
 }
 .summary {
   display: flex;
@@ -74,7 +73,7 @@ const columns = computed(() => {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #7fb0ff;
+  color: var(--primary-600);
   font-size: 14px;
   font-weight: 700;
 }
@@ -83,7 +82,7 @@ const columns = computed(() => {
   width: 22px;
   height: 2px;
   border-radius: 2px;
-  background: currentColor;
+  background: var(--primary);
 }
 .summary h2 {
   font-size: clamp(26px, 3.4vw, 36px);
@@ -91,6 +90,7 @@ const columns = computed(() => {
   text-wrap: balance;
 }
 .summary p {
+  color: var(--muted);
   font-size: 16.5px;
   max-width: 42ch;
 }
@@ -100,12 +100,13 @@ const columns = computed(() => {
   gap: 14px;
   margin-top: 6px;
   padding: 14px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 .score b {
-  color: #fff;
+  color: var(--fg);
   font-size: 36px;
   font-weight: 800;
   line-height: 1;
@@ -114,6 +115,7 @@ const columns = computed(() => {
 .score small {
   display: block;
   margin-top: 4px;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -123,6 +125,7 @@ const columns = computed(() => {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   height: 480px;
+  padding: 4px;
   overflow: hidden;
   mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
 }
@@ -161,13 +164,14 @@ const columns = computed(() => {
   flex-direction: column;
   gap: 12px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 blockquote {
   margin: 0;
-  color: #dfe4ec;
+  color: var(--text);
   font-size: 15px;
   line-height: 1.9;
 }
@@ -191,21 +195,21 @@ figcaption {
   background: var(--green);
 }
 .quote:nth-child(3n) .avatar {
-  background: #2a3342;
+  background: var(--fg);
 }
 figcaption b {
   display: block;
-  color: #fff;
+  color: var(--fg);
   font-size: 15px;
 }
 figcaption span {
+  color: var(--muted);
   font-size: 13px;
 }
 
 @media (max-width: 900px) {
   .panel {
     grid-template-columns: minmax(0, 1fr);
-    padding: 32px 20px;
   }
   .columns {
     grid-template-columns: minmax(0, 1fr);
