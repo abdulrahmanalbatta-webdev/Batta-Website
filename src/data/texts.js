@@ -39,6 +39,7 @@ export const texts = reactive({
     testimonials: {
       eyebrow: 'آراء',
       title: 'ماذا يقول الطلاب والعملاء',
+      text: 'طلاب أنهوا دوراتهم، وأصحاب مشاريع أطلقوا مواقعهم، وفرق حضرت الورش.',
     },
     faq: {
       eyebrow: 'أسئلة شائعة',
