@@ -1,0 +1,37 @@
+name: deploy (vercel)
+
+# Builds and deploys main to Vercel (project "batta-website", created on the first run).
+# Stays a no-op until the repository secret VERCEL_TOKEN is set (Vercel → Account Settings → Tokens).
+# The dashboard's API comes from the repository variable VITE_API_URL, else the alwaysdata address below.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vercel
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VITE_API_URL: ${{ vars.VITE_API_URL || 'https://abdulrhman-dashboard.alwaysdata.net/api/v1' }}
+
+    steps:
+      - name: Waiting for VERCEL_TOKEN
+        if: env.VERCEL_TOKEN == ''
+        run: echo "Add the VERCEL_TOKEN repository secret to deploy to Vercel."
+
+      - uses: actions/checkout@v4
+        if: env.VERCEL_TOKEN != ''
+
+      - uses: actions/setup-node@v4
+        if: env.VERCEL_TOKEN != ''
+        with:
+          node-version: 22
+
+      - name: Deploy to production
+        if: env.VERCEL_TOKEN != ''
+        run: npx --yes vercel@63.1.2 deploy --prod --yes --project batta-website --build-env VITE_API_URL="$VITE_API_URL" --token "$VERCEL_TOKEN"

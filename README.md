@@ -88,5 +88,5 @@ src/
 
 ## النشر
 
-- **Vercel:** ارفع المشروع مباشرة؛ ملف `vercel.json` يوجّه كل المسارات إلى `index.html`.
+- **Vercel:** ملف `vercel.json` يوجّه كل المسارات إلى `index.html`. النشر تلقائي من GitHub Actions (`.github/workflows/deploy-vercel.yml`) لما يكون سر المستودع `VERCEL_TOKEN` معرّف؛ ورابط API اللوحة من متغير المستودع `VITE_API_URL`.
 - **Cloudflare (Workers):** أمر البناء `npm run build` وأمر النشر `npx wrangler deploy`؛ ملف `wrangler.jsonc` ينشر مجلد `dist` ويوجّه كل المسارات إلى `index.html`. ضع `VITE_API_URL` في متغيرات البناء.
