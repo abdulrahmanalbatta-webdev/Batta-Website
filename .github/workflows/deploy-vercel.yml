@@ -1,6 +1,6 @@
 name: deploy (vercel)
 
-# Builds and deploys main to Vercel (project "batta-website", created on the first run).
+# Builds and deploys main to Vercel (project "batta-website", after the checkout folder, created on the first run).
 # Stays a no-op until the repository secret VERCEL_TOKEN is set (Vercel → Account Settings → Tokens).
 # The dashboard's API comes from the repository variable VITE_API_URL, else the alwaysdata address below.
 on:
@@ -34,4 +34,6 @@ jobs:
 
       - name: Deploy to production
         if: env.VERCEL_TOKEN != ''
-        run: npx --yes vercel@63.1.2 deploy --prod --yes --project batta-website --build-env VITE_API_URL="$VITE_API_URL" --token "$VERCEL_TOKEN"
+        # unlinked and with --yes, the CLI links (creating on the first run) the project named after the
+        # checkout folder, batta-website; the build settings come from vercel.json
+        run: npx --yes vercel@63.1.2 deploy --prod --yes --build-env VITE_API_URL="$VITE_API_URL" --token "$VERCEL_TOKEN"
