@@ -35,6 +35,8 @@ const routes = [
 
   { path: '/contact', name: 'contact', component: () => import('@/views/ContactView.vue'), meta: { page: 'contact', title: 'تواصل معي' } },
   { path: '/about', name: 'about', component: () => import('@/views/AboutView.vue'), meta: { page: 'about', title: 'من أنا' } },
+  { path: '/privacy', name: 'privacy', component: () => import('@/views/LegalView.vue'), props: { page: 'privacy' }, meta: { title: 'سياسة الخصوصية' } },
+  { path: '/terms', name: 'terms', component: () => import('@/views/LegalView.vue'), props: { page: 'terms' }, meta: { title: 'الشروط والأحكام' } },
   { path: '/login', name: 'login', component: () => import('@/views/auth/LoginView.vue'), meta: { title: 'تسجيل الدخول', bare: true } },
   { path: '/register', name: 'register', component: () => import('@/views/auth/RegisterView.vue'), meta: { title: 'إنشاء حساب', bare: true } },
   { path: '/reset-password', name: 'reset-password', component: () => import('@/views/auth/ResetPasswordView.vue'), meta: { title: 'كلمة مرور جديدة', bare: true } },

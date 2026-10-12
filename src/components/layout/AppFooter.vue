@@ -50,6 +50,10 @@ const { email, whatsapp, whatsappUrl } = useContact()
       </div>
       <div class="bottom">
         <span>© {{ year }} {{ profile.name }}. جميع الحقوق محفوظة.</span>
+        <nav class="legal">
+          <RouterLink :to="{ name: 'privacy' }">سياسة الخصوصية</RouterLink>
+          <RouterLink :to="{ name: 'terms' }">الشروط والأحكام</RouterLink>
+        </nav>
       </div>
     </div>
   </footer>
@@ -107,6 +111,10 @@ a:hover {
   flex-wrap: wrap;
   font-size: 13.5px;
   color: #7d8796;
+}
+.legal {
+  display: flex;
+  gap: 18px;
 }
 @media (max-width: 860px) {
   .cols {

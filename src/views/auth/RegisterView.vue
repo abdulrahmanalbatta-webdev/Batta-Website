@@ -125,7 +125,7 @@ async function submit() {
 
       <label class="check" :class="{ invalid: errors.terms }">
         <input v-model="form.terms" type="checkbox" />
-        أوافق على الشروط وسياسة الخصوصية
+        <span>أوافق على <RouterLink :to="{ name: 'terms' }" target="_blank">الشروط</RouterLink> و<RouterLink :to="{ name: 'privacy' }" target="_blank">سياسة الخصوصية</RouterLink></span>
       </label>
       <span v-if="errors.terms" class="error">{{ errors.terms }}</span>
 
