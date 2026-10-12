@@ -415,7 +415,16 @@ export function seo({ apiUrl, siteUrl }) {
     async writeBundle() {
       const data = await loadData(apiUrl)
       const built = buildPages(data, site)
-      const template = await readFile(join(outDir, 'index.html'), 'utf8')
+      // Google Search Console and Bing ownership (dashboard → Settings → Analytics), on every page
+      const verification = [
+        ['google-site-verification', data.settings.google_site_verification],
+        ['msvalidate.01', data.settings.bing_site_verification],
+      ]
+        .filter(([, code]) => /^[A-Za-z0-9_-]{10,100}$/.test(code ?? ''))
+        .map(([name, code]) => `<meta name="${name}" content="${code}" />\n  `)
+        .join('')
+      const template = (await readFile(join(outDir, 'index.html'), 'utf8')).replace('</head>', `  ${verification}</head>`)
+      if (verification) await writeFile(join(outDir, 'index.html'), template)
 
       if (!data.content) {
         console.warn('[batta] لم أصل للوحة التحكم: بقيت index.html كما هي، بلا صفحات جاهزة')
