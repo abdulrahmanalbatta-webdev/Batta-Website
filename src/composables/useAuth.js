@@ -37,6 +37,13 @@ export function useAuth() {
     student.value = res.data
   }
 
+  // Google or Facebook: a new account sends its phone too (the dashboard asks for it with a 422 on "phone")
+  async function socialSignIn(provider, accessToken, phone) {
+    const res = await api.post(`auth/social/${provider}`, { token: accessToken, phone: phone || undefined, device_name: navigator.userAgent.slice(0, 100) })
+    token.set(res.token)
+    student.value = res.data
+  }
+
   async function signOut() {
     try {
       await api.post('auth/logout')
@@ -54,6 +61,7 @@ export function useAuth() {
     isSignedIn: computed(() => !!student.value),
     signIn,
     register,
+    socialSignIn,
     signOut,
     refresh: load,
   }
