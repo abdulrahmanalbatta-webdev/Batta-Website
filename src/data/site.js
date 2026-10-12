@@ -19,6 +19,9 @@ import { reactive } from 'vue'
 // الاسم والشعار في رأس الموقع وتذييله؛ بدون شعار من اللوحة يظهر الشعار الأصلي (src/assets/images)
 export const brand = reactive({ name: 'عبد الرحمن البطه', logo: null, logoDark: null })
 
+// صفحتا سياسة الخصوصية والشروط: نصهما من اللوحة فقط (محتوى الموقع ← الخصوصية والشروط)
+export const legal = reactive({ privacy: null, terms: null })
+
 export const announcement = reactive({
   enabled: true,
   text: 'دفعة "برنامج المطوّر المستقل" تبدأ 15 نوفمبر، وبقي 7 مقاعد فقط.',

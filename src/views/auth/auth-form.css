@@ -118,3 +118,7 @@
   color: var(--text);
   font-weight: 600;
 }
+.check a {
+  color: var(--primary-600);
+  font-weight: 700;
+}

@@ -85,7 +85,7 @@ async function completeSignUp() {
         <input id="social-phone" v-model="phone" type="tel" autocomplete="tel" dir="ltr" placeholder="+970 59 000 0000" :aria-invalid="!!phoneError" />
       </div>
       <span v-if="phoneError" class="error">{{ phoneError }}</span>
-      <span v-else class="hint">نتواصل معك عليه بخصوص الدورات والورش التي تسجّل فيها. بالمتابعة توافق على الشروط وسياسة الخصوصية.</span>
+      <span v-else class="hint">نتواصل معك عليه بخصوص الدورات والورش التي تسجّل فيها. بالمتابعة توافق على <RouterLink :to="{ name: 'terms' }" target="_blank">الشروط</RouterLink> و<RouterLink :to="{ name: 'privacy' }" target="_blank">سياسة الخصوصية</RouterLink>.</span>
       <div class="step-actions">
         <button class="btn btn-primary btn-block" type="submit" :disabled="!!busy">{{ busy ? 'جارٍ إنشاء الحساب…' : 'إنشاء الحساب' }}</button>
         <button class="text-btn" type="button" @click="pending = null">إلغاء</button>
@@ -211,6 +211,10 @@ async function completeSignUp() {
 .hint {
   font-size: 13px;
   color: var(--muted);
+}
+.hint a {
+  color: var(--primary-600);
+  font-weight: 700;
 }
 .text-btn {
   border: 0;
