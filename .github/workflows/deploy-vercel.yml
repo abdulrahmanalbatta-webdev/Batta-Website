@@ -2,7 +2,8 @@ name: deploy (vercel)
 
 # Builds and deploys main to Vercel (project "batta-website", created on the first run).
 # Stays a no-op until the repository secret VERCEL_TOKEN is set (Vercel → Account Settings → Tokens).
-# The dashboard's API comes from the repository variable VITE_API_URL, else the alwaysdata address below.
+# The dashboard's API comes from the repository variable VITE_API_URL, else the alwaysdata address below;
+# the site's own public address (canonical links, sitemap, share tags) from VITE_SITE_URL, else the vercel.app one.
 # Every 6 hours too: the build writes each page's text for search engines and AI crawlers (vite/seo.js),
 # so courses and articles added in the dashboard reach them without a code change.
 on:
@@ -22,6 +23,7 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VITE_API_URL: ${{ vars.VITE_API_URL || 'https://abdulrhman-dashboard.alwaysdata.net/api/v1' }}
+      VITE_SITE_URL: ${{ vars.VITE_SITE_URL || 'https://batta-website.vercel.app' }}
 
     steps:
       - name: Waiting for VERCEL_TOKEN
@@ -47,4 +49,4 @@ jobs:
       # the build settings come from vercel.json
       - name: Deploy to production
         if: env.VERCEL_TOKEN != ''
-        run: npx --yes vercel@63.1.2 deploy --prod --yes --build-env VITE_API_URL="$VITE_API_URL" --token "$VERCEL_TOKEN"
+        run: npx --yes vercel@63.1.2 deploy --prod --yes --build-env VITE_API_URL="$VITE_API_URL" --build-env VITE_SITE_URL="$VITE_SITE_URL" --token "$VERCEL_TOKEN"
