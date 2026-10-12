@@ -3,6 +3,7 @@ import { reactive, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/components/auth/AuthLayout.vue'
 import PasswordField from '@/components/auth/PasswordField.vue'
+import SocialSignIn from '@/components/auth/SocialSignIn.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { useToast } from '@/composables/useToast'
 import { useAuth } from '@/composables/useAuth'
@@ -46,6 +47,11 @@ function validate() {
 
 const next = () => (typeof route.query.next === 'string' && route.query.next.startsWith('/') && !route.query.next.startsWith('//') ? route.query.next : '/my-courses')
 
+function afterSocial() {
+  showToast('أهلاً بك، تم تسجيل دخولك')
+  router.push(next())
+}
+
 async function submit() {
   if (!validate()) return
   loading.value = true
@@ -69,6 +75,8 @@ async function submit() {
 <template>
   <AuthLayout :title="texts.general.register.title" :subtitle="texts.general.register.text">
     <p v-if="settings && !settings.registration_open" class="closed">التسجيل مغلق حالياً. تواصل معنا إذا أردت الانضمام.</p>
+
+    <SocialSignIn @signed-in="afterSocial" />
 
     <form class="fields" novalidate @submit.prevent="submit">
       <div class="field">

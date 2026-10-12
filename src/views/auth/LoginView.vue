@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/components/auth/AuthLayout.vue'
 import PasswordField from '@/components/auth/PasswordField.vue'
+import SocialSignIn from '@/components/auth/SocialSignIn.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import { useToast } from '@/composables/useToast'
 import { useAuth } from '@/composables/useAuth'
@@ -43,6 +44,11 @@ async function submit() {
   }
 }
 
+function afterSocial() {
+  showToast('أهلاً بك')
+  router.push(next())
+}
+
 const sending = ref(false)
 async function forgotPassword() {
   if (!emailPattern.test(form.email)) {
@@ -62,6 +68,8 @@ async function forgotPassword() {
 
 <template>
   <AuthLayout :title="texts.general.login.title" :subtitle="texts.general.login.text">
+    <SocialSignIn @signed-in="afterSocial" />
+
     <form class="fields" novalidate @submit.prevent="submit">
       <div class="field">
         <label for="login-email" class="field-label">البريد الإلكتروني</label>
