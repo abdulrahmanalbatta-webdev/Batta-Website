@@ -1,6 +1,5 @@
 // بياناتك الشخصية: نسخة احتياطية، والمحتوى الفعلي يُعدَّل من لوحة التحكم (محتوى الموقع ← عنك).
 // الصورة تُرفع من لوحة التحكم (محتوى الموقع ← صورتك الشخصية)، وبدونها يظهر أول حرف من اسمك.
-import { siGithub, siX, siYoutube } from 'simple-icons'
 import { reactive } from 'vue'
 
 // LinkedIn أُزيل من simple-icons، فشعاره هنا
@@ -10,7 +9,7 @@ export const LINKEDIN_PATH =
 export const profile = reactive({
   // صورة مرفوعة من لوحة التحكم (null: صورة src/assets/images)
   photo: null,
-  name: 'عبدالرحمن البطة',
+  name: 'عبد الرحمن البطه',
   role: 'مطوّر Full-stack ومدرّب برمجة',
   initial: 'ع',
   available: 'متاح لمشاريع جديدة',
@@ -49,14 +48,5 @@ export const profile = reactive({
 
 
   // الحسابات تُعدَّل من لوحة التحكم (محتوى الموقع ← عنك)، وواتساب والبريد من إعداداتها
-  socials: [
-    { name: 'GitHub', url: 'https://github.com/', path: siGithub.path },
-    {
-      name: 'LinkedIn',
-      url: 'https://www.linkedin.com/',
-      path: LINKEDIN_PATH,
-    },
-    { name: 'X', url: 'https://x.com/', path: siX.path },
-    { name: 'YouTube', url: 'https://www.youtube.com/', path: siYoutube.path },
-  ],
+  socials: [],
 })

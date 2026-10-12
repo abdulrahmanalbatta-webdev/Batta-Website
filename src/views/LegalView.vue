@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue'
 import PageHero from '@/components/ui/PageHero.vue'
+import LoadState from '@/components/ui/LoadState.vue'
 import { useContact } from '@/composables/useSettings'
 import { legal } from '@/data/site'
+import { contentStatus, loadSiteContent } from '@/lib/siteContent'
 
 // سياسة الخصوصية والشروط: النص كله من اللوحة (محتوى الموقع ← الخصوصية والشروط)، بفهرس للأقسام
 const props = defineProps({
@@ -11,6 +13,8 @@ const props = defineProps({
 
 const content = computed(() => legal[props.page])
 const { email } = useContact()
+// the content failed to load (its message), or loaded without this page (a dashboard older than it)
+const loadError = computed(() => ({ loading: '', ready: 'هذه الصفحة غير متاحة حالياً، حاول لاحقاً.' })[contentStatus.value] ?? contentStatus.value)
 </script>
 
 <template>
@@ -45,7 +49,9 @@ const { email } = useContact()
           </aside>
         </article>
       </div>
-      <p v-else class="container loading">جارٍ التحميل…</p>
+      <div v-else class="container">
+        <LoadState :loading="contentStatus === 'loading'" :error="loadError" @retry="loadSiteContent" />
+      </div>
     </section>
   </div>
 </template>
@@ -127,9 +133,6 @@ const { email } = useContact()
   color: var(--primary-600);
   font-weight: 700;
   unicode-bidi: isolate;
-}
-.loading {
-  color: var(--muted);
 }
 @media (max-width: 900px) {
   .layout {

@@ -18,7 +18,7 @@ const columns = computed(() => {
 </script>
 
 <template>
-  <section class="section">
+  <section v-if="testimonials.length" class="section">
     <div class="container">
       <div class="panel">
         <header class="summary">

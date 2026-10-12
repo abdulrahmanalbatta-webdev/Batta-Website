@@ -1,6 +1,15 @@
 <script setup>
 import BrandLogo from '@/components/ui/BrandLogo.vue'
+import { onMounted, onUnmounted } from 'vue'
 import { texts } from '@/data/texts'
+
+// unknown addresses answer 200 (one page app), so tell search engines not to index them
+let robots
+onMounted(() => {
+  robots = Object.assign(document.createElement('meta'), { name: 'robots', content: 'noindex' })
+  document.head.append(robots)
+})
+onUnmounted(() => robots?.remove())
 </script>
 
 <template>
