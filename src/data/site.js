@@ -23,7 +23,7 @@ export const brand = reactive({ name: 'عبد الرحمن البطه', logo: nu
 export const legal = reactive({ privacy: null, terms: null })
 
 export const announcement = reactive({
-  enabled: true,
+  enabled: false,
   text: 'دفعة "برنامج المطوّر المستقل" تبدأ 15 نوفمبر، وبقي 7 مقاعد فقط.',
   link: '/courses',
   linkLabel: 'احجز مقعدك',
@@ -125,9 +125,6 @@ export const processSteps = reactive([
   { title: 'إطلاق ودعم', text: 'نشر وتدريب على الاستخدام وشهر متابعة.' },
 ])
 
-export const testimonials = reactive([
-  { name: 'محمد', role: 'طالب · دورة Next.js', initial: 'م', text: 'أول دورة أكملها للنهاية. المشروع النهائي صار أول شيء في ملف أعمالي، وبفضله حصلت على أول تدريب.' },
-  { name: 'رامي', role: 'صاحب محمصة قهوة', initial: 'ر', text: 'سلّم الموقع قبل الموعد، وكان يرسل نسخة تجريبية كل أسبوع. وصلنا ثلاثة أضعاف الطلبات خلال شهرين.' },
-  { name: 'سارة', role: 'منسقة برامج · حاضنة أعمال', initial: 'س', text: 'الورشة كانت عملية من أول دقيقة. خرج الفريق بمشروع منشور بدل شرائح نظرية.' },
-])
+// آراء حقيقية فقط، من اللوحة (محتوى الموقع ← آراء العملاء والطلاب)
+export const testimonials = reactive([])
 

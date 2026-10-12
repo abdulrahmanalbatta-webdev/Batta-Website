@@ -42,6 +42,7 @@ import {
 import { brand, legal, announcement, heroWords, technologies, services, reasons, faqs, packages, processSteps, testimonials } from '@/data/site'
 import { profile, LINKEDIN_PATH } from '@/data/profile'
 import { texts } from '@/data/texts'
+import { ref } from 'vue'
 import { api } from '@/lib/api'
 
 // the logos the dashboard offers (SiteContent::TECHNOLOGIES and NETWORKS), by simple-icons slug;
@@ -51,14 +52,20 @@ const logo = (slug) => LOGOS[slug]
 const replace = (list, items) => list.splice(0, list.length, ...items)
 const initial = (name) => [...String(name).trim()][0] ?? ''
 
+// pages with no bundled text (privacy, terms) show an error and a retry instead of waiting forever
+export const contentStatus = ref('loading')
+
 export async function loadSiteContent() {
+  contentStatus.value = 'loading'
   let c
   try {
     c = (await api.get('content')).data
-  } catch {
+  } catch (err) {
+    contentStatus.value = err.message
     return // the bundled texts stay
   }
   apply(c)
+  contentStatus.value = 'ready'
 }
 
 function apply(c) {

@@ -96,8 +96,16 @@ router.beforeEach(async (to) => {
 // meta.page: the page's name from the dashboard (texts.ui.pages), meta.title the bundled fallback
 export const pageTitle = (route) => siteTitle(texts.ui.pages[route.meta.page] ?? route.meta.title)
 
+// each page is its own canonical address (index.html carries the home page's for crawlers that skip JavaScript)
+function setCanonical(path) {
+  const url = __SITE_URL__ + (path === '/' ? '/' : path.replace(/\/$/, ''))
+  document.querySelector('link[rel="canonical"]')?.setAttribute('href', url)
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', url)
+}
+
 router.afterEach((to) => {
   document.title = pageTitle(to)
+  setCanonical(to.path)
   trackPageView(to.fullPath)
 })
 

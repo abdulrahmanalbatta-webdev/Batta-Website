@@ -3,9 +3,17 @@
 const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1').replace(/\/$/, '')
 const TOKEN_KEY = 'batta.token'
 
+// status 0: no answer at all; 408: no answer in time (the free host may be waking up); 503: a deploy in progress
+const MESSAGES = {
+  0: 'تعذّر الاتصال بالخادم، تحقق من الإنترنت وحاول مجدداً.',
+  408: 'الخادم يستغرق وقتاً أطول من المعتاد في الرد، حاول مجدداً بعد لحظات.',
+  503: 'نحدّث الموقع الآن، حاول مجدداً بعد دقيقة.',
+}
+const TIMEOUT = 20000
+
 export class ApiError extends Error {
   constructor(status, body) {
-    super(body?.message || (status === 0 ? 'تعذّر الاتصال بالخادم، تحقق من الإنترنت وحاول مجدداً.' : 'حدث خطأ غير متوقع، حاول مجدداً.'))
+    super(body?.message || MESSAGES[status] || 'حدث خطأ غير متوقع، حاول مجدداً.')
     this.status = status
     // أخطاء الحقول من Laravel: { email: ['...'] } → { email: '...' }
     this.errors = Object.fromEntries(Object.entries(body?.errors || {}).map(([key, list]) => [key, list[0]]))
@@ -37,9 +45,9 @@ async function request(method, path, body) {
 
   let response
   try {
-    response = await fetch(`${BASE}/${path.replace(/^\//, '')}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
-  } catch {
-    throw new ApiError(0)
+    response = await fetch(`${BASE}/${path.replace(/^\//, '')}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(TIMEOUT) })
+  } catch (err) {
+    throw new ApiError(err?.name === 'TimeoutError' ? 408 : 0)
   }
 
   if (response.status === 204) return null
