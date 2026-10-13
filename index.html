@@ -19,10 +19,26 @@
     <meta property="og:image" content="%SITE_URL%/icon-512.png" />
     <meta property="og:locale" content="ar_AR" />
     <meta name="twitter:card" content="summary" />
-    <!-- the ready-made page text (vite/seo.js) shown until the app takes over -->
+    <!-- the ready-made page text (vite/seo.js) is for crawlers that don't run JavaScript; visitors see a short
+         loading screen instead until the app takes over (the app replaces everything inside #app) -->
+    <script>document.documentElement.classList.add('js')</script>
     <style>
       .prerender { max-width: 860px; margin: 0 auto; padding: 24px 16px; line-height: 1.9; }
       .prerender nav { font-size: 14px; margin-bottom: 24px; }
+      .js .prerender { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+      .js #app:has(.prerender)::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        width: 36px;
+        height: 36px;
+        border: 3px solid #d6deea;
+        border-top-color: #0066ff;
+        border-radius: 50%;
+        animation: boot-spin 0.8s linear infinite;
+      }
+      @keyframes boot-spin { to { transform: rotate(360deg); } }
     </style>
   </head>
   <body>
