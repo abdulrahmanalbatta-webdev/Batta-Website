@@ -9,7 +9,7 @@ const siteUrlTags = (siteUrl) => ({ name: 'batta-site-url', transformIndexHtml: 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
-  const siteUrl = env.VITE_SITE_URL || 'https://batta-website.vercel.app'
+  const siteUrl = env.VITE_SITE_URL || 'https://albatta.vercel.app'
 
   return {
     // same default as src/lib/api.js; the public address goes into the share tags, robots.txt and sitemap.xml
