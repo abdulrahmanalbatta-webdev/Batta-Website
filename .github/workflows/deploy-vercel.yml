@@ -1,6 +1,7 @@
 name: deploy (vercel)
 
-# Builds and deploys main to Vercel (project "batta-website", created on the first run).
+# Builds and deploys main to Vercel, to the project the site runs on: repository variable VERCEL_PROJECT, else "albatta"
+# (the project behind albatta.vercel.app). It must already exist: renaming it in Vercel means updating that name here.
 # Stays a no-op until the repository secret VERCEL_TOKEN is set (Vercel → Account Settings → Tokens).
 # The dashboard's API comes from the repository variable VITE_API_URL, else the alwaysdata address below;
 # the site's own public address (canonical links, sitemap, share tags) from VITE_SITE_URL, else the vercel.app one.
@@ -24,6 +25,7 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VITE_API_URL: ${{ vars.VITE_API_URL || 'https://abdulrhman-dashboard.alwaysdata.net/api/v1' }}
       VITE_SITE_URL: ${{ vars.VITE_SITE_URL || 'https://albatta.vercel.app' }}
+      VERCEL_PROJECT: ${{ vars.VERCEL_PROJECT || 'albatta' }}
 
     steps:
       - name: Waiting for VERCEL_TOKEN
@@ -38,13 +40,17 @@ jobs:
         with:
           node-version: 22
 
-      # the project is "batta-website" (the checkout folder, Batta-Website, isn't a valid name); made on the first run
+      # never creates a project: a missing one (say, renamed in Vercel) fails here and lists the account's projects,
+      # instead of deploying somewhere nobody visits
       - name: Link the Vercel project
         if: env.VERCEL_TOKEN != ''
         run: |
-          npx --yes vercel@63.1.2 project inspect batta-website --token "$VERCEL_TOKEN" > /dev/null 2>&1 \
-            || npx --yes vercel@63.1.2 project create batta-website --token "$VERCEL_TOKEN"
-          npx --yes vercel@63.1.2 link --yes --project batta-website --token "$VERCEL_TOKEN"
+          if ! npx --yes vercel@63.1.2 project inspect "$VERCEL_PROJECT" --token "$VERCEL_TOKEN" > /dev/null 2>&1; then
+            echo "::error::No Vercel project named \"$VERCEL_PROJECT\". Set the repository variable VERCEL_PROJECT to the site's project name:"
+            npx --yes vercel@63.1.2 project ls --token "$VERCEL_TOKEN"
+            exit 1
+          fi
+          npx --yes vercel@63.1.2 link --yes --project "$VERCEL_PROJECT" --token "$VERCEL_TOKEN"
 
       # the build settings come from vercel.json
       - name: Deploy to production
