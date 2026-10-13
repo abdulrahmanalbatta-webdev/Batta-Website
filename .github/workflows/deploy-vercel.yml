@@ -1,6 +1,6 @@
 name: deploy (vercel)
 
-# Builds and deploys main to Vercel, to the project the site runs on: repository variable VERCEL_PROJECT, else "albatta"
+# Builds and deploys main to Vercel, to the project the site runs on: repository variable VERCEL_PROJECT, else "abdulrhmanalbatta"
 # (the project behind albatta.vercel.app). It must already exist: renaming it in Vercel means updating that name here.
 # Stays a no-op until the repository secret VERCEL_TOKEN is set (Vercel → Account Settings → Tokens).
 # The dashboard's API comes from the repository variable VITE_API_URL, else the alwaysdata address below;
@@ -25,7 +25,7 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VITE_API_URL: ${{ vars.VITE_API_URL || 'https://abdulrhman-dashboard.alwaysdata.net/api/v1' }}
       VITE_SITE_URL: ${{ vars.VITE_SITE_URL || 'https://albatta.vercel.app' }}
-      VERCEL_PROJECT: ${{ vars.VERCEL_PROJECT || 'albatta' }}
+      VERCEL_PROJECT: ${{ vars.VERCEL_PROJECT || 'abdulrhmanalbatta' }}
 
     steps:
       - name: Waiting for VERCEL_TOKEN
