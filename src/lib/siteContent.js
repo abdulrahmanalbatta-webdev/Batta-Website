@@ -1,6 +1,7 @@
 // محتوى الموقع من لوحة التحكم (محتوى الموقع): الإعلان، الرئيسية، "من أنا"، الخدمات، الباقات، الأعمال، الآراء، الأسئلة،
 // ونصوص الصفحات (العناوين والمقدّمات، التذييل، صفحتا الدخول والتسجيل).
-// ملفات src/data تبقى النسخة الاحتياطية: يظهر محتواها فوراً، ثم يُستبدل بما في اللوحة عند وصوله.
+// نسخة اللوحة وقت البناء مكتوبة داخل الصفحة (vite/seo.js) فتظهر فوراً، ثم تُحدَّث بآخر نسخة من اللوحة عند وصولها.
+// ملفات src/data تبقى النسخة الاحتياطية إن لم تكن هناك نسخة مكتوبة.
 import {
   siVuedotjs,
   siNuxt,
@@ -55,14 +56,27 @@ const initial = (name) => [...String(name).trim()][0] ?? ''
 // pages with no bundled text (privacy, terms) show an error and a retry instead of waiting forever
 export const contentStatus = ref('loading')
 
+// the dashboard's texts the build wrote into the page (vite/seo.js), applied before the app mounts
+export function applyEmbeddedContent() {
+  const embedded = document.getElementById('site-content')
+  if (!embedded) return
+  try {
+    apply(JSON.parse(embedded.textContent))
+    contentStatus.value = 'ready'
+  } catch {
+    // an older dashboard's shape: the bundled texts stay until the live ones arrive
+  }
+}
+
 export async function loadSiteContent() {
-  contentStatus.value = 'loading'
+  const ready = contentStatus.value === 'ready'
+  if (!ready) contentStatus.value = 'loading'
   let c
   try {
     c = (await api.get('content')).data
   } catch (err) {
-    contentStatus.value = err.message
-    return // the bundled texts stay
+    if (!ready) contentStatus.value = err.message
+    return // the embedded or bundled texts stay
   }
   apply(c)
   contentStatus.value = 'ready'

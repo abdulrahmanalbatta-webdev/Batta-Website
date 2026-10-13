@@ -423,8 +423,11 @@ export function seo({ apiUrl, siteUrl }) {
         .filter(([, code]) => /^[A-Za-z0-9_-]{10,100}$/.test(code ?? ''))
         .map(([name, code]) => `<meta name="${name}" content="${code}" />\n  `)
         .join('')
-      const template = (await readFile(join(outDir, 'index.html'), 'utf8')).replace('</head>', `  ${verification}</head>`)
-      if (verification) await writeFile(join(outDir, 'index.html'), template)
+      // the dashboard's texts as they were at build time, so the app starts with them instead of the bundled ones
+      // and doesn't swap the page's text a moment later (src/lib/siteContent.js; it still fetches the latest)
+      const embedded = data.content ? `<script type="application/json" id="site-content">${JSON.stringify(data.content).replace(/</g, '\\u003c')}</script>\n  ` : ''
+      const template = (await readFile(join(outDir, 'index.html'), 'utf8')).replace('</head>', `  ${verification}${embedded}</head>`)
+      if (verification || embedded) await writeFile(join(outDir, 'index.html'), template)
 
       if (!data.content) {
         console.warn('[batta] لم أصل للوحة التحكم: بقيت index.html كما هي، بلا صفحات جاهزة')

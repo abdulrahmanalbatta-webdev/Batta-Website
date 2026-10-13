@@ -9,10 +9,11 @@ import '@/assets/styles/base.css'
 
 import App from './App.vue'
 import router, { pageTitle } from './router'
-import { loadSiteContent } from './lib/siteContent'
+import { applyEmbeddedContent, loadSiteContent } from './lib/siteContent'
 
+// the dashboard's texts from build time first, so the page doesn't change under the visitor; then the latest ones
+applyEmbeddedContent()
 createApp(App).use(router).mount('#app')
-// the site's texts from the dashboard (the bundled ones show until they arrive)
 loadSiteContent().then(() => {
   // the tab title, now with the dashboard's page names (course and article pages set their own)
   const route = router.currentRoute.value
