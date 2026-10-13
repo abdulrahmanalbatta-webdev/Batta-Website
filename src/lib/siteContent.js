@@ -85,7 +85,7 @@ export async function loadSiteContent() {
 function apply(c) {
   // a dashboard older than the brand section sends none
   Object.assign(legal, { privacy: c.privacy ?? null, terms: c.terms ?? null })
-  if (c.brand) Object.assign(brand, { name: c.brand.name, logo: c.brand.logo, logoDark: c.brand.logo_dark })
+  if (c.brand) Object.assign(brand, { name: c.brand.name, logo: c.brand.logo, logoDark: c.brand.logo_dark, logoHasName: Boolean(c.brand.logo_has_name) })
   Object.assign(announcement, { enabled: c.announcement.enabled, text: c.announcement.text ?? '', link: c.announcement.link || '/', linkLabel: c.announcement.link_label ?? '' })
   replace(heroWords, c.hero.words.length ? c.hero.words : heroWords.slice())
   replace(technologies, c.technologies.map(logo).filter(Boolean).map((i) => ({ name: i.title, path: i.path, color: `#${i.hex}` })))

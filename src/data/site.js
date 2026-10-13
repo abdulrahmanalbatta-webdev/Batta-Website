@@ -17,7 +17,7 @@ import {
 import { reactive } from 'vue'
 
 // الاسم والشعار في رأس الموقع وتذييله؛ بدون شعار من اللوحة يظهر الشعار الأصلي (src/assets/images)
-export const brand = reactive({ name: 'عبد الرحمن البطه', logo: null, logoDark: null })
+export const brand = reactive({ name: 'عبد الرحمن البطه', logo: null, logoDark: null, logoHasName: false })
 
 // صفحتا سياسة الخصوصية والشروط: نصهما من اللوحة فقط (محتوى الموقع ← الخصوصية والشروط)
 export const legal = reactive({ privacy: null, terms: null })
