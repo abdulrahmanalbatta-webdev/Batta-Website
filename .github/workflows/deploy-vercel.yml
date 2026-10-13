@@ -23,7 +23,7 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VITE_API_URL: ${{ vars.VITE_API_URL || 'https://abdulrhman-dashboard.alwaysdata.net/api/v1' }}
-      VITE_SITE_URL: ${{ vars.VITE_SITE_URL || 'https://batta-website.vercel.app' }}
+      VITE_SITE_URL: ${{ vars.VITE_SITE_URL || 'https://albatta.vercel.app' }}
 
     steps:
       - name: Waiting for VERCEL_TOKEN
