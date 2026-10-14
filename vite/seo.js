@@ -361,7 +361,7 @@ function renderPage(template, page, site, name) {
     .replace(/(<meta property="og:type" content=")[^"]*/, `$1${page.type || 'website'}`)
     .replace(/(<link rel="canonical" href=")[^"]*/, `$1${esc(pageUrl)}`)
     .replace('</head>', `  ${jsonLd}</head>`)
-    .replace('<div id="app"></div>', `<div id="app"><div class="prerender"><nav>${link('/', name)} — ${nav}</nav><main>${page.body}</main></div></div>`)
+    .replace('<div id="app">', `<div id="app"><div class="prerender"><nav>${link('/', name)} — ${nav}</nav><main>${page.body}</main></div>`)
 }
 
 function llmsTxt({ pages, name, role }, data, site) {

@@ -19,30 +19,44 @@
     <meta property="og:image" content="%SITE_URL%/icon-512.png" />
     <meta property="og:locale" content="ar_AR" />
     <meta name="twitter:card" content="summary" />
-    <!-- the ready-made page text (vite/seo.js) is for crawlers that don't run JavaScript; visitors see a short
-         loading screen instead until the app takes over (the app replaces everything inside #app) -->
+    <!-- the ready-made page text (vite/seo.js) is for crawlers that don't run JavaScript; visitors see a skeleton of
+         the page instead until the app takes over (the app replaces everything inside #app) -->
     <script>document.documentElement.classList.add('js')</script>
     <style>
       .prerender { max-width: 860px; margin: 0 auto; padding: 24px 16px; line-height: 1.9; }
       .prerender nav { font-size: 14px; margin-bottom: 24px; }
       .js .prerender { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-      .js #app:has(.prerender)::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        margin: auto;
-        width: 36px;
-        height: 36px;
-        border: 3px solid #d6deea;
-        border-top-color: #0066ff;
-        border-radius: 50%;
-        animation: boot-spin 0.8s linear infinite;
+      .boot { display: none; }
+      .js .boot { display: block; position: fixed; inset: 0; background: #f1f4f9; overflow: hidden; }
+      .boot-head { height: 72px; background: #fff; border-bottom: 1px solid #dde3ed; }
+      .boot-wrap { max-width: 1180px; height: 100%; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 28px; }
+      .boot-hero { padding-top: 88px; }
+      .boot-hero .boot-wrap { flex-direction: column; align-items: flex-start; gap: 18px; height: auto; }
+      .boot i { display: block; flex: none; border-radius: 10px; background: linear-gradient(90deg, #e3e8f0 0%, #eef2f7 50%, #e3e8f0 100%) 0 0 / 300% 100%; animation: boot-shine 1.4s ease-in-out infinite; }
+      .boot .logo { width: 150px; height: 40px; }
+      .boot .link { width: 64px; height: 14px; border-radius: 7px; }
+      .boot .cta { width: 128px; height: 44px; border-radius: 999px; margin-inline-start: auto; }
+      .boot .title { width: min(560px, 90%); height: 46px; }
+      .boot .title.short { width: min(380px, 65%); }
+      .boot .line { width: min(620px, 100%); height: 14px; border-radius: 7px; }
+      .boot .line.short { width: min(420px, 75%); }
+      .boot .buttons { display: flex; gap: 12px; margin-top: 10px; }
+      .boot .btn { width: 150px; height: 50px; border-radius: 999px; }
+      @media (max-width: 760px) {
+        .boot .link { display: none; }
+        .boot .cta { width: 44px; border-radius: 12px; }
+        .boot-hero { padding-top: 56px; }
+        .boot .btn { width: 130px; }
       }
-      @keyframes boot-spin { to { transform: rotate(360deg); } }
+      @keyframes boot-shine { from { background-position: 100% 0; } to { background-position: 0 0; } }
+      @media (prefers-reduced-motion: reduce) { .boot i { animation: none; } }
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app"><div class="boot" aria-hidden="true">
+      <div class="boot-head"><div class="boot-wrap"><i class="logo"></i><i class="link"></i><i class="link"></i><i class="link"></i><i class="link"></i><i class="cta"></i></div></div>
+      <div class="boot-hero"><div class="boot-wrap"><i class="title"></i><i class="title short"></i><i class="line"></i><i class="line"></i><i class="line short"></i><div class="buttons"><i class="btn"></i><i class="btn"></i></div></div></div>
+    </div></div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
