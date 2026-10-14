@@ -30,8 +30,8 @@ export const announcement = reactive({
 })
 
 export const heroWords = reactive(['موقعك', 'تطبيقك', 'متجرك', 'مسارك المهني'])
-// the big words behind the photo at the top of the home page (the second one in blue)
-export const heroBackdrop = reactive(['DEVELOPER', 'AL BATTA', 'MENTOR'])
+// what you offer, around your logo at the top of the home page
+export const heroHubs = reactive(['تطوير مواقع', 'متاجر إلكترونية', 'لوحات تحكم', 'دورات برمجة', 'ورش عمل', 'مسارات تعلّم'])
 
 // شعارات التقنيات من مكتبة simple-icons (SVG، مجانية الاستخدام)
 export const technologies = reactive([siVuedotjs, siNextdotjs, siReact, siNodedotjs, siPostgresql, siTailwindcss, siTypescript, siPrisma, siSupabase, siStripe, siVercel, siFigma].map(
