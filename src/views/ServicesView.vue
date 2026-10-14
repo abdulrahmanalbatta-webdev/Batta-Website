@@ -28,11 +28,7 @@ watch(
 
 <template>
   <div>
-    <PageHero :title="texts.ui.pages.services" :subtitle="texts.pages.services.text">
-      <span v-for="s in services" :key="s.id">
-        <RouterLink :to="{ hash: `#${s.id}` }" class="jump"><BaseIcon :name="s.icon" :size="16" />{{ s.title }}</RouterLink>
-      </span>
-    </PageHero>
+    <PageHero :title="texts.ui.pages.services" :subtitle="texts.pages.services.text" />
 
     <section class="page-body">
       <div class="container stack">
@@ -96,16 +92,6 @@ watch(
 .stack {
   gap: 72px;
 }
-.jump {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: inherit;
-}
-.jump:hover {
-  color: #fff;
-}
-
 /* ---------- services ---------- */
 .services-list {
   display: grid;
