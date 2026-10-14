@@ -40,7 +40,7 @@ import {
   siBehance,
   siDribbble,
 } from 'simple-icons'
-import { brand, legal, announcement, heroWords, technologies, services, reasons, faqs, packages, processSteps, testimonials } from '@/data/site'
+import { brand, legal, announcement, heroWords, heroBackdrop, technologies, services, reasons, faqs, packages, processSteps, testimonials } from '@/data/site'
 import { profile, LINKEDIN_PATH } from '@/data/profile'
 import { texts } from '@/data/texts'
 import { ref } from 'vue'
@@ -88,6 +88,8 @@ function apply(c) {
   if (c.brand) Object.assign(brand, { name: c.brand.name, logo: c.brand.logo, logoDark: c.brand.logo_dark, logoHasName: Boolean(c.brand.logo_has_name) })
   Object.assign(announcement, { enabled: c.announcement.enabled, text: c.announcement.text ?? '', link: c.announcement.link || '/', linkLabel: c.announcement.link_label ?? '' })
   replace(heroWords, c.hero.words.length ? c.hero.words : heroWords.slice())
+  // a dashboard older than the backdrop words sends none: the bundled ones stay
+  if (c.hero.backdrop) replace(heroBackdrop, c.hero.backdrop)
   replace(technologies, c.technologies.map(logo).filter(Boolean).map((i) => ({ name: i.title, path: i.path, color: `#${i.hex}` })))
   replace(services, c.services)
   replace(reasons, c.reasons)
