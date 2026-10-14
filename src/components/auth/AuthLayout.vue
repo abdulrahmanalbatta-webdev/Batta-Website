@@ -41,10 +41,6 @@ const { settings } = useSettings()
             <span class="ico"><BaseIcon :name="p.icon" :size="20" /></span>{{ p.text }}
           </li>
         </ul>
-        <figure class="quote">
-          <blockquote>{{ texts.general.auth.quote }}</blockquote>
-          <figcaption>{{ texts.general.auth.quote_by }}</figcaption>
-        </figure>
       </div>
     </aside>
   </div>
@@ -164,21 +160,6 @@ li {
   background: rgba(0, 102, 255, 0.18);
   color: #6ea8ff;
   flex: none;
-}
-.quote {
-  margin: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 22px;
-}
-.quote blockquote {
-  margin: 0;
-  color: #fff;
-  font-size: 16px;
-  line-height: 1.9;
-}
-.quote figcaption {
-  margin-top: 8px;
-  font-size: 13.5px;
 }
 
 @media (max-width: 900px) {
