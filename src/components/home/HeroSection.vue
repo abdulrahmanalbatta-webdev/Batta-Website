@@ -49,12 +49,11 @@ onBeforeUnmount(() => clearInterval(timer))
         </div>
 
         <!-- real numbers from the dashboard; hidden until there is something to show -->
-        <div v-if="numbers.students || numbers.reviews" class="trust">
+        <div v-if="numbers.reviews || numbers.projects" class="trust">
           <div v-if="initials.length" class="avatars"><span v-for="(letter, i) in initials" :key="i">{{ letter }}</span></div>
           <div class="trust-text">
             <template v-if="numbers.reviews"><StarRating /> <b>{{ numbers.rating }}</b> من 5<br /></template>
-            <template v-if="numbers.students"><b>{{ format(numbers.students) }}</b> طالب</template>
-            <template v-if="numbers.projects">{{ numbers.students ? ' و' : '' }}<b>{{ format(numbers.projects) }}</b> مشروعاً منجزاً</template>
+            <template v-if="numbers.projects"><b>{{ format(numbers.projects) }}</b> مشروعاً منجزاً</template>
           </div>
         </div>
       </div>

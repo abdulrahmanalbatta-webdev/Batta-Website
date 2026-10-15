@@ -105,6 +105,10 @@ li {
   grid-template-columns: 1fr 1fr;
   gap: 18px;
 }
+/* three numbers: the first takes the whole top row */
+.stat:first-child {
+  grid-column: 1 / -1;
+}
 .stat {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -115,21 +119,17 @@ li {
   gap: 6px;
   box-shadow: var(--shadow-sm);
 }
-.stat:nth-child(2),
-.stat:nth-child(3) {
+.stat:nth-child(2) {
   background: var(--ink-panel);
   border-color: var(--ink-panel);
 }
-.stat:nth-child(2) b,
-.stat:nth-child(3) b {
+.stat:nth-child(2) b {
   color: #fff;
 }
-.stat:nth-child(2) .lbl,
-.stat:nth-child(3) .lbl {
+.stat:nth-child(2) .lbl {
   color: var(--ink-text);
 }
-.stat:nth-child(2) .ico-box,
-.stat:nth-child(3) .ico-box {
+.stat:nth-child(2) .ico-box {
   background: rgba(0, 102, 255, 0.2);
   color: #6ea8ff;
 }
@@ -144,6 +144,14 @@ li {
 .lbl {
   color: var(--muted);
   font-weight: 600;
+}
+.stat:first-child {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+.stat:first-child b {
+  margin-top: 0;
 }
 @media (max-width: 980px) {
   .grid-why {

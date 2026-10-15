@@ -31,7 +31,6 @@ export const toCourse = (c) => ({
   description: c.short_description,
   level: c.level_label,
   glyph: c.glyph,
-  students: c.students,
   rating: c.rating,
   reviews: c.reviews,
   outcomes: c.outcomes ?? [],
@@ -131,7 +130,6 @@ export function useStats() {
   return computed(() => {
     const s = Array.isArray(stats.items.value) ? {} : stats.items.value
     return [
-      { icon: 'users', value: count(s.students), label: 'طالب ومتدرب' },
       { icon: 'play', value: count(s.courses), label: 'دورات عملية' },
       { icon: 'briefcase', value: count(s.projects), label: 'مشروعاً منجزاً' },
       { icon: 'article', value: count(s.articles), label: 'مقالاً تقنياً' },
@@ -139,7 +137,7 @@ export function useStats() {
   })
 }
 
-// the raw numbers (students, projects, rating, reviews), for sentences such as the hero's
+// the raw numbers (projects, rating, reviews), for sentences such as the hero's
 export function useStatsNumbers() {
   stats.load()
   return computed(() => (Array.isArray(stats.items.value) ? {} : stats.items.value))
