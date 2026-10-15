@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0b0d12" />
+    <title>الصفحة غير موجودة | عبد الرحمن البطه</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <!-- what Vercel answers for a missing file; the app's own 404 is src/views/NotFoundView.vue (same design) -->
+    <style>
+      @font-face { font-family: 'Cairo'; font-weight: 400; font-display: swap; src: url('/fonts/cairo-arabic-400-normal.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; }
+      @font-face { font-family: 'Cairo'; font-weight: 800; font-display: swap; src: url('/fonts/cairo-arabic-800-normal.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC; }
+      @font-face { font-family: 'Cairo'; font-weight: 400; font-display: swap; src: url('/fonts/cairo-latin-400-normal.woff2') format('woff2'); unicode-range: U+0000-00FF; }
+      @font-face { font-family: 'Cairo'; font-weight: 800; font-display: swap; src: url('/fonts/cairo-latin-800-normal.woff2') format('woff2'); unicode-range: U+0000-00FF; }
+      * { box-sizing: border-box; margin: 0; }
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px 16px;
+        font-family: 'Cairo', system-ui, 'Segoe UI', Tahoma, sans-serif;
+        color: #2f3744;
+        background: radial-gradient(ellipse at 50% 0%, #eaf2ff 0%, transparent 65%), #f1f4f9;
+      }
+      main { width: 100%; max-width: 520px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+      .logo img { display: block; height: 48px; width: auto; }
+      .code {
+        margin-top: 16px;
+        font-size: clamp(110px, 28vw, 168px);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -4px;
+        background: linear-gradient(135deg, #0b0d12 30%, #0066ff 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      h1 { font-size: 28px; font-weight: 800; color: #0b0d12; }
+      p { max-width: 420px; color: #5f6b7a; font-size: 17px; line-height: 1.8; }
+      .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
+      .btn { display: inline-flex; padding: 12px 26px; border-radius: 999px; font-weight: 800; font-size: 15px; text-decoration: none; border: 1px solid transparent; transition: background 0.15s; }
+      .btn-primary { background: #0066ff; color: #fff; box-shadow: 0 6px 16px -6px rgba(0, 102, 255, 0.7); }
+      .btn-primary:hover { background: #0052cc; }
+      .btn-ghost { background: #fff; border-color: #dde3ed; color: #0b0d12; }
+      .btn-ghost:hover { border-color: #cfd7e3; }
+      nav { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; font-size: 14px; color: #5f6b7a; }
+      nav a { padding: 6px 14px; border-radius: 999px; background: #fff; border: 1px solid #dde3ed; color: #2f3744; text-decoration: none; }
+      nav a:hover { border-color: #0066ff; color: #0052cc; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="logo" href="/" aria-label="الصفحة الرئيسية"><img src="/lockup.png" alt="عبد الرحمن البطه" width="166" height="48" /></a>
+      <div class="code" aria-hidden="true">404</div>
+      <h1>الصفحة غير موجودة</h1>
+      <p>الصفحة التي تبحث عنها غير موجودة أو نُقلت.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/">العودة للرئيسية</a>
+        <a class="btn btn-ghost" href="/contact">أبلغني عن الرابط</a>
+      </div>
+      <nav aria-label="صفحات قد تبحث عنها">
+        <span>أو جرّب:</span>
+        <a href="/services">الخدمات</a>
+        <a href="/courses">الدورات</a>
+        <a href="/workshops">الورش</a>
+        <a href="/articles">المقالات</a>
+        <a href="/contact">تواصل معي</a>
+      </nav>
+    </main>
+  </body>
+</html>
