@@ -113,11 +113,10 @@ watch(
           <div class="card buy">
             <img v-if="course.cover" class="buy-cover" :src="course.cover" :alt="course.title" />
             <ul class="facts">
-              <li><BaseIcon name="users" :size="16" />{{ course.students }} طالب مسجّل</li>
               <li><BaseIcon name="award" :size="16" />{{ course.level }}</li>
               <li v-if="course.certificate"><BaseIcon name="award" :size="16" />شهادة إتمام</li>
             </ul>
-            <RegistrationButton type="course" :target="course.slug" :label="texts.ui.buttons.enroll" block large @change="course.students += $event" />
+            <RegistrationButton type="course" :target="course.slug" :label="texts.ui.buttons.enroll" block large />
             <p class="muted small">التسجيل مجاني، وبعده نتواصل معك بتفاصيل الدورة وموعد البدء.</p>
             <RouterLink class="ask" :to="{ name: 'contact', query: { type: 'student', course: course.slug } }"><BaseIcon name="chat" :size="16" />عندك سؤال عن الدورة؟</RouterLink>
           </div>
