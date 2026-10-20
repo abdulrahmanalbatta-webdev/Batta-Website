@@ -11,6 +11,8 @@ try {
 } catch {
   /* storage unavailable */
 }
+// a full address (a Google Form, another site) opens in a new tab; anything else is a page of this site
+const isExternal = computed(() => /^https?:\/\//i.test(announcement.link ?? ''))
 const visible = computed(() => announcement.enabled && !!announcement.text && dismissedText.value !== announcement.text)
 
 function close() {
@@ -28,7 +30,8 @@ function close() {
     <div class="container inner">
       <span class="dot" />
       <p>{{ announcement.text }}</p>
-      <RouterLink :to="announcement.link" class="link">{{ announcement.linkLabel }} <BaseIcon name="arrow" :size="14" /></RouterLink>
+      <a v-if="isExternal" :href="announcement.link" class="link" target="_blank" rel="noopener noreferrer">{{ announcement.linkLabel }} <BaseIcon name="arrow" :size="14" /></a>
+      <RouterLink v-else :to="announcement.link" class="link">{{ announcement.linkLabel }} <BaseIcon name="arrow" :size="14" /></RouterLink>
       <button type="button" class="close" aria-label="إغلاق الإعلان" @click="close"><BaseIcon name="close" :size="16" /></button>
     </div>
   </div>
