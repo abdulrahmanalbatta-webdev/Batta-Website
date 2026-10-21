@@ -7,6 +7,8 @@ import LoadState from '@/components/ui/LoadState.vue'
 import { useCourses } from '@/composables/useContent'
 import { texts } from '@/data/texts'
 
+defineProps({ showKind: { type: Boolean, default: false } })
+
 const levels = ['مبتدئ', 'متوسط', 'متقدم']
 const { items: courses, loading, error, reload } = useCourses()
 
@@ -22,7 +24,7 @@ const filtered = computed(() => courses.value.filter((c) => level.value === 'ا�
   <div class="panel">
     <FilterChips v-model="level" :options="levels" />
     <div class="grid g3">
-      <CourseCard v-for="c in filtered" :key="c.id" :course="c" />
+      <CourseCard v-for="c in filtered" :key="c.id" :course="c" :show-kind="showKind" />
       <LoadState :loading="loading" :error="error" :empty="!filtered.length" :empty-text="texts.ui.empty.courses" @retry="reload" />
     </div>
   </div>

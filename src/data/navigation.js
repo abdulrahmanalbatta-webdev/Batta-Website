@@ -9,11 +9,10 @@ export const nav = computed(() => [
   { label: texts.ui.pages.services, to: '/services' },
   {
     label: texts.ui.pages.academy,
-    match: ['/paths', '/courses', '/workshops', '/mentorship'],
+    match: ['/academy', '/paths', '/courses', '/workshops', '/mentorship'],
     children: [
+      { label: 'الدورات والورش', desc: 'دورات مسجّلة وورش مباشرة، والتسجيل مجاني', icon: 'play', to: '/academy' },
       { label: texts.ui.pages.paths, desc: texts.ui.menu.paths, icon: 'pin', to: '/paths' },
-      { label: texts.ui.pages.courses, desc: texts.ui.menu.courses, icon: 'play', to: '/courses' },
-      { label: texts.ui.pages.workshops, desc: texts.ui.menu.workshops, icon: 'calendar', to: '/workshops' },
       { label: 'الإرشاد', desc: 'متابعة شخصية بخطة وجلسات فردية', icon: 'users', to: '/mentorship' },
     ],
   },

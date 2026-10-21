@@ -117,7 +117,7 @@ const host = (url) => {
             <span class="num" aria-hidden="true"><BaseIcon name="check" :size="16" /></span>
             <div class="finish-text">
               <b>خلّصت المسار؟</b>
-              <span>اعرض مشاريعك، وإن أردت تعلّماً أعمق مع متابعة، تصفّح <RouterLink to="/courses">الدورات</RouterLink> و<RouterLink to="/workshops">الورش</RouterLink>.</span>
+              <span>اعرض مشاريعك، وإن أردت تعلّماً أعمق مع متابعة، تصفّح <RouterLink to="/academy?type=courses">الدورات</RouterLink> و<RouterLink to="/academy?type=workshops">الورش</RouterLink>.</span>
             </div>
           </li>
         </ol>

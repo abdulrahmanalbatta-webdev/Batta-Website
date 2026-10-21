@@ -5,6 +5,8 @@ import { useRegistrations } from '@/composables/useRegistrations'
 
 const props = defineProps({
   course: { type: Object, required: true },
+  // "دورة" above the title, where courses and workshops are listed together
+  showKind: { type: Boolean, default: false },
 })
 
 const { isRegistered } = useRegistrations()
@@ -21,6 +23,7 @@ const page = computed(() => ({ name: 'course', params: { slug: props.course.slug
     </div>
 
     <div class="body">
+      <span v-if="showKind" class="pill kind">دورة</span>
       <h3><RouterLink :to="page" class="title-link">{{ course.title }}</RouterLink></h3>
       <div class="meta">
         <span><BaseIcon name="award" :size="16" />{{ course.level }}</span>

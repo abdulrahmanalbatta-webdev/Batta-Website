@@ -20,12 +20,13 @@ const routes = [
   // الأكاديمية
   { path: '/paths', name: 'paths', component: () => import('@/views/PathsView.vue'), meta: { page: 'paths', title: 'المسارات' } },
   { path: '/paths/:id', name: 'path', component: () => import('@/views/PathView.vue'), props: true, meta: { title: 'المسارات' } },
-  { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { page: 'courses', title: 'الدورات' } },
+  // courses and workshops share one page; the old addresses open it on that type
+  { path: '/academy', name: 'academy', component: () => import('@/views/AcademyView.vue'), meta: { title: 'الدورات والورش' } },
+  { path: '/courses', redirect: (to) => ({ path: '/academy', query: { ...to.query, type: 'courses' } }) },
   { path: '/courses/:slug', name: 'course', component: () => import('@/views/CourseView.vue'), props: true, meta: { title: 'الدورات' } },
-  { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { page: 'workshops', title: 'الورش' } },
+  { path: '/workshops', redirect: (to) => ({ path: '/academy', query: { ...to.query, type: 'workshops' } }) },
   { path: '/mentorship', name: 'mentorship', component: () => import('@/views/MentorshipView.vue'), meta: { title: 'الإرشاد' } },
   { path: '/workshops/:id(\\d+)', name: 'workshop', component: () => import('@/views/WorkshopView.vue'), props: true, meta: { title: 'الورش' } },
-  { path: '/academy', redirect: fromTabs({ workshops: '/workshops' }, '/courses') },
 
   // الموارد
   { path: '/articles', name: 'articles', component: () => import('@/views/ArticlesView.vue'), meta: { page: 'articles', title: 'المقالات' } },

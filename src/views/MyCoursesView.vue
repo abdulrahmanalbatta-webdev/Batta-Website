@@ -73,7 +73,7 @@ async function logout() {
                 <h3>لم تسجّل في أي دورة بعد</h3>
                 <p>التسجيل مجاني: افتح صفحة الدورة واضغط "سجّل في الدورة".</p>
               </div>
-              <RouterLink class="btn btn-primary" to="/courses">تصفّح الدورات</RouterLink>
+              <RouterLink class="btn btn-primary" to="/academy?type=courses">تصفّح الدورات</RouterLink>
             </div>
           </div>
 
@@ -88,7 +88,7 @@ async function logout() {
                 <h3>لم تحجز مقعداً في أي ورشة بعد</h3>
                 <p>احجز مقعدك مجاناً من صفحة الورش.</p>
               </div>
-              <RouterLink class="btn btn-primary" to="/workshops">الورش القادمة</RouterLink>
+              <RouterLink class="btn btn-primary" to="/academy?type=workshops">الورش القادمة</RouterLink>
             </div>
           </div>
         </template>

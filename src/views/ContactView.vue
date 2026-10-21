@@ -234,7 +234,7 @@ async function sendMessage() {
                       <p>{{ sent.text }}</p>
                       <div class="done-actions">
                         <button type="button" class="btn btn-ghost" @click="sent = null">إرسال رسالة أخرى</button>
-                        <RouterLink v-if="a.id === 'student'" class="btn btn-soft" to="/courses">تصفّح الدورات</RouterLink>
+                        <RouterLink v-if="a.id === 'student'" class="btn btn-soft" to="/academy?type=courses">تصفّح الدورات</RouterLink>
                         <RouterLink v-else class="btn btn-soft" to="/services">تعرّف على الخدمات</RouterLink>
                       </div>
                     </div>
@@ -321,7 +321,7 @@ async function sendMessage() {
                           أسرع:
                           <RouterLink v-if="student" to="/my-courses">تسجيلاتي</RouterLink>
                           <RouterLink v-else :to="{ name: 'login', query: { next: '/contact?type=student' } }">تسجيل الدخول</RouterLink>
-                          · <RouterLink to="/courses">الدورات</RouterLink> · <RouterLink to="/workshops">الورش</RouterLink>
+                          · <RouterLink to="/academy?type=courses">الدورات</RouterLink> · <RouterLink to="/academy?type=workshops">الورش</RouterLink>
                         </span>
                       </div>
                     </form>

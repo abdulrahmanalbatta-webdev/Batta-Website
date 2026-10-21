@@ -13,8 +13,7 @@ onUnmounted(() => robots?.remove())
 // the same design as public/404.html (what Vercel answers for a missing file)
 const shortcuts = [
   { label: 'الخدمات', to: '/services' },
-  { label: 'الدورات', to: '/courses' },
-  { label: 'الورش', to: '/workshops' },
+  { label: 'الدورات والورش', to: '/academy' },
   { label: 'المقالات', to: '/articles' },
   { label: 'تواصل معي', to: '/contact' },
 ]

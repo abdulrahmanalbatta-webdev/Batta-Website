@@ -4,13 +4,15 @@ import LoadState from '@/components/ui/LoadState.vue'
 import { useWorkshops } from '@/composables/useContent'
 import { texts } from '@/data/texts'
 
+defineProps({ showKind: { type: Boolean, default: false } })
+
 const { items: workshops, loading, error, reload } = useWorkshops()
 </script>
 
 <template>
   <div class="panel">
     <div class="list">
-      <WorkshopCard v-for="w in workshops" :key="w.id" :workshop="w" />
+      <WorkshopCard v-for="w in workshops" :key="w.id" :workshop="w" :show-kind="showKind" />
       <LoadState :loading="loading" :error="error" :empty="!workshops.length" :empty-text="texts.ui.empty.workshops" @retry="reload" />
     </div>
 

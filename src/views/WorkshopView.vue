@@ -83,7 +83,7 @@ const paragraphs = computed(() => (workshop.value?.description ?? '').split(/\n\
               <div class="meter"><i :style="{ width: `${fill}%` }" /></div>
               <RegistrationButton type="workshop" :target="workshop.id" :label="texts.ui.buttons.book_seat" :closed="seatsLeft ? '' : texts.ui.buttons.seats_full" block large @change="workshop.taken += $event" />
             </template>
-            <p v-else class="muted ended">انتهت هذه الورشة. تابع الورش القادمة من <RouterLink to="/workshops">صفحة الورش</RouterLink>.</p>
+            <p v-else class="muted ended">انتهت هذه الورشة. تابع الورش القادمة من <RouterLink to="/academy?type=workshops">صفحة الورش</RouterLink>.</p>
             <RouterLink class="ask" :to="{ name: 'contact', query: { type: 'student', workshop: workshop.id } }"><BaseIcon name="chat" :size="16" />عندك سؤال عن الورشة؟</RouterLink>
           </div>
         </aside>
