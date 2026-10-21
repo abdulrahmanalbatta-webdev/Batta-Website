@@ -38,5 +38,15 @@ export async function shrinkImage(file, maxSide = 1600) {
   return new File([best], `${file.name.replace(/\.\w+$/, '')}.jpg`, { type: 'image/jpeg' })
 }
 
-// what a single upload may weigh once images are shrunk (the server accepts 2 MB by default)
-export const UPLOAD_LIMIT = 1.9 * 1024 * 1024
+// what a single upload may weigh once images are shrunk (the dashboard takes up to 5 MB)
+export const UPLOAD_LIMIT = 4.5 * 1024 * 1024
+
+// the file as "data:image/jpeg;base64,…": receipts go inside the JSON body, since the dashboard's host turns
+// down file uploads (multipart) coming from another site
+export const toDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
