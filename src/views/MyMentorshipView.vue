@@ -4,6 +4,7 @@ import PageHero from '@/components/ui/PageHero.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
 import LoadState from '@/components/ui/LoadState.vue'
 import { api } from '@/lib/api'
+import { shrinkImage, UPLOAD_LIMIT } from '@/lib/shrinkImage'
 import { useToast } from '@/composables/useToast'
 
 // طلب الإرشاد: أين وصل الطلب، وبعد القبول المحافظ التي يُحوَّل إليها المبلغ ورفع إشعار التحويل قبل انتهاء المهلة.
@@ -63,12 +64,13 @@ const reference = ref('')
 const sending = ref(false)
 async function sendProof() {
   if (!file.value) return showToast('اختر صورة إشعار التحويل أولاً')
-  if (file.value.size > 5 * 1024 * 1024) return showToast('حجم الملف أكبر من 5 ميغابايت')
-  const body = new FormData()
-  body.append('proof', file.value)
-  if (reference.value.trim()) body.append('transaction_ref', reference.value.trim())
   sending.value = true
   try {
+    const proof = await shrinkImage(file.value)
+    if (proof.size > UPLOAD_LIMIT) return showToast('الملف أكبر من 2 ميغابايت. أرسل لقطة شاشة للإشعار بدلاً منه.', 4500)
+    const body = new FormData()
+    body.append('proof', proof)
+    if (reference.value.trim()) body.append('transaction_ref', reference.value.trim())
     const res = await api.post('me/mentorship/proof', body)
     request.value = res.data
     showToast(res.message, 4500)
@@ -142,7 +144,7 @@ async function sendProof() {
                 </div>
 
                 <form class="upload" @submit.prevent="sendProof">
-                  <label class="field-label">إشعار التحويل (صورة أو PDF، حتى 5 ميغابايت)
+                  <label class="field-label">إشعار التحويل (صورة أو لقطة شاشة، أو PDF حتى 2 ميغابايت)
                     <input class="input" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required @change="file = $event.target.files[0] ?? null" />
                   </label>
                   <label class="field-label"><span class="lbl">رقم العملية <small>اختياري</small></span>
