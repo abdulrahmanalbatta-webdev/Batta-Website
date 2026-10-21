@@ -9,6 +9,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
 import { profile } from '@/data/profile'
 import { mentorship as copy } from '@/data/mentorship'
+import { walletLogo } from '@/data/wallets'
 
 // صفحة الإرشاد: التعريف بالخدمة والباقات، ثم الطلب على ثلاث خطوات بجانبه ملخّص الطلب.
 // الباقات والمقاعد من لوحة التحكم (GET mentorship). الطلب يحتاج حساباً، فالطالب يتابعه ويدفع من صفحة "طلب الإرشاد".
@@ -369,7 +370,7 @@ async function submit() {
             <span>تدفع بعد قبول طلبك فقط، ولديك {{ config.payment_hours }} ساعة لإتمام التحويل.</span>
           </div>
           <div class="methods">
-            <span v-for="m in config.payment_methods?.length ? config.payment_methods : ['بال باي', 'جوال باي']" :key="m" class="method"><BaseIcon name="wallet" :size="16" />{{ m }}</span>
+            <span v-for="m in config.payment_methods?.length ? config.payment_methods : ['بال باي', 'جوال باي']" :key="m" class="method"><img v-if="walletLogo(m)" :src="walletLogo(m)" alt="" /><BaseIcon v-else name="wallet" :size="16" />{{ m }}</span>
           </div>
         </aside>
       </div>
@@ -1167,6 +1168,11 @@ async function submit() {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+.method img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 .method {
   display: inline-flex;

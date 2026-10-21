@@ -5,6 +5,7 @@ import LoadState from '@/components/ui/LoadState.vue'
 import { api } from '@/lib/api'
 import { shrinkImage, toDataUrl, UPLOAD_LIMIT } from '@/lib/shrinkImage'
 import { useToast } from '@/composables/useToast'
+import { walletLogo } from '@/data/wallets'
 
 // طلب الإرشاد، على شكل صفحة دفع: أين وصل الطلب، وبعد القبول اختيار المحفظة وخطوات التحويل ورفع الإشعار،
 // وبجانبها ملخّص الطلب والمهلة المتبقية.
@@ -199,7 +200,10 @@ const calendarUrl = computed(() => {
                   <div class="wallets" role="radiogroup" aria-label="طريقة الدفع">
                     <label v-for="w in request.wallets" :key="w.id" class="wallet" :class="[w.id, { on: wallet === w.id }]">
                       <input v-model="wallet" type="radio" name="wallet" :value="w.id" />
-                      <span class="w-logo"><BaseIcon name="wallet" :size="22" /></span>
+                      <span class="w-logo" :class="{ plain: !walletLogo(w.id) }">
+                        <img v-if="walletLogo(w.id)" :src="walletLogo(w.id)" :alt="w.name" />
+                        <BaseIcon v-else name="wallet" :size="22" />
+                      </span>
                       <span class="w-text"><b>{{ w.name }}</b><small>محفظة إلكترونية</small></span>
                       <span class="radio" />
                     </label>
@@ -207,7 +211,10 @@ const calendarUrl = computed(() => {
                 </div>
 
                 <div v-if="chosenWallet" class="card block">
-                  <header class="block-head"><span class="num">2</span><h2>حوّل المبلغ عبر {{ chosenWallet.name }}</h2></header>
+                  <header class="block-head">
+                    <span class="num">2</span><h2>حوّل المبلغ عبر {{ chosenWallet.name }}</h2>
+                    <img v-if="walletLogo(chosenWallet.id)" class="head-logo" :src="walletLogo(chosenWallet.id)" alt="" />
+                  </header>
                   <ol class="howto">
                     <li>
                       <span>المبلغ</span>
@@ -544,17 +551,30 @@ const calendarUrl = computed(() => {
   box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
 }
 .w-logo {
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   border-radius: 14px;
   display: grid;
   place-items: center;
-  color: #fff;
-  background: linear-gradient(135deg, #0b6e4f, #18a36f);
+  padding: 7px;
+  background: #fff;
+  border: 1px solid var(--line);
   flex: none;
 }
-.wallet.jawwalpay .w-logo {
-  background: linear-gradient(135deg, #0050b3, #2f7cf6);
+.w-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.w-logo.plain {
+  color: #fff;
+  border: 0;
+  background: linear-gradient(135deg, #0b6e4f, #18a36f);
+}
+.head-logo {
+  height: 30px;
+  width: auto;
+  margin-inline-start: auto;
 }
 .w-text {
   display: flex;
