@@ -23,6 +23,7 @@ const routes = [
   { path: '/courses', name: 'courses', component: () => import('@/views/CoursesView.vue'), meta: { page: 'courses', title: 'الدورات' } },
   { path: '/courses/:slug', name: 'course', component: () => import('@/views/CourseView.vue'), props: true, meta: { title: 'الدورات' } },
   { path: '/workshops', name: 'workshops', component: () => import('@/views/WorkshopsView.vue'), meta: { page: 'workshops', title: 'الورش' } },
+  { path: '/mentorship', name: 'mentorship', component: () => import('@/views/MentorshipView.vue'), meta: { title: 'الإرشاد' } },
   { path: '/workshops/:id(\\d+)', name: 'workshop', component: () => import('@/views/WorkshopView.vue'), props: true, meta: { title: 'الورش' } },
   { path: '/academy', redirect: fromTabs({ workshops: '/workshops' }, '/courses') },
 
@@ -52,6 +53,7 @@ const routes = [
           ? { name: 'workshop', params: { id: String(to.query.workshop) }, query: {} }
           : { path: '/courses', query: {} },
   },
+  { path: '/my-mentorship', name: 'my-mentorship', component: () => import('@/views/MyMentorshipView.vue'), meta: { title: 'طلب الإرشاد', auth: true } },
   { path: '/my-courses', name: 'my-courses', component: () => import('@/views/MyCoursesView.vue'), meta: { title: 'تسجيلاتي', auth: true } },
   // courses have no lessons any more: old links go to the course page
   { path: '/my-courses/:slug', redirect: (to) => ({ name: 'course', params: { slug: to.params.slug } }) },
