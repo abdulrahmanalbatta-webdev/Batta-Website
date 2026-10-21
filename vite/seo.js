@@ -5,6 +5,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { markdownToBlocks } from '../src/lib/markdown.js'
+import { mentorship } from '../src/data/mentorship.js'
 
 const esc = (value) =>
   String(value ?? '')
@@ -70,6 +71,7 @@ async function loadData(apiUrl) {
   const paths = await tryFetch(apiUrl, 'paths', [])
   const tools = await tryFetch(apiUrl, 'tools', [])
   const articleList = await tryFetch(apiUrl, 'articles?per_page=50', [])
+  const mentorshipConfig = await tryFetch(apiUrl, 'mentorship', null)
 
   const courseDetails = []
   for (const c of courses) courseDetails.push((await tryFetch(apiUrl, `courses/${encodeURIComponent(c.slug)}`, null)) ?? c)
@@ -78,11 +80,11 @@ async function loadData(apiUrl) {
   const pathDetails = []
   for (const p of paths) pathDetails.push((await tryFetch(apiUrl, `paths/${encodeURIComponent(p.id)}`, null)) ?? p)
 
-  return { content, settings, courses: courseDetails, workshops, paths: pathDetails, tools, articles }
+  return { content, settings, courses: courseDetails, workshops, paths: pathDetails, tools, articles, mentorshipConfig }
 }
 
 function buildPages(data, site) {
-  const { content, settings, courses, workshops, paths, tools, articles } = data
+  const { content, settings, courses, workshops, paths, tools, articles, mentorshipConfig } = data
   const name = content?.brand?.name || content?.profile?.name || settings.site_name || 'Batta'
   const role = content?.profile?.role || ''
   const seo = content?.seo ?? {}
@@ -273,6 +275,30 @@ ${(p.stages ?? []).map((s, i) => `<h2>${i + 1}. ${esc(s.title)}</h2><p>${esc(s.t
     })
   }
 
+  const packages = mentorshipConfig?.packages ?? mentorship.packages
+  add({
+    path: '/mentorship',
+    title: `الإرشاد | ${name}`,
+    description: mentorship.subtitle,
+    body: `<h1>${esc(mentorship.title)}</h1>
+<p>${esc(mentorship.subtitle)}</p>
+<h2>${esc(mentorship.about.title)}</h2>
+<p>${esc(mentorship.about.text)}</p>
+<h2>الباقات</h2>
+${list(packages, (p) => `${esc(p.name)}: ${esc(p.price)} ₪${p.period ? ` / ${esc(p.period)}` : ''} — ${esc(p.description)}`)}
+<h2>أسئلة شائعة</h2>
+${mentorship.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a.replace('{hours}', mentorshipConfig?.payment_hours ?? 24))}</p>`).join('\n')}`,
+    jsonLd: [
+      {
+        '@type': 'Service',
+        name: 'الإرشاد',
+        description: mentorship.subtitle,
+        provider: { '@id': `${site}/#person` },
+        url: url('/mentorship'),
+        offers: packages.map((p) => ({ '@type': 'Offer', name: p.name, price: p.price, priceCurrency: 'ILS' })),
+      },
+    ],
+  })
   add({ path: '/workshops', title: `${pagesText.workshops || 'الورش'} | ${name}`, body: `<h1>${esc(pagesText.workshops || 'الورش')}</h1>${workshopLinks}` })
   for (const w of workshops) {
     const online = /online|أونلاين|عن بعد/i.test(`${w.format} ${w.format_label}`)
@@ -344,6 +370,7 @@ function renderPage(template, page, site, name) {
     ['/paths', 'المسارات'],
     ['/courses', 'الدورات'],
     ['/workshops', 'الورش'],
+    ['/mentorship', 'الإرشاد'],
     ['/articles', 'المقالات'],
     ['/about', 'من أنا'],
     ['/contact', 'تواصل معي'],

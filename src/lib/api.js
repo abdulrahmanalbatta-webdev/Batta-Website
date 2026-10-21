@@ -39,13 +39,15 @@ export const token = {
 
 async function request(method, path, body) {
   const headers = { Accept: 'application/json' }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  // a FormData body (a file upload) sets its own multipart Content-Type
+  const isForm = body instanceof FormData
+  if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json'
   const bearer = token.get()
   if (bearer) headers.Authorization = `Bearer ${bearer}`
 
   let response
   try {
-    response = await fetch(`${BASE}/${path.replace(/^\//, '')}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(TIMEOUT) })
+    response = await fetch(`${BASE}/${path.replace(/^\//, '')}`, { method, headers, body: body === undefined || isForm ? body : JSON.stringify(body), signal: AbortSignal.timeout(TIMEOUT) })
   } catch (err) {
     throw new ApiError(err?.name === 'TimeoutError' ? 408 : 0)
   }

@@ -46,6 +46,7 @@ async function logout() {
 <template>
   <div>
     <PageHero title="تسجيلاتي" eyebrow="حسابي" :subtitle="student ? `أهلاً ${student.name}` : ''">
+      <RouterLink class="link-btn" :to="{ name: 'my-mentorship' }"><BaseIcon name="users" :size="16" />طلب الإرشاد</RouterLink>
       <button class="link-btn" type="button" @click="logout"><BaseIcon name="next" :size="16" />تسجيل الخروج</button>
     </PageHero>
 
