@@ -3,11 +3,9 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import BaseIcon from '@/components/ui/BaseIcon.vue'
-import ProfilePhoto from '@/components/ui/ProfilePhoto.vue'
 import { api } from '@/lib/api'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
-import { profile } from '@/data/profile'
 import { mentorship as copy } from '@/data/mentorship'
 import { walletLogo } from '@/data/wallets'
 
@@ -142,14 +140,6 @@ async function submit() {
         <!-- an illustration of what the mentorship looks like -->
         <div class="hero-art" aria-hidden="true">
           <div class="mentor-card">
-            <div class="mentor">
-              <ProfilePhoto :size="56" rounded="16px" />
-              <div>
-                <b>{{ profile.name }}</b>
-                <small>{{ profile.role }}</small>
-              </div>
-              <span class="online">متاح</span>
-            </div>
             <div class="plan">
               <small>خطتك الشخصية</small>
               <ol>
@@ -158,14 +148,6 @@ async function submit() {
                 </li>
               </ol>
             </div>
-          </div>
-          <div class="float f-session">
-            <span class="ico"><BaseIcon name="calendar" :size="18" /></span>
-            <div><b>جلستك القادمة</b><small>الثلاثاء · 7:00 مساءً</small></div>
-          </div>
-          <div class="float f-review">
-            <span class="ico green"><BaseIcon name="code" :size="18" /></span>
-            <div><b>مراجعة الكود</b><small>3 ملاحظات جديدة</small></div>
           </div>
         </div>
       </div>
@@ -481,28 +463,8 @@ async function submit() {
   flex-direction: column;
   gap: 22px;
 }
-.mentor {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.mentor > div {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-.mentor small,
 .plan > small {
   color: var(--muted);
-}
-.online {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--green);
-  background: var(--green-soft);
-  padding: 3px 10px;
-  border-radius: 999px;
 }
 .plan ol {
   list-style: none;
@@ -546,56 +508,6 @@ async function submit() {
 .plan li.now .dot {
   border-color: var(--primary);
   box-shadow: inset 0 0 0 4px var(--surface), inset 0 0 0 9px var(--primary);
-}
-.float {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  animation: float 6s ease-in-out infinite;
-}
-.float div {
-  display: flex;
-  flex-direction: column;
-}
-.float b {
-  font-size: 14px;
-}
-.float small {
-  color: var(--muted);
-  font-size: 12.5px;
-}
-.float .ico {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: var(--primary-soft);
-  color: var(--primary-600);
-}
-.float .ico.green {
-  background: var(--green-soft);
-  color: var(--green);
-}
-.f-session {
-  top: 0;
-  inset-inline-start: -8px;
-}
-.f-review {
-  bottom: 0;
-  inset-inline-end: -8px;
-  animation-delay: -3s;
-}
-@keyframes float {
-  50% {
-    transform: translateY(-8px);
-  }
 }
 
 /* ---------- seats ---------- */
@@ -1301,16 +1213,8 @@ async function submit() {
     grid-template-columns: 1fr;
     gap: 2px;
   }
-  .float {
-    display: none;
-  }
   .hero-art {
     padding: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .float {
-    animation: none;
   }
 }
 </style>
