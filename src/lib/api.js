@@ -63,9 +63,38 @@ async function request(method, path, body) {
   return data
 }
 
+// a JSON POST that reports how much of the body went up (fetch can't): for receipts on slow connections
+function postWithProgress(path, body, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', `${BASE}/${path.replace(/^\//, '')}`)
+    xhr.setRequestHeader('Accept', 'application/json')
+    xhr.setRequestHeader('Content-Type', 'application/json')
+    const bearer = token.get()
+    if (bearer) xhr.setRequestHeader('Authorization', `Bearer ${bearer}`)
+    xhr.timeout = 120000
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(e.loaded / e.total)
+    xhr.onload = () => {
+      let data = null
+      try {
+        data = JSON.parse(xhr.responseText)
+      } catch {
+        /* not JSON */
+      }
+      if (xhr.status >= 200 && xhr.status < 300) return resolve(data)
+      if (xhr.status === 401 && bearer) token.set(null)
+      reject(new ApiError(xhr.status, data))
+    }
+    xhr.onerror = () => reject(new ApiError(0))
+    xhr.ontimeout = () => reject(new ApiError(408))
+    xhr.send(JSON.stringify(body))
+  })
+}
+
 export const api = {
   get: (path, query) => request('GET', query ? `${path}?${new URLSearchParams(Object.entries(query).filter(([, v]) => v !== undefined && v !== null && v !== ''))}` : path),
   post: (path, body = {}) => request('POST', path, body),
   put: (path, body = {}) => request('PUT', path, body),
   delete: (path) => request('DELETE', path),
+  postWithProgress,
 }
