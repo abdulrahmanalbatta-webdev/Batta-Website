@@ -8,5 +8,17 @@
       "source": "/((?!.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/courses",
+      "destination": "/academy?type=courses",
+      "permanent": true
+    },
+    {
+      "source": "/workshops",
+      "destination": "/academy?type=workshops",
+      "permanent": true
+    }
   ]
 }

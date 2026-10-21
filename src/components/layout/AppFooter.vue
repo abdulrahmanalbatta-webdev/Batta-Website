@@ -34,8 +34,8 @@ const { email, whatsapp, whatsappUrl } = useContact()
           <h4>تعلّم</h4>
           <ul>
             <li><RouterLink to="/paths">{{ texts.ui.pages.paths }}</RouterLink></li>
-            <li><RouterLink to="/courses">{{ texts.ui.pages.courses }}</RouterLink></li>
-            <li><RouterLink to="/workshops">{{ texts.ui.pages.workshops }}</RouterLink></li>
+            <li><RouterLink to="/academy">الدورات والورش</RouterLink></li>
+            <li><RouterLink to="/mentorship">الإرشاد</RouterLink></li>
             <li><RouterLink to="/articles">{{ texts.ui.pages.articles }}</RouterLink></li>
             <li><RouterLink to="/tools">{{ texts.ui.pages.tools }}</RouterLink></li>
           </ul>

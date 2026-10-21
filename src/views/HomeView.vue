@@ -34,7 +34,7 @@ const latestArticles = computed(() => articles.value.slice(0, 3))
           <CourseCard v-for="c in courses.slice(0, 3)" :key="c.id" :course="c" />
         </div>
         <div class="center-row">
-          <RouterLink class="btn btn-ghost btn-lg" to="/courses">{{ texts.ui.buttons.all_courses }} <BaseIcon name="arrow" :size="18" /></RouterLink>
+          <RouterLink class="btn btn-ghost btn-lg" to="/academy?type=courses">{{ texts.ui.buttons.all_courses }} <BaseIcon name="arrow" :size="18" /></RouterLink>
         </div>
       </div>
     </section>

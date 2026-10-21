@@ -15,7 +15,7 @@ import { texts } from '@/data/texts'
         <RouterLink class="btn btn-primary btn-lg" :to="{ name: 'contact' }">
           {{ texts.ui.buttons.start_project }} <BaseIcon name="arrow" :size="18" />
         </RouterLink>
-        <RouterLink class="btn btn-outline-light btn-lg" to="/courses">{{ texts.ui.buttons.start_learning }}</RouterLink>
+        <RouterLink class="btn btn-outline-light btn-lg" to="/academy?type=courses">{{ texts.ui.buttons.start_learning }}</RouterLink>
       </div>
     </div>
   </section>

@@ -6,6 +6,8 @@ import { texts } from '@/data/texts'
 
 const props = defineProps({
   workshop: { type: Object, required: true },
+  // "ورشة" beside the format, where courses and workshops are listed together
+  showKind: { type: Boolean, default: false },
 })
 
 // the student's own booking or cancelling moves the meter without reloading the list
@@ -25,6 +27,7 @@ const closed = computed(() => (props.workshop.ended ? 'انتهت الورشة' 
 
     <div class="info">
       <div class="tags">
+        <span v-if="showKind" class="pill">ورشة</span>
         <span class="pill line"><BaseIcon :name="workshop.online ? 'monitor' : 'pin'" :size="14" />{{ workshop.format }}</span>
       </div>
       <h3><RouterLink class="title-link" :to="{ name: 'workshop', params: { id: workshop.id } }">{{ workshop.title }}</RouterLink></h3>

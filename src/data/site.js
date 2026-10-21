@@ -25,7 +25,7 @@ export const legal = reactive({ privacy: null, terms: null })
 export const announcement = reactive({
   enabled: false,
   text: 'دفعة "برنامج المطوّر المستقل" تبدأ 15 نوفمبر، وبقي 7 مقاعد فقط.',
-  link: '/courses',
+  link: '/academy',
   linkLabel: 'احجز مقعدك',
 })
 

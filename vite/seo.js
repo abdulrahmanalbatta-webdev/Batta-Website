@@ -167,12 +167,21 @@ ${faqList}`,
     ],
   })
 
+  // courses and workshops share one page (/courses and /workshops redirect to it, vercel.json)
   add({
-    path: '/courses',
-    title: `${pagesText.courses || 'الدورات'} | ${name}`,
-    description: clip(content?.texts_learning?.courses?.text) || seo.description,
-    body: `<h1>${esc(pagesText.courses || 'الدورات')}</h1>${courseLinks}`,
-    jsonLd: [{ '@type': 'ItemList', itemListElement: courses.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: url(`/courses/${c.slug}`), name: c.title })) }],
+    path: '/academy',
+    title: `الدورات والورش | ${name}`,
+    description: 'دورات مسجّلة تنتهي بمشروع حقيقي، وورش مباشرة أونلاين وحضورياً، والتسجيل فيها كلها مجاني.',
+    body: `<h1>الدورات والورش</h1>
+<p>دورات مسجّلة تنتهي بمشروع حقيقي، وورش مباشرة أونلاين وحضورياً، والتسجيل فيها كلها مجاني.</p>
+${workshops.length ? `<h2>الورش القادمة</h2>${workshopLinks}` : ''}
+${courses.length ? `<h2>الدورات</h2>${courseLinks}` : ''}`,
+    jsonLd: [
+      {
+        '@type': 'ItemList',
+        itemListElement: [...workshops.map((w) => ({ path: `/workshops/${w.id}`, name: w.title })), ...courses.map((c) => ({ path: `/courses/${c.slug}`, name: c.title }))].map((item, i) => ({ '@type': 'ListItem', position: i + 1, url: url(item.path), name: item.name })),
+      },
+    ],
   })
   for (const c of courses) {
     add({
@@ -201,7 +210,7 @@ ${c.tags?.length ? `<p>${c.tags.map(esc).join(' · ')}</p>` : ''}`,
           aggregateRating: c.reviews ? { '@type': 'AggregateRating', ratingValue: c.rating, reviewCount: c.reviews } : undefined,
         },
         breadcrumbs([
-          { name: pagesText.courses || 'الدورات', path: '/courses' },
+          { name: 'الدورات والورش', path: '/academy' },
           { name: c.title, path: `/courses/${c.slug}` },
         ]),
       ],
@@ -299,7 +308,6 @@ ${mentorship.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a.replace('{hours}'
       },
     ],
   })
-  add({ path: '/workshops', title: `${pagesText.workshops || 'الورش'} | ${name}`, body: `<h1>${esc(pagesText.workshops || 'الورش')}</h1>${workshopLinks}` })
   for (const w of workshops) {
     const online = /online|أونلاين|عن بعد/i.test(`${w.format} ${w.format_label}`)
     add({
@@ -368,8 +376,7 @@ function renderPage(template, page, site, name) {
     ['/', 'الرئيسية'],
     ['/services', 'الخدمات'],
     ['/paths', 'المسارات'],
-    ['/courses', 'الدورات'],
-    ['/workshops', 'الورش'],
+    ['/academy', 'الدورات والورش'],
     ['/mentorship', 'الإرشاد'],
     ['/articles', 'المقالات'],
     ['/about', 'من أنا'],
