@@ -159,6 +159,8 @@ const calendarUrl = computed(() => {
             <span class="label">{{ s }}</span>
           </li>
         </ol>
+        <!-- phones show the numbers only, and the current step's name here -->
+        <p v-if="request && !closed" class="step-caption">الخطوة {{ Math.min(stepIndex, STEPS.length - 1) + 1 }} من {{ STEPS.length }}: <b>{{ STEPS[Math.min(stepIndex, STEPS.length - 1)] }}</b></p>
       </div>
     </section>
 
@@ -457,6 +459,9 @@ const calendarUrl = computed(() => {
   background: var(--surface);
   border: 1px solid var(--line);
   flex: none;
+}
+.step-caption {
+  display: none;
 }
 .stepper .done {
   color: var(--green);
@@ -976,21 +981,70 @@ const calendarUrl = computed(() => {
   }
   .side {
     position: static;
-    order: -1;
-  }
-  .secure {
-    display: none;
   }
 }
 @media (max-width: 620px) {
+  .top {
+    padding-top: 22px;
+  }
+  .title-row {
+    gap: 8px;
+  }
+  .title-row h1 {
+    font-size: 24px;
+    width: 100%;
+  }
+  .stepper {
+    margin-top: 4px;
+  }
+  .stepper li {
+    justify-content: center;
+    padding-bottom: 12px;
+  }
   .stepper .label {
     display: none;
   }
-  .stepper .now .label {
-    display: inline;
+  .step-caption {
+    display: block;
+    padding-bottom: 14px;
+    color: var(--muted);
+    font-size: 14.5px;
   }
-  .stepper li {
-    font-size: 12.5px;
+  .step-caption b {
+    color: var(--fg);
+  }
+  .body {
+    padding-block: 20px 72px;
+  }
+  .state {
+    padding: 32px 18px;
+  }
+  .state h2 {
+    font-size: 21px;
+  }
+  .next {
+    font-size: 14.5px;
+  }
+  .wallets {
+    grid-template-columns: 1fr;
+  }
+  .head-logo {
+    display: none;
+  }
+  .block-head h2 {
+    font-size: 17px;
+  }
+  .dl-top {
+    flex-wrap: wrap;
+  }
+  .dl-top b {
+    margin-inline-start: 0;
+    width: 100%;
+    font-size: 18px;
+  }
+  .summary,
+  .secure {
+    padding: 18px;
   }
   .block {
     padding: 20px 16px;

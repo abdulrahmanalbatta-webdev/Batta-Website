@@ -1156,7 +1156,62 @@ async function submit() {
 }
 @media (max-width: 620px) {
   .hero {
-    padding-top: 44px;
+    padding-block: 36px 48px;
+  }
+  /* on a phone the title and the buttons come first; the illustrative plan would only push them apart */
+  .hero-art {
+    display: none;
+  }
+  .hero h1 {
+    font-size: 32px;
+  }
+  .lead {
+    font-size: 16.5px;
+    line-height: 1.85;
+  }
+  .cta {
+    flex-direction: column;
+    margin-top: 22px;
+  }
+  .cta .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .trust {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .benefits li {
+    flex-direction: row;
+    align-items: center;
+    padding: 16px;
+  }
+  .steps {
+    gap: 18px;
+  }
+  .steps li {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .steps .n {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 16px;
+    flex: none;
+  }
+  .about-text h2 {
+    font-size: 24px;
+  }
+  .about-text p {
+    font-size: 16px;
+  }
+  .plan-card {
+    padding: 26px 20px;
+  }
+  .price b {
+    font-size: 34px;
   }
   .benefits,
   .steps,
@@ -1170,6 +1225,10 @@ async function submit() {
   }
   .seats-text {
     white-space: normal;
+  }
+  .meter {
+    flex: none;
+    width: 100%;
   }
   .apply-main {
     padding: 22px 18px;
