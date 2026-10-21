@@ -125,7 +125,6 @@ async function submit() {
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-text">
-          <span class="badge"><span class="live" />{{ copy.eyebrow }}<template v-if="seatsText"> · {{ seatsText }}</template></span>
           <h1>{{ copy.title }}</h1>
           <p class="lead">{{ copy.subtitle }}</p>
           <div class="cta">
@@ -390,28 +389,7 @@ async function submit() {
   gap: 56px;
   align-items: center;
 }
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--text);
-  box-shadow: var(--shadow-sm);
-}
-.live {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 4px var(--green-soft);
-}
 .hero h1 {
-  margin-top: 18px;
   font-size: clamp(34px, 4.6vw, 54px);
   line-height: 1.25;
   letter-spacing: -0.5px;
