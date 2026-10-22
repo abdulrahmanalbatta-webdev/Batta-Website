@@ -45,14 +45,6 @@ watch(
 )
 
 const faqs = computed(() => copy.faqs.map((f) => ({ ...f, a: f.a.replace('{hours}', config.value.payment_hours) })))
-const seatsKnown = computed(() => config.value.enabled && config.value.seats_left !== null && config.value.capacity)
-const seatsTaken = computed(() => (seatsKnown.value ? config.value.capacity - config.value.seats_left : 0))
-const seatsText = computed(() => {
-  const n = config.value.seats_left
-  if (!seatsKnown.value) return ''
-  if (n === 0) return 'المقاعد مكتملة هذا الشهر'
-  return n === 1 ? 'متبقي مقعد واحد هذا الشهر' : n === 2 ? 'متبقي مقعدان هذا الشهر' : `متبقي ${n} ${n <= 10 ? 'مقاعد' : 'مقعداً'} هذا الشهر`
-})
 const closedText = computed(() => {
   if (!loaded.value) return ''
   if (!config.value.enabled) return 'استقبال طلبات الإرشاد مغلق حالياً. تابعني لتعرف موعد فتح المقاعد القادمة.'
@@ -151,19 +143,6 @@ async function submit() {
         </div>
       </div>
     </section>
-
-    <!-- ---------- seats ---------- -->
-    <div v-if="seatsKnown" class="container seats-wrap">
-      <div class="seats">
-        <div class="seats-text">
-          <BaseIcon name="users" :size="20" />
-          <span><b>{{ seatsTaken }} من {{ config.capacity }}</b> مقاعد محجوزة · {{ seatsText }}</span>
-        </div>
-        <div class="meter" role="progressbar" :aria-valuenow="seatsTaken" aria-valuemin="0" :aria-valuemax="config.capacity">
-          <i :style="{ width: `${(seatsTaken / config.capacity) * 100}%` }" />
-        </div>
-      </div>
-    </div>
 
     <!-- ---------- what it is ---------- -->
     <section class="section">
@@ -486,46 +465,6 @@ async function submit() {
 .plan li.now .dot {
   border-color: var(--primary);
   box-shadow: inset 0 0 0 4px var(--surface), inset 0 0 0 9px var(--primary);
-}
-
-/* ---------- seats ---------- */
-.seats-wrap {
-  margin-top: -28px;
-  position: relative;
-  z-index: 1;
-}
-.seats {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 18px 24px;
-  border-radius: 18px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-}
-.seats-text {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  white-space: nowrap;
-}
-.seats-text .icon {
-  color: var(--primary-600);
-}
-.meter {
-  flex: 1;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--tint);
-  overflow: hidden;
-}
-.meter i {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--primary), #4d94ff);
 }
 
 /* ---------- about ---------- */
@@ -1217,18 +1156,6 @@ async function submit() {
   .steps,
   .fields {
     grid-template-columns: 1fr;
-  }
-  .seats {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-  .seats-text {
-    white-space: normal;
-  }
-  .meter {
-    flex: none;
-    width: 100%;
   }
   .apply-main {
     padding: 22px 18px;
